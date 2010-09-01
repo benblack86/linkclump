@@ -1,0 +1,71 @@
+body {
+	background-color: #000000;
+}
+
+p,h1 {
+	color: #FFFFFF;
+	font-family: Georgia;
+}
+
+p {
+	margin-left: 20px;
+	font-size: 16px;
+}
+
+b {
+	font-style: italic;
+	font-weight: bolder;
+	
+}
+
+p.copyright {
+	font-size: 12px
+}
+
+a {
+	color: #66A3D2;
+	text-decoration: none
+}
+
+
+#facebook
+{
+  display: block;
+  width: 128px;
+  height: 128px;
+  background: url("facebook.png") no-repeat 0 0;
+
+}
+
+#facebook:hover
+{ 
+  background-position: 0 -127px;
+}
+
+#twitter
+{
+  display: block;
+  width: 128px;
+  height: 128px;
+  background: url("twitter.png") no-repeat 0 0;
+
+}
+
+#twitter:hover
+{ 
+  background-position: 0 -128px;
+}
+
+#chrome
+{
+  display: block;
+  width: 128px;
+  height: 128px;
+  background: url("chrome.png") no-repeat 0 0;
+
+}
+
+#chrome:hover
+{ 
+  background-position: 0 -127px;
+}

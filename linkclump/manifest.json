@@ -1,0 +1,22 @@
+{
+  "name": "Linkclump",
+  "version": "1.0",
+  "description": "Open multiple links at once.",
+  "background_page": "background.html",
+  "content_scripts": [
+    {
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content_script.js"],
+    "run_at": "document_end",
+    "all_frames": true
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Linkclump",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
