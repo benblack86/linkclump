@@ -11,10 +11,15 @@
 		            var mouse_button = null
 		            var key_code = null
 					var os = 0
+					var smart_select = null
 		            
 					if (navigator.appVersion.indexOf("Win") != -1) {
 						os = 1
 					}
+					
+					try {
+						smart_select = window.localStorage.getItem('smart_select') == 'true'
+		            } catch(exception) {}
 					
 		            try {
 						mouse_button = window.localStorage.getItem('mouse_button')
@@ -26,6 +31,11 @@
 		            try {
 		                key_code = window.localStorage.getItem('key_code')
 		            } catch(exception) {}
+					
+					if(smart_select == null) {
+						smart_select = true
+						window.localStorage.setItem('smart_select', smart_select)
+					}
 		
 					if(mouse_button == null) {
 						if(os == 1) {
@@ -45,7 +55,7 @@
 						window.localStorage.setItem('key_code', key_code)
 					}
 		
-		            callback({mouse_button:mouse_button, key_code:key_code, os:os});
+		            callback({mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select});
 		        }
 		    }
 		);

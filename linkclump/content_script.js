@@ -3,12 +3,14 @@ var doc = document.body
 var properties = {
     mouse_button: null,
     key_code: null,
-    os: null
+    os: null,
+	smart_select: null
 }
 var state = {
     key_pressed: null,
     stop_menu: false,
-    clump_on: false
+    clump_on: false,
+	smart_select: false
 }
 var links = new Array()
 var clump = null
@@ -27,6 +29,7 @@ chrome.extension.onRequest.addListener(function(request, sender, callback){
 
 function update_status(properties){
     this.properties.os = properties.os
+	this.properties.smart_select = properties.smart_select
     
     if (properties.mouse_button != null) {
         this.properties.mouse_button = properties.mouse_button
@@ -35,7 +38,7 @@ function update_status(properties){
         this.properties.key_code = properties.key_code.toUpperCase()
     }
     
-    console.log(this.properties.mouse_button + "|" + this.properties.key_code)
+    console.log(this.properties.mouse_button + "|" + this.properties.key_code + "|"+this.properties.smart_select)
 }
 
 function mousedown(event){
@@ -101,7 +104,8 @@ function mousemove(event){
             clump.style.top = event.pageY + "px"
         }
         
-        detech(event, false)
+		// while detect keeps on calling false then recall the method
+        while(!detech(event, false)) {}
     } else {
        terminate()
     }
@@ -161,6 +165,12 @@ function setup(){
         page_links[i].box = null
         
         links.push(page_links[i])
+		
+		if(properties.smart_select && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i)) {
+			page_links[i].important = true
+		} else {
+			page_links[i].important = false
+		}
     }
     
     state.clump_on = true
@@ -202,6 +212,9 @@ function clean_up(){
         }
     }
     links = new Array()
+	
+	// wipe clean the smart select
+	state.smart_select = false
 }
 
 function detech(event, open){
@@ -227,21 +240,33 @@ function detech(event, open){
     
     if (!state.clump_on) {
         if (end_x - start_x < 5 && end_y - start_y < 5) {
-            return
+            return true
         } else {
             setup()
         }
         
     }
-    
+    var count = 0
     for (var i = 0; i < links.length; i++) {
-        if (!(links[i].x1 > end_x || links[i].x2 < start_x || links[i].y1 > end_y || links[i].y2 < start_y)) {
+        if ((!state.smart_select || links[i].important) && !(links[i].x1 > end_x || links[i].x2 < start_x || links[i].y1 > end_y || links[i].y2 < start_y)) {
             if (open) {
                 chrome.extension.sendRequest({
                     message: 'openLink',
                     url: links[i].href
                 });
             }
+		
+			// check if important links have been selected and possibly redo
+			if (!state.smart_select) {
+				if (links[i].important) {
+					state.smart_select = true
+					return false
+				}
+			} else {
+				if (links[i].important) {
+					count++
+				}
+			}
             
             if (links[i].box == null) {
                 var link_box = document.createElement("span")
@@ -264,6 +289,14 @@ function detech(event, open){
             }
         }
     }
+	
+	// important links were found, but not anymore so redo
+	if(state.smart_select && count == 0) {
+		state.smart_select = false
+		return false
+	}
+	
+	return true
 }
 
 

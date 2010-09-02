@@ -1,8 +1,11 @@
 {
   "name": "Linkclump",
-  "version": "1.0",
+  "version": "1.0.1",
   "description": "Open multiple links at once.",
   "background_page": "background.html",
+  "icons": {"16": "favicon.ico",
+           "48": "48x48.png",
+          "128": "128x128.png" },
   "content_scripts": [
     {
     "matches": ["http://*/*", "https://*/*"],

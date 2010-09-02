@@ -12,13 +12,17 @@
     </select>
     + <i id="optional">optional</i> key
     <input type="text" size="1" maxlength="1" onkeyup="save_key();" onfocus="hello();" onblur="bye();" id="key">
+	<br />
+	<input type="checkbox" onchange="save_smart_select()" id="smart">smart select
 </div>
 
 <script type="text/javascript">
     var mouse = null
     var key = null
+	var smart = null
     var mouse_button = null
     var key_code = null
+	var smart_select = null
 	var optional = null
 	var error = false
 	var isFocused = false
@@ -36,12 +40,19 @@
     function setup() {
         mouse = document.getElementById("mouse")
         key = document.getElementById("key")
+		smart = document.getElementById("smart")
 		optional = document.getElementById("optional")
 		
 		if(navigator.appVersion.indexOf("Win")!=-1) {
 			os = 1
 		}
     
+	    try {
+            smart_select = window.localStorage.getItem('smart_select')
+        } catch(exception) {
+            error = true
+        }
+	
         try {
             mouse_button = parseInt(window.localStorage.getItem('mouse_button'))
         } catch(exception) {
@@ -58,14 +69,22 @@
             document.getElementById("options").innerHTML = "<b>There has been an error. Please reload and try again.</b>"
             window.localStorage.setItem('mouse_button', 0)
             window.localStorage.setItem('key_code', '')
+			window.localStorage.setItem('smart_select', true)
         } else {
             mouse.options[mouse_button].selected = true
             key.value = key_code
+			smart.checked = smart_select == 'true'
         }
 		
 		if(os == 0 && mouse_button == 2) {
 			optional.innerHTML = "mandatory"
 		}
+    }
+	
+	function save_smart_select() {
+		smart_select = smart.checked
+        window.localStorage.setItem('smart_select', smart_select)
+        send_to_content_script()
     }
     
     function save_mouse_button() {
@@ -113,7 +132,7 @@
         chrome.windows.getAll({populate:true}, function(windowList) {
             windowList.forEach(function(window){
                 window.tabs.forEach(function(tab){
-                    chrome.tabs.sendRequest(tab.id, {message:'update', mouse_button:mouse_button, key_code:key_code, os:os}, null);
+                    chrome.tabs.sendRequest(tab.id, {message:'update', mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select}, null);
                 })
             })
         });
