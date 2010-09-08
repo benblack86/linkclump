@@ -12,10 +12,15 @@
 		            var key_code = null
 					var os = 0
 					var smart_select = null
+					var exclude_words = null
 		            
 					if (navigator.appVersion.indexOf("Win") != -1) {
 						os = 1
 					}
+					
+					try {
+						exclude_words = window.localStorage.getItem('exclude_words')
+		            } catch(exception) {}
 					
 					try {
 						smart_select = window.localStorage.getItem('smart_select') == 'true'
@@ -32,12 +37,17 @@
 		                key_code = window.localStorage.getItem('key_code')
 		            } catch(exception) {}
 					
-					if(smart_select == null) {
+					if(exclude_words == null) {
+						exclude_words = ''
+						window.localStorage.setItem('exclude_words', exclude_words)
+					}
+					
+					if(smart_select == null || smart_select == '') {
 						smart_select = true
 						window.localStorage.setItem('smart_select', smart_select)
 					}
 		
-					if(mouse_button == null) {
+					if(mouse_button == null || mouse_button == '') {
 						if(os == 1) {
 							mouse_button = 2
 						} else {
@@ -55,7 +65,7 @@
 						window.localStorage.setItem('key_code', key_code)
 					}
 		
-		            callback({mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select});
+		            callback({mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select, exclude_words:exclude_words});
 		        }
 		    }
 		);

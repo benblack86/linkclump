@@ -13,7 +13,11 @@
     + <i id="optional">optional</i> key
     <input type="text" size="1" maxlength="1" onkeyup="save_key();" onfocus="hello();" onblur="bye();" id="key">
 	<br />
-	<input type="checkbox" onchange="save_smart_select()" id="smart">smart select
+	smart select <input type="checkbox" onchange="save_smart_select()" id="smart">
+	<br />
+	exclude words <input type="text" size="30" id="exclude" onkeyup="save_exclude_words();">
+	<br />
+	<i>seperate words with a comma (,)</i>
 </div>
 
 <script type="text/javascript">
@@ -23,7 +27,9 @@
     var mouse_button = null
     var key_code = null
 	var smart_select = null
+	var exclude_words = null
 	var optional = null
+	var exclude = null
 	var error = false
 	var isFocused = false
 	var os = 0
@@ -42,10 +48,17 @@
         key = document.getElementById("key")
 		smart = document.getElementById("smart")
 		optional = document.getElementById("optional")
+		exclude = document.getElementById("exclude")
 		
 		if(navigator.appVersion.indexOf("Win")!=-1) {
 			os = 1
 		}
+		
+		try {
+            exclude_words = window.localStorage.getItem('exclude_words')
+        } catch(exception) {
+            error = true
+        }
     
 	    try {
             smart_select = window.localStorage.getItem('smart_select')
@@ -70,15 +83,23 @@
             window.localStorage.setItem('mouse_button', 0)
             window.localStorage.setItem('key_code', '')
 			window.localStorage.setItem('smart_select', true)
+			window.localStorage.setItem('exclude_words', '')
         } else {
             mouse.options[mouse_button].selected = true
             key.value = key_code
 			smart.checked = smart_select == 'true'
+			exclude.value = exclude_words
         }
 		
 		if(os == 0 && mouse_button == 2) {
 			optional.innerHTML = "mandatory"
 		}
+    }
+	
+	function save_exclude_words() {
+		exclude_words = exclude.value
+        window.localStorage.setItem('exclude_words', exclude_words)
+        send_to_content_script()
     }
 	
 	function save_smart_select() {
@@ -132,7 +153,7 @@
         chrome.windows.getAll({populate:true}, function(windowList) {
             windowList.forEach(function(window){
                 window.tabs.forEach(function(tab){
-                    chrome.tabs.sendRequest(tab.id, {message:'update', mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select}, null);
+                    chrome.tabs.sendRequest(tab.id, {message:'update', mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select, exclude_words:exclude_words}, null);
                 })
             })
         });

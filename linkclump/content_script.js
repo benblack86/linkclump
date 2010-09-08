@@ -4,7 +4,8 @@ var properties = {
     mouse_button: null,
     key_code: null,
     os: null,
-	smart_select: null
+	smart_select: null,
+	exclude_words: null
 }
 var state = {
     key_pressed: null,
@@ -30,6 +31,11 @@ chrome.extension.onRequest.addListener(function(request, sender, callback){
 function update_status(properties){
     this.properties.os = properties.os
 	this.properties.smart_select = properties.smart_select
+	if (properties.exclude_words.replace(/ */, '') != '') {
+		this.properties.exclude_words = properties.exclude_words.replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
+	} else {
+		this.properties.exclude_words = null
+	}
     
     if (properties.mouse_button != null) {
         this.properties.mouse_button = properties.mouse_button
@@ -38,7 +44,7 @@ function update_status(properties){
         this.properties.key_code = properties.key_code.toUpperCase()
     }
     
-    console.log(this.properties.mouse_button + "|" + this.properties.key_code + "|"+this.properties.smart_select)
+    console.log(this.properties.mouse_button + "|" + this.properties.key_code + "|"+this.properties.smart_select+"|"+this.properties.exclude_words)
 }
 
 function mousedown(event){
@@ -146,6 +152,14 @@ function setup(){
             x += link.offsetLeft;
             link = link.offsetParent;
         }
+		
+		if (properties.exclude_words != null) {
+			for (var k = 0; k < properties.exclude_words.length; k++) {
+				if(page_links[i].innerHTML.toLowerCase().indexOf(properties.exclude_words[k]) > -1) {
+					continue outerloop
+				}
+			}
+		}
         
         link = page_links[i];
         while (link && link != document.body && link != document.documentElement) {
