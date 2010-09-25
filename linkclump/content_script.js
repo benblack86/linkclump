@@ -5,7 +5,8 @@ var properties = {
     key_code: null,
     os: null,
 	smart_select: null,
-	exclude_words: null
+	exclude_words: null,
+	new_window: null
 }
 var state = {
     key_pressed: null,
@@ -31,6 +32,7 @@ chrome.extension.onRequest.addListener(function(request, sender, callback){
 function update_status(properties){
     this.properties.os = properties.os
 	this.properties.smart_select = properties.smart_select
+	this.properties.new_window = properties.new_window
 	if (properties.exclude_words.replace(/ */, '') != '') {
 		this.properties.exclude_words = properties.exclude_words.replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
 	} else {
@@ -41,10 +43,10 @@ function update_status(properties){
         this.properties.mouse_button = properties.mouse_button
     }
     if (properties.key_code != null) {
-        this.properties.key_code = properties.key_code.toUpperCase()
+        this.properties.key_code = properties.key_code
     }
     
-    console.log(this.properties.mouse_button + "|" + this.properties.key_code + "|"+this.properties.smart_select+"|"+this.properties.exclude_words)
+    console.log(this.properties.mouse_button+"|"+this.properties.key_code+"|"+this.properties.smart_select+"|"+this.properties.new_window+"|"+this.properties.exclude_words)
 }
 
 function mousedown(event){
@@ -261,13 +263,11 @@ function detech(event, open){
         
     }
     var count = 0
+	var open_tabs = new Array
     for (var i = 0; i < links.length; i++) {
         if ((!state.smart_select || links[i].important) && !(links[i].x1 > end_x || links[i].x2 < start_x || links[i].y1 > end_y || links[i].y2 < start_y)) {
             if (open) {
-                chrome.extension.sendRequest({
-                    message: 'openLink',
-                    url: links[i].href
-                });
+				open_tabs.push(links[i].href)
             }
 		
 			// check if important links have been selected and possibly redo
@@ -310,13 +310,21 @@ function detech(event, open){
 		return false
 	}
 	
+	if(open_tabs.length > 0) {
+		chrome.extension.sendRequest({
+			message: 'openLink',
+			urls: open_tabs,
+			new_window: properties.new_window
+		});
+	}
+	
 	return true
 }
 
 
 
 function keydown(event){
-    state.key_pressed = String.fromCharCode(event.keyCode) // always capital
+    state.key_pressed = event.keyCode
     if (properties.os == 0 && properties.key_code == state.key_pressed) {
         state.stop_menu = true
     }

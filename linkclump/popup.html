@@ -3,77 +3,115 @@
 <head>
 	<title>Linkclump Settings</title>
 </head>
-<body onload="setup();" onunload="bye();">
+<body onload="setup();">
 <div id="options" style="width: 300px; text-align:center; font-family: Arial, sans-serif; font-size:11px">
-    mouse button <select onChange="save_mouse_button()" id="mouse">
+    mouse button
+	<select onChange="save_mouse_button()" id="input_mouse_button">
             <option value="0">left</option>
             <option value="1">middle</option>
             <option value="2">right</option>
     </select>
     + <i id="optional">optional</i> key
-    <input type="text" size="1" maxlength="1" onkeyup="save_key();" onfocus="hello();" onblur="bye();" id="key">
+	<select onChange="save_key()" id="input_key_code"></select>
 	<br />
-	smart select <input type="checkbox" onchange="save_smart_select()" id="smart">
+	smart select <input type="checkbox" onchange="save_smart_select()" id="input_smart_select">
 	<br />
-	exclude words <input type="text" size="30" id="exclude" onkeyup="save_exclude_words();">
+	open tabs in new window <input type="checkbox" onchange="save_new_window()" id="input_new_window">
 	<br />
+	exclude words<input type="text" size="35" id="input_exclude_words" onkeyup="save_exclude_words();">
 	<i>seperate words with a comma (,)</i>
 </div>
 
 <script type="text/javascript">
-    var mouse = null
-    var key = null
-	var smart = null
-    var mouse_button = null
-    var key_code = null
-	var smart_select = null
-	var exclude_words = null
-	var optional = null
-	var exclude = null
-	var error = false
-	var isFocused = false
-	var os = 0
-
-	function hello() {
-		isFocused = true
+	var extra_keys = new Array()
+	extra_keys[''] = ''
+	extra_keys['shift'] = 16
+	if (navigator.appVersion.indexOf("Linux") == -1) {
+		extra_keys['alt'] = 18
+	}
+	extra_keys['ctrl'] = 17
+	
+	var properties = {
+		message: 'update',
+	    mouse_button: null,
+	    key_code: null,
+	    os: 0,
+		smart_select: null,
+		exclude_words: null,
+		new_window: null
 	}
 	
-	function bye() {
-		isFocused = false
-		save_key()
+	var input = {
+	    mouse_button: null,
+	    key_code: null,
+		smart_select: null,
+		exclude_words: null,
+		new_window: null
 	}
+	
+	var blank = null
+	var optional = null
+	var error = false
 
     function setup() {
-        mouse = document.getElementById("mouse")
-        key = document.getElementById("key")
-		smart = document.getElementById("smart")
+        input.mouse_button = document.getElementById("input_mouse_button")
+        input.key_code = document.getElementById("input_key_code")
+		input.smart_select = document.getElementById("input_smart_select")
+		input.exclude_words = document.getElementById("input_exclude_words")
+		input.key_code = document.getElementById("input_key_code")
+		input.new_window = document.getElementById("input_new_window")
 		optional = document.getElementById("optional")
-		exclude = document.getElementById("exclude")
+		
+		for(key in extra_keys) {
+			var option = document.createElement('option');
+			option.text = key;
+  			option.value = extra_keys[key];
+			input.key_code.add(option)
+			
+			if(key == '') {
+				blank = option
+			}
+		}
+		
+		for(i = 0; i < 26; i++) {
+			var option = document.createElement('option');
+			option.text = String.fromCharCode(97+i);
+  			option.value = 65 + i;
+			input.key_code.add(option)
+		}
+		
+		
 		
 		if(navigator.appVersion.indexOf("Win")!=-1) {
-			os = 1
+			properties.os = 1
 		}
 		
 		try {
-            exclude_words = window.localStorage.getItem('exclude_words')
+            properties.exclude_words = window.localStorage.getItem('exclude_words')
         } catch(exception) {
             error = true
         }
     
 	    try {
-            smart_select = window.localStorage.getItem('smart_select')
+            properties.smart_select = window.localStorage.getItem('smart_select')
         } catch(exception) {
             error = true
         }
 	
         try {
-            mouse_button = parseInt(window.localStorage.getItem('mouse_button'))
+            properties.mouse_button = parseInt(window.localStorage.getItem('mouse_button'))
         } catch(exception) {
             error = true
         }
     
         try {
-            key_code = window.localStorage.getItem('key_code')
+            properties.key_code = parseInt(window.localStorage.getItem('key_code'))
+        } catch(exception) {
+            error = true
+        }
+		
+		try {
+            properties.new_window = window.localStorage.getItem('new_window')
         } catch(exception) {
             error = true
         }
@@ -83,77 +121,78 @@
             window.localStorage.setItem('mouse_button', 0)
             window.localStorage.setItem('key_code', '')
 			window.localStorage.setItem('smart_select', true)
+			window.localStorage.setItem('new_window', false)
 			window.localStorage.setItem('exclude_words', '')
         } else {
-            mouse.options[mouse_button].selected = true
-            key.value = key_code
-			smart.checked = smart_select == 'true'
-			exclude.value = exclude_words
+            input.mouse_button.options[properties.mouse_button].selected = true
+			input.smart_select.checked = properties.smart_select == 'true'
+			input.new_window.checked = properties.new_window == 'true'
+			input.exclude_words.value = properties.exclude_words
+			
+			for(i = 0; i < input.key_code.options.length; i++) {
+				if(input.key_code.options[i].value == properties.key_code) {
+					input.key_code.options[i].selected = true
+					break
+				}
+			}
         }
 		
-		if(os == 0 && mouse_button == 2) {
+		if(properties.os == 0 && properties.mouse_button == 2) {
 			optional.innerHTML = "mandatory"
+			input.key_code.remove(0)
 		}
     }
 	
 	function save_exclude_words() {
-		exclude_words = exclude.value
-        window.localStorage.setItem('exclude_words', exclude_words)
+		properties.exclude_words = input.exclude_words.value
+        window.localStorage.setItem('exclude_words', properties.exclude_words)
         send_to_content_script()
     }
 	
 	function save_smart_select() {
-		smart_select = smart.checked
-        window.localStorage.setItem('smart_select', smart_select)
+		properties.smart_select = input.smart_select.checked
+        window.localStorage.setItem('smart_select', properties.smart_select)
+        send_to_content_script()
+    }
+	
+	function save_new_window() {
+		properties.new_window = input.new_window.checked
+        window.localStorage.setItem('new_window', properties.new_window)
         send_to_content_script()
     }
     
     function save_mouse_button() {
-        window.localStorage.setItem('mouse_button', mouse.options[mouse.selectedIndex].value)
-        mouse_button = mouse.options[mouse.selectedIndex].value
+		properties.mouse_button = input.mouse_button.options[input.mouse_button.selectedIndex].value
+        window.localStorage.setItem('mouse_button', properties.mouse_button)
         send_to_content_script()
-		if(os == 0 && mouse_button == 2) {
-			optional.innerHTML = "mandatory"
-			if (key.value == '') {
-				key.value = 'z'
-				save_key()
+		if(properties.os == 0 && properties.mouse_button == 2) {
+			if (optional.innerHTML != "mandatory") {
+				optional.innerHTML = "mandatory"
+				input.key_code.remove(0)
+				if (properties.key_code == '') {
+					key.value = '16'
+					save_key()
+				}
 			}
 		} else {
-			optional.innerHTML = "optional"
+			if (optional.innerHTML != "optional") {
+				optional.innerHTML = "optional"
+				input.key_code.add(blank, input.key_code.options[0])
+			}
 		}
     }
     
     function save_key() {
-        if(key.value != '') {
-            if (key.value.match(/^[0-9a-zA-Z]/)) {
-                window.localStorage.setItem('key_code', key.value)
-                key_code = key.value
-                send_to_content_script()
-            } else {
-                key.value = window.localStorage.getItem('key_code')
-            }
-        } else {
-			if (os == 0 && mouse_button == 2) {
-
-			} else {
-				key_code = ''
-				window.localStorage.setItem('key_code', key.value)
-				send_to_content_script()
-			}
-		}
+		properties.key_code = input.key_code.options[input.key_code.selectedIndex].value
+        window.localStorage.setItem('key_code', properties.key_code)
+		send_to_content_script()
     }
-	
-	function check_key() {
-		if (key.value != '' && !key.value.match(/^[0-9a-zA-Z]/)) {
-			key.value = ''
-		}
-	}
     
     function send_to_content_script() {
         chrome.windows.getAll({populate:true}, function(windowList) {
             windowList.forEach(function(window){
                 window.tabs.forEach(function(tab){
-                    chrome.tabs.sendRequest(tab.id, {message:'update', mouse_button:mouse_button, key_code:key_code, os:os, smart_select:smart_select, exclude_words:exclude_words}, null);
+                    chrome.tabs.sendRequest(tab.id, properties, null);
                 })
             })
         });

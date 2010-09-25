@@ -37,11 +37,6 @@ a {
 
 }
 
-#facebook:hover
-{ 
-  background-position: 0 -127px;
-}
-
 #twitter
 {
   display: block;
@@ -51,11 +46,6 @@ a {
 
 }
 
-#twitter:hover
-{ 
-  background-position: 0 -128px;
-}
-
 #chrome
 {
   display: block;
@@ -63,9 +53,4 @@ a {
   height: 128px;
   background: url("chrome.png") no-repeat 0 0;
 
-}
-
-#chrome:hover
-{ 
-  background-position: 0 -127px;
 }

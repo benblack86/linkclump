@@ -1,7 +1,7 @@
 {
   "name": "Linkclump",
-  "version": "1.0.2",
-  "description": "Opens all selected links into new tabs.",
+  "version": "1.0.3",
+  "description": "Opens all selected links into new tabs (works on windows/mac/linux).",
   "background_page": "background.html",
   "icons": {"16": "favicon.ico",
            "48": "48x48.png",
