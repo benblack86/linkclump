@@ -1,5 +1,12 @@
 Linkclump Version History
 
+v1.0.6
++ scroll functionality
++ using jquery 1.4.4 for improved dimensions calculations
++ if link surrounds an image then image dimensions are used
++ moved options to options page
++ improved design
+
 v1.0.3
 + new window feature added
 + ability to open with shift/alt/ctrl

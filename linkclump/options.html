@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Options</title>
+        <script type="text/javascript">
+            var params = null
+            var doc = new Object()
+            var extra_keys = new Array()
+            
+            function setup(){
+                // find all elements that are important
+                doc.mouse_button = document.getElementById("input_mouse_button")
+                doc.key_code = document.getElementById("input_key_code")
+                doc.smart_select = document.getElementById("input_smart_select")
+                doc.exclude_words = document.getElementById("input_exclude_words")
+                doc.key_code = document.getElementById("input_key_code")
+                doc.new_window = document.getElementById("input_new_window")
+                doc.optional = document.getElementById("optional")
+                doc.save_button = document.getElementById("save_button")
+                
+                // setup key select list
+                extra_keys[''] = ''
+                extra_keys['shift'] = 16
+                if (navigator.appVersion.indexOf("Linux") == -1) {
+                    extra_keys['alt'] = 18
+                }
+                extra_keys['ctrl'] = 17
+                for (key in extra_keys) {
+                    var option = document.createElement('option');
+                    option.text = key;
+                    option.value = extra_keys[key];
+                    doc.key_code.add(option)
+                    
+                    if (key == '') {
+                        doc.blank = option
+                    }
+                }
+                for (i = 0; i < 26; i++) {
+                    var option = document.createElement('option');
+                    option.text = String.fromCharCode(97 + i);
+                    option.value = 65 + i;
+                    doc.key_code.add(option)
+                }
+                
+                // initialise with current values
+                chrome.extension.sendRequest({
+                    message: 'init'
+                }, function(params){
+                    this.params = params
+                    
+                    doc.mouse_button.options[params.mouse_button].selected = true
+                    doc.smart_select.checked = params.smart_select == 'true'
+                    doc.new_window.checked = params.new_window == 'true'
+                    doc.exclude_words.value = params.exclude_words
+                    
+                    for (i = 0; i < doc.key_code.options.length; i++) {
+                        if (doc.key_code.options[i].value == params.key_code) {
+                            doc.key_code.options[i].selected = true
+                            break
+                        }
+                    }
+                    
+                    if (params.os == 0 && params.mouse_button == 2) {
+                        doc.optional.innerHTML = "mandatory"
+                        doc.key_code.remove(0)
+                    }
+                    
+                });
+            }
+            
+            function save(){
+                params.exclude_words = doc.exclude_words.value
+                params.exclude_words = params.exclude_words.replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
+                window.localStorage.setItem('exclude_words', params.exclude_words)
+                
+                params.smart_select = doc.smart_select.checked
+                window.localStorage.setItem('smart_select', params.smart_select)
+                
+                params.new_window = doc.new_window.checked
+                window.localStorage.setItem('new_window', params.new_window)
+                
+                params.mouse_button = doc.mouse_button.selectedIndex
+                window.localStorage.setItem('mouse_button', params.mouse_button)
+                
+                params.key_code = doc.key_code.options[doc.key_code.selectedIndex].value
+                window.localStorage.setItem('key_code', params.key_code)
+                
+                chrome.windows.getAll({
+                    populate: true
+                }, function(windowList){
+                    windowList.forEach(function(window){
+                        window.tabs.forEach(function(tab){
+                            chrome.tabs.sendRequest(tab.id, {
+                                message: 'update',
+                                params: params
+                            }, null);
+                        })
+                    })
+                });
+                
+                doc.save_button.innerHTML = 'Saved';
+                doc.save_button.disabled = true;
+                setTimeout(function(){
+                    doc.save_button.innerHTML = 'Save';
+                    doc.save_button.disabled = false;
+                }, 750);
+            }
+            
+            function update_keys(){
+                if (params.os == 0 && doc.mouse_button.selectedIndex == 2) {
+                    if (doc.optional.innerHTML != "mandatory") {
+                        doc.optional.innerHTML = "mandatory"
+                        doc.key_code.remove(0)
+                    }
+                }
+                else {
+                    if (doc.optional.innerHTML != "optional") {
+                        doc.optional.innerHTML = "optional"
+                        doc.key_code.add(doc.blank, doc.key_code.options[0])
+                    }
+                }
+            }
+        </script>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
+    <body onload="setup();">
+        <div class="box">
+            <img src="linkclump.png" alt="Linkclump logo"/>
+            <p>
+                Use your mouse to drag a box around the links you want to open and when you release the mouse button all the links will open up into new tabs.
+            </p>
+			<p>
+                <span style="text-decoration: underline blink; font-weight:900;">*PLEASE NOTE*</span> this extension doesn't work on this page or the chrome extension website. Please open a new tab to try it out.
+            </p>
+            <p>
+                You can choose which mouse button and/or key will actiavte Linkclump, or you can just use the defaults that have been chosen to work on your operating system.
+            </p>
+            <table>
+                <tr>
+                    <th>
+                        mouse button
+                    </th>
+                    <td>
+                        <select onChange="update_keys()" id="input_mouse_button">
+                            <option value="0">left</option>
+                            <option value="1">middle</option>
+                            <option value="2">right</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        + <i id="optional">optional</i>
+                        key
+                    </th>
+                    <td>
+                        <select id="input_key_code">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        smart select
+                    </th>
+                    <td>
+                        <input type="checkbox" id="input_smart_select">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        open links in new window
+                    </th>
+                    <td>
+                        <input type="checkbox" id="input_new_window">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        ignore links with words
+                    </th>
+                    <td>
+                        <input type="text" size="35" id="input_exclude_words">
+                        <br/>
+                        <i>seperate words with a comma ","</i>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center;">
+                        <button onclick="save()" id="save_button">
+                            Save
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <p>
+                Please leave feedback on our <a href="https://chrome.google.com/extensions/detail/lfpjkncokllnfokkgpkobnkbkmelfefj?hl=en">gallery page</a>.
+            </p>
+        </div>
+        </div>
+    </body>
+</html>

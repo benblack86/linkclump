@@ -22,3 +22,13 @@ img {
     margin-left: auto;
     margin-right: auto;
 }
+
+th {
+    text-align: right;
+}
+
+tr {
+    height: 30px;
+    vertical-align: text-top;
+    font-size: 14px
+}

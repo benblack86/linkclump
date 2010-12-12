@@ -3,6 +3,20 @@
     <head>
         <title>Linkclump Background</title>
         <script type="text/javascript">
+        	function set_param(key, format, value) {
+				if(localStorage[key] == undefined || typeof localStorage[key] != format) {
+					if(typeof value == "function") {
+            			localStorage[key] = value()
+					} else {
+						localStorage[key] = value
+					} 
+        		}
+			}
+			
+			function get_param(key) {
+				return localStorage[key]
+			}
+			
             chrome.extension.onRequest.addListener(function(request, sender, callback){
                 if (request.message == 'openLink') {
                     if (request.new_window == true) {
@@ -23,94 +37,25 @@
                             })
                         })
                     }
-                } else if (request.message == 'init') {
-                    var mouse_button = null
-                    var key_code = null
-                    var os = 0
-                    var smart_select = null
-                    var new_window = null
-                    var exclude_words = null
-                    
-                    if (navigator.appVersion.indexOf("Win") != -1) {
-                        os = 1
-                    }
-                    
-                    try {
-                        exclude_words = window.localStorage.getItem('exclude_words')
-                    } 
-                    catch (exception) {
-                    }
-                    
-                    try {
-                        new_window = window.localStorage.getItem('new_window') == 'true'
-                    } 
-                    catch (exception) {
-                    }
-                    
-                    try {
-                        smart_select = window.localStorage.getItem('smart_select') == 'true'
-                    } 
-                    catch (exception) {
-                    }
-                    
-                    try {
-                        mouse_button = window.localStorage.getItem('mouse_button')
-                        if (mouse_button != null) {
-                            mouse_button = parseInt(mouse_button)
-                        }
-                    } 
-                    catch (exception) {
-                    }
-                    
-                    try {
-                        key_code = window.localStorage.getItem('key_code')
-                    } 
-                    catch (exception) {
-                    }
-                    
-                    if (exclude_words == null) {
-                        exclude_words = ''
-                        window.localStorage.setItem('exclude_words', exclude_words)
-                    }
-                    
-                    if (new_window == null || new_window == '') {
-                        new_window = false
-                        window.localStorage.setItem('new_window', new_window)
-                    }
-                    
-                    if (smart_select == null || smart_select == '') {
-                        smart_select = true
-                        window.localStorage.setItem('smart_select', smart_select)
-                    }
-                    
-                    if (mouse_button == null || mouse_button == '') {
-                        if (os == 1) {
-                            mouse_button = 2
-                        } else {
-                            mouse_button = 0
-                        }
-                        window.localStorage.setItem('mouse_button', mouse_button)
-                    }
-                    
-                    if (key_code == null) {
-                        if (os == 1) {
-                            key_code = ''
-                        } else {
-                            key_code = '16'
-                        }
-                        window.localStorage.setItem('key_code', key_code)
-                    }
-                    
-                    callback({
-                        mouse_button: mouse_button,
-                        key_code: key_code,
-                        os: os,
-                        smart_select: smart_select,
-                        new_window: new_window,
-                        exclude_words: exclude_words
-                    });
-                }
+				} else if (request.message == 'init') {
+					callback({
+						mouse_button: get_param('mouse_button'),
+						key_code: get_param('key_code'),
+						os: get_param('os'),
+						smart_select: get_param('smart_select'),
+						new_window: get_param('new_window'),
+						exclude_words: get_param('exclude_words')
+					});
+				}
             });
+			
+			set_param('os', 'number', function() {if (navigator.appVersion.indexOf("Win") != -1) {return 1} else {return 0}}) // 1=win, 0=linux_mac
+			set_param('exclude_words', 'string', '')
+			set_param('new_window', 'boolean', false)
+			set_param('smart_select', 'boolean', true)
+			set_param('mouse_button', 'number', function() {if (get_param('os') == 1) {return 2} else {return 0}})
+			set_param('key_code', 'number', function() {if (get_param('os') == 1) {return ''} else {return '16'}})
+			
         </script>
     </head>
 </html>

@@ -1,24 +1,20 @@
 {
-  "name": "Linkclump",
-  "version": "1.0.3",
-  "description": "Opens all selected links into new tabs (works on windows/mac/linux).",
+  "name": "Linkclump - Open all selected links",
+  "version": "1.0.6",
+  "description": "Use your mouse to select and open groups of links into new tabs [works on windows/mac/linux]",
   "background_page": "background.html",
-  "icons": {"16": "favicon.ico",
+  "options_page": "options.html",
+  "icons": {"16": "16x16.png",
            "48": "48x48.png",
           "128": "128x128.png" },
   "content_scripts": [
     {
-    "matches": ["http://*/*", "https://*/*"],
-    "js": ["content_script.js"],
+    "matches": ["<all_urls>"],
+    "js": ["content_script.js", "jquery-1.4.4.js"],
     "run_at": "document_end",
     "all_frames": true
     }
   ],
-  "browser_action": {
-    "default_icon": "icon.png",
-    "default_title": "Linkclump",
-    "default_popup": "popup.html"
-  },
   "permissions": [
     "tabs"
   ]
