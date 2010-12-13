@@ -71,6 +71,9 @@
             function save(){
                 params.exclude_words = doc.exclude_words.value
                 params.exclude_words = params.exclude_words.replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
+				if (params.exclude_words[0] == "") {
+					params.exclude_words.shift()
+				}
                 window.localStorage.setItem('exclude_words', params.exclude_words)
                 
                 params.smart_select = doc.smart_select.checked

@@ -38,13 +38,18 @@
                         })
                     }
 				} else if (request.message == 'init') {
+					var exclude = get_param('exclude_words').split(",")
+					if (exclude[0] == "") {
+						exclude.shift()
+					}
+					
 					callback({
 						mouse_button: get_param('mouse_button'),
 						key_code: get_param('key_code'),
 						os: get_param('os'),
 						smart_select: get_param('smart_select'),
 						new_window: get_param('new_window'),
-						exclude_words: get_param('exclude_words')
+						exclude_words: exclude
 					});
 				}
             });
