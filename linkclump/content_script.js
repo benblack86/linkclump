@@ -35,11 +35,11 @@ chrome.extension.onRequest.addListener(function(request, sender, callback){
 
 function update_param(params){
     this.params = params
-    var str = "";
-    for (param in params) {
-        str += param + ":" + params[param] + "|"
-    };
-    console.log(str)
+    //var str = "";
+    //for (param in params) {
+    //    str += param + ":" + params[param] + "|"
+    //};
+    //console.log(str)
 }
 
 function mousedown(event){
@@ -77,14 +77,14 @@ function mousedown(event){
         clump.style.width = "0px"
         clump.style.height = "0px"
         
-        // turn on menu for windows
-        if (params.os == 1) {
-            state.stop_menu = false
-        }
-        
         // setup mouse move and mouse up
         window.addEventListener("mousemove", mousemove, true)
         window.addEventListener("mouseup", mouseup, true)
+    }
+	
+	// turn on menu for windows
+    if (params.os == 1) {
+		state.stop_menu = false
     }
 }
 
