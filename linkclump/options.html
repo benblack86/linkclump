@@ -49,8 +49,8 @@
                     this.params = params
                     
                     doc.mouse_button.options[params.mouse_button].selected = true
-                    doc.smart_select.checked = params.smart_select == 'true'
-                    doc.new_window.checked = params.new_window == 'true'
+                    doc.smart_select.checked = params.smart_select
+                    doc.new_window.checked = params.new_window
                     doc.exclude_words.value = params.exclude_words
                     
                     for (i = 0; i < doc.key_code.options.length; i++) {

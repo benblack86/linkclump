@@ -4,13 +4,14 @@
         <title>Linkclump Background</title>
         <script type="text/javascript">
         	function set_param(key, format, value) {
-				if(localStorage[key] == undefined || typeof localStorage[key] != format) {
-					if(typeof value == "function") {
-            			localStorage[key] = value()
-					} else {
+				if (localStorage[key] == undefined) {
+					if (typeof value == "function") {
+						localStorage[key] = value()
+					}
+					else {
 						localStorage[key] = value
-					} 
-        		}
+					}
+				}
 			}
 			
 			function get_param(key) {
@@ -46,20 +47,20 @@
 					callback({
 						mouse_button: get_param('mouse_button'),
 						key_code: get_param('key_code'),
-						os: get_param('os'),
-						smart_select: get_param('smart_select'),
-						new_window: get_param('new_window'),
+						os: parseInt(get_param('os')),
+						smart_select: get_param('smart_select') == 'true' ? true : false,
+						new_window: get_param('new_window') == 'true' ? true : false,
 						exclude_words: exclude
 					});
 				}
             });
 			
-			set_param('os', 'number', function() {if (navigator.appVersion.indexOf("Win") != -1) {return 1} else {return 0}}) // 1=win, 0=linux_mac
+			set_param('os', 'string', function() {if (navigator.appVersion.indexOf("Win") != -1) {return '1'} else {return '0'}}) // 1=win, 0=linux_mac
 			set_param('exclude_words', 'string', '')
-			set_param('new_window', 'boolean', false)
-			set_param('smart_select', 'boolean', true)
-			set_param('mouse_button', 'number', function() {if (get_param('os') == 1) {return 2} else {return 0}})
-			set_param('key_code', 'number', function() {if (get_param('os') == 1) {return ''} else {return '16'}})
+			set_param('new_window', 'string', false)
+			set_param('smart_select', 'string', true)
+			set_param('mouse_button', 'string', function() {if (get_param('os') == 1) {return '2'} else {return '0'}})
+			set_param('key_code', 'string', function() {if (get_param('os') == 1) {return ''} else {return '16'}})
 			
         </script>
     </head>

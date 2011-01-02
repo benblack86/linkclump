@@ -1,7 +1,7 @@
 {
-  "name": "Linkclump - Open all selected links",
-  "version": "1.0.6",
-  "description": "Use your mouse to select and open groups of links into new tabs [works on windows/mac/linux]",
+  "name": "Linkclump",
+  "version": "1.1.0",
+  "description": "Open all selected links: use your mouse to select and open groups of links into new tabs.",
   "background_page": "background.html",
   "options_page": "options.html",
   "icons": {"16": "16x16.png",
