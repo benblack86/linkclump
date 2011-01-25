@@ -33,12 +33,6 @@ var linkclump = {
 		window.addEventListener("keydown", linkclump.keydown, true)
 		window.addEventListener("keyup", linkclump.keyup, true)
 		document.addEventListener("contextmenu", linkclump.contextmenu, true)
-		
-		linkclump.z_index = Math.max(0, Math.max.apply(null, $.map($("body *"), 
-				function (v) {
-					return parseInt($(v).css("z-index")) || null;
-				}
-			))) + 1;
     },
 
 	update_param : function(params){
@@ -159,6 +153,7 @@ var linkclump = {
 	            }
 	        }
 
+			// attempt to ignore invisible links (can't ignore overflow)
 			var link = page_links[i];
 	        while (link != null) {
 	            if (window.getComputedStyle(link, null).display == 'none') {
@@ -175,8 +170,10 @@ var linkclump = {
 
 
 			link = $(page_links[i]);
+			
 			var left = link.offset().left, top = link.offset().top, width = link.outerWidth(), height = link.outerHeight();
 
+			// attempt to get the actual size of the link
 			for(var k = 0; k < page_links[i].childNodes.length; k++) {
 				if(page_links[i].childNodes[k].nodeName == "IMG") {
 					inside = $(page_links[i].childNodes[k]);
