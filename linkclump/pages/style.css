@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #A7977F;
-    background-image: url('background.png');
+    background-image: url('../images/background.png');
     background-repeat: no-repeat;
     background-position: 10% 0%;
 }

@@ -1,0 +1,16 @@
+span#linkclump-box {
+	margin: 0px auto;
+	border: 2px dotted white;
+	position: absolute;
+	background-color: black;
+	opacity:0.2;
+	overflow: hidden;
+	padding: 0;
+	float: none;
+}
+
+span#linkclump-link {
+	margin: 0px auto;
+	border: 1px solid red;
+	position: absolute;
+}
