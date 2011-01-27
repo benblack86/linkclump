@@ -174,15 +174,15 @@ var linkclump = {
 			var left = link.offset().left, top = link.offset().top, width = link.outerWidth(), height = link.outerHeight();
 
 			// attempt to get the actual size of the link
-			for(var k = 0; k < page_links[i].childNodes.length; k++) {
-				if(page_links[i].childNodes[k].nodeName == "IMG") {
-					inside = $(page_links[i].childNodes[k]);
-					left = Math.min(left, inside.offset().left);
-					top = Math.min(top, inside.offset().top);
-					width = Math.max(width, inside.outerWidth());
-					height = Math.max(height, inside.outerHeight());
-				}
-			}
+			//for(var k = 0; k < page_links[i].childNodes.length; k++) {
+			//	if(page_links[i].childNodes[k].nodeName == "IMG") {
+			//		inside = $(page_links[i].childNodes[k]);
+			//		left = Math.min(left, inside.offset().left);
+			//		top = Math.min(top, inside.offset().top);
+			//		width = Math.max(width, inside.outerWidth());
+			//		height = Math.max(height, inside.outerHeight());
+			//	}
+			//}
 	
 			page_links[i].x1 = left
 	        page_links[i].y1 = top
