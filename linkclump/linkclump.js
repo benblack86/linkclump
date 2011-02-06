@@ -15,8 +15,6 @@ var linkclump = {
 	overlay : null,
 	
 	initialize : function () {
-        $('embed').attr('wmode', 'opaque').wrap('<div>').unwrap(); // place above flash elements
-		
 		chrome.extension.sendRequest({
 		    message: 'init'
 		}, function(state){
@@ -61,7 +59,7 @@ var linkclump = {
 
 	        // create the box
 	        if (linkclump.box == null) {
-				linkclump.box = $('<span id="linkclump-box" />').append($('<span id="linkclump-count" />'));
+				linkclump.box = $('<span id="linkclump-box" />');
 	            linkclump.box.css('zIndex', linkclump.z_index);
 				linkclump.box.hide().appendTo($('body'));
 	        }
@@ -154,35 +152,27 @@ var linkclump = {
 	        }
 
 			// attempt to ignore invisible links (can't ignore overflow)
-			var link = page_links[i];
-	        while (link != null) {
-	            if (window.getComputedStyle(link, null).display == 'none') {
-	                continue outerloop
-	            }
-	            if (window.getComputedStyle(link, null).visibility == 'hidden') {
-	                continue outerloop
-	            }
-	            if (parseInt(window.getComputedStyle(link, null).zIndex) < 0) {
-	                continue outerloop
-	            }
-	            link = link.offsetParent;
+			var comp = window.getComputedStyle(page_links[i], null);
+			if (comp.visibility == 'hidden' || comp.display == 'none') {
+				continue outerloop
 	        }
 
-
-			link = $(page_links[i]);
-			
-			var left = link.offset().left, top = link.offset().top, width = link.outerWidth(), height = link.outerHeight();
+			var link = $(page_links[i]);
+			var left = link.offset().left
+			var top = link.offset().top
+			var width = link.outerWidth()
+			var height = link.outerHeight();
 
 			// attempt to get the actual size of the link
-			//for(var k = 0; k < page_links[i].childNodes.length; k++) {
-			//	if(page_links[i].childNodes[k].nodeName == "IMG") {
-			//		inside = $(page_links[i].childNodes[k]);
-			//		left = Math.min(left, inside.offset().left);
-			//		top = Math.min(top, inside.offset().top);
-			//		width = Math.max(width, inside.outerWidth());
-			//		height = Math.max(height, inside.outerHeight());
-			//	}
-			//}
+			for(var k = 0; k < page_links[i].childNodes.length; k++) {
+				if(page_links[i].childNodes[k].nodeName == "IMG") {
+					inside = $(page_links[i].childNodes[k]);
+					left = Math.min(left, inside.offset().left);
+					top = Math.min(top, inside.offset().top);
+					width = Math.max(width, inside.outerWidth());
+					height = Math.max(height, inside.outerHeight());
+				}
+			}
 	
 			page_links[i].x1 = left
 	        page_links[i].y1 = top
@@ -249,10 +239,11 @@ var linkclump = {
 
 	scroll : function() {
 		if (linkclump.allow_selection()) {
-			var y = linkclump.mouse_y-window.scrollY
+			var y = linkclump.mouse_y-window.scrollY;
+			var win_height = $(window).height();
 
-			if (y > window.innerHeight - 20) { //down
-				var speed = window.innerHeight - y
+			if (y > win_height - 20) { //down
+				var speed = win_height - y
 				if (speed < 2) {
 					speed = 60 
 				}

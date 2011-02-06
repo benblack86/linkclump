@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Options</title>
+		<script type="text/javascript" src="../libs/jquery-1.4.4.js"></script>
         <script type="text/javascript">
             var params = null
             var doc = new Object()
@@ -64,9 +65,42 @@
                         doc.optional.innerHTML = "mandatory"
                         doc.key_code.remove(0)
                     }
+
+					update_text();
                     
                 });
+
+				// inject Linkclump into windows that don't contain the code
+				chrome.windows.getAll({ populate: true }, function(windows) {
+			        for (var i = 0; i < windows.length; ++i)
+			            for (var j = 0; j < windows[i].tabs.length; ++j) {
+							if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
+				
+							chrome.tabs.insertCSS(windows[i].tabs[j].id, { file: 'linkclump.css' });
+							chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
+							chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'libs/jquery-1.4.4.js' });
+			            }
+			    });
             }
+
+			function update_text() {
+				$('#mouse_name').text(doc.mouse_button.options[params.mouse_button].innerText);
+				if(params.key_code != '') {
+					var key = '';
+					for (k in extra_keys) {
+						if(params.key_code == extra_keys[k]) {
+							key = k;
+						}
+					}
+					if(key == '') {
+						key = String.fromCharCode(params.key_code);
+					}
+					
+					$('#key_name').html("the <b>"+key+"</b> key and");
+				} else {
+					$('#key_name').html('');
+				}
+			}
             
             function save(){
                 params.exclude_words = doc.exclude_words.value
@@ -101,12 +135,15 @@
                     })
                 });
                 
+				update_text();
+
                 doc.save_button.innerHTML = 'Saved';
                 doc.save_button.disabled = true;
                 setTimeout(function(){
                     doc.save_button.innerHTML = 'Save';
                     doc.save_button.disabled = false;
                 }, 750);
+
             }
             
             function update_keys(){
@@ -123,20 +160,24 @@
                     }
                 }
             }
+
+			$(function() {setup();});
         </script>
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
-    <body onload="setup();">
+    <body>
         <div class="box">
             <img src="../images/linkclump.png" alt="Linkclump logo"/>
             <p>
-                Use your mouse to drag a box around the links you want to open and when you release the mouse button all the links will open up into new tabs.
-            </p>
-			<p>
-                <span style="text-decoration: underline blink; font-weight:900;">*PLEASE NOTE*</span> this extension doesn't work on this page or the chrome extension website. Please open a new tab to try it out.
-            </p>
+                Press and hold <span id="key_name"></span> <b><span id="mouse_name"></span></b> mouse button, then drag the selection box around the links you want to open. When you release the mouse button all the links will open up into new tabs. Use the test area below to try it out</p>
+
+			
+			<iframe id="test_area" src="test_area.html" width="100%" height="200" style="border: black 2px solid; margin: 0px;">
+
+			</iframe>
+
             <p>
-                You can choose which mouse button and/or key will actiavte Linkclump, or you can just use the defaults that have been chosen to work on your operating system.
+                You can customise how this feature is activated by changing the settings below.
             </p>
             <table>
                 <tr>
@@ -184,7 +225,7 @@
                     <td>
                         <input type="text" size="35" id="input_exclude_words">
                         <br/>
-                        <i>seperate words with a comma ","</i>
+                        <i>separate words with a comma ","</i>
                     </td>
                 </tr>
                 <tr>
@@ -196,7 +237,10 @@
                 </tr>
             </table>
             <p>
-                Please leave feedback on our <a href="https://chrome.google.com/extensions/detail/lfpjkncokllnfokkgpkobnkbkmelfefj?hl=en">gallery page</a>.
+                Please leave feedback on our 
+					<a href="https://chrome.google.com/extensions/detail/lfpjkncokllnfokkgpkobnkbkmelfefj?hl=en">gallery page</a>.
+				Source code is available on
+					<a href="https://github.com/benblack86/linkclump">GitHub</a>.
             </p>
         </div>
         </div>

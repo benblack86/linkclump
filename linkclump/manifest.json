@@ -1,7 +1,7 @@
 {
   "name": "Linkclump",
   "version": "1.1.0",
-  "description": "Open multiple links quickly by dragging a selection box around them.",
+  "description": "Open multiple links by dragging a selection box around them.",
   "background_page": "background.html",
   "options_page": "pages/options.html",
   "icons": {"16": "images/16x16.png",
@@ -17,6 +17,6 @@
     }
   ],
   "permissions": [
-    "tabs"
+    "tabs", "http://*/*", "https://*/*"
   ]
 }
