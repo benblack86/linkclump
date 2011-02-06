@@ -1,5 +1,12 @@
 Linkclump Version History
 
+v1.1.0
++ convert more code to jquery
++ fixed linkclump box wondering
++ improved image dimension finding
++ adding pop-up setup guide on first install
++ improved description
+
 v1.0.6
 + scroll functionality
 + using jquery 1.4.4 for improved dimensions calculations
