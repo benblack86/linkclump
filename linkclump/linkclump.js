@@ -59,8 +59,13 @@ var linkclump = {
 
 	        // create the box
 	        if (linkclump.box == null) {
-				linkclump.box = $('<span id="linkclump-box" />');
+				linkclump.box = $('<span />');
 	            linkclump.box.css('zIndex', linkclump.z_index);
+				linkclump.box.css('margin', '0px auto');
+				linkclump.box.css('border', '2px dotted orange');
+				linkclump.box.css('position', 'absolute');
+				linkclump.box.css('padding', 0);
+				linkclump.box.css('float', 'none');
 				linkclump.box.hide().appendTo($('body'));
 	        }
 
@@ -235,6 +240,7 @@ var linkclump = {
 	    // wipe clean the smart select
 	    linkclump.smart_select = false
 		linkclump.mouse_button = -1
+		linkclump.key_pressed = null;
 	},
 
 	scroll : function() {
@@ -329,6 +335,9 @@ var linkclump = {
 	                link_box.css('height', linkclump.links[i].height + "px");
 	                link_box.css('top', linkclump.links[i].y1 + "px");
 	                link_box.css('left', linkclump.links[i].x1 + "px");
+					link_box.css('margin', '0px auto');
+					link_box.css('border', '1px solid red');
+					link_box.css('position', 'absolute');
 					link_box.appendTo($('body'));
 
 	                linkclump.links[i].box = link_box

@@ -70,17 +70,17 @@
                     
                 });
 
-				// inject Linkclump into windows that don't contain the code
-				chrome.windows.getAll({ populate: true }, function(windows) {
-			        for (var i = 0; i < windows.length; ++i)
-			            for (var j = 0; j < windows[i].tabs.length; ++j) {
-							if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
-				
-							chrome.tabs.insertCSS(windows[i].tabs[j].id, { file: 'linkclump.css' });
-							chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
-							chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'libs/jquery-1.4.4.js' });
-			            }
-			    });
+				if(window.location.href.match(/init/)) {
+					// inject Linkclump into windows that don't contain the code
+					chrome.windows.getAll({ populate: true }, function(windows) {
+				        for (var i = 0; i < windows.length; ++i)
+				            for (var j = 0; j < windows[i].tabs.length; ++j) {
+								if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
+								chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
+								chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'libs/jquery-1.4.4.js' });
+				            }
+				    });
+				}
             }
 
 			function update_text() {
@@ -240,7 +240,8 @@
                 Please leave feedback on our 
 					<a href="https://chrome.google.com/extensions/detail/lfpjkncokllnfokkgpkobnkbkmelfefj?hl=en">gallery page</a>.
 				Source code is available on
-					<a href="https://github.com/benblack86/linkclump">GitHub</a>.
+					<a href="https://github.com/benblack86/linkclump">GitHub</a>. 
+				Please send bug reports to <a href="mailto:benblack86@gmail.com">benblack86@gmail.com</a>.
             </p>
         </div>
         </div>

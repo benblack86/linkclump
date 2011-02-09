@@ -1,2 +1,2 @@
 - change all options and restart browser
-- new window option selected with key, open links, go back to current page and try selecting without key (current bug)
+- new window option selected with key, open links, go back to current page and try selecting without key
