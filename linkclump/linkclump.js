@@ -35,11 +35,11 @@ var linkclump = {
 
 	update_param : function(params){
 	    linkclump.params = params
-	    var str = "";
-	    for (param in params) {
-	        str += param + ":" + params[param] + "|"
-	    };
-	    console.log(str)
+	    //var str = "";
+	    //for (param in params) {
+	    //    str += param + ":" + params[param] + "|"
+	    //};
+	    //console.log(str)
 	},
 
 	mousedown : function(event){
@@ -137,6 +137,30 @@ var linkclump = {
 
 	    linkclump.stop()
 	},
+	
+	getXY : function (element) {
+		var x = 0;
+		var y = 0;
+		var parent = element;
+		while(parent) {
+			x += parent.offsetLeft;
+			y += parent.offsetTop;
+			parent = parent.offsetParent;
+		}
+		
+		parent = element;
+		while(parent && parent != document.body) {
+			if(parent.scrollleft) {
+				x -= parent.scrollLeft;
+			}
+			if(parent.scrollTop) {
+				y -= parent.scrollTop;
+			}
+			parent = parent.parentNode;
+		}
+		
+		return {x:x, y:y};
+	},
 
 	start : function () {
 	    linkclump.box.show();
@@ -162,27 +186,29 @@ var linkclump = {
 				continue outerloop
 	        }
 
-			var link = $(page_links[i]);
-			var left = link.offset().left
-			var top = link.offset().top
-			var width = link.outerWidth()
-			var height = link.outerHeight();
+
+			var pos = linkclump.getXY(page_links[i])
+			
+			var width = page_links[i].offsetWidth
+			var height = page_links[i].offsetHeight
 
 			// attempt to get the actual size of the link
 			for(var k = 0; k < page_links[i].childNodes.length; k++) {
 				if(page_links[i].childNodes[k].nodeName == "IMG") {
-					inside = $(page_links[i].childNodes[k]);
-					left = Math.min(left, inside.offset().left);
-					top = Math.min(top, inside.offset().top);
-					width = Math.max(width, inside.outerWidth());
-					height = Math.max(height, inside.outerHeight());
+					pos2 = linkclump.getXY(page_links[i].childNodes[k]);
+					
+					pos.x = Math.min(pos.x, pos2.x);
+					pos.y = Math.min(pos.y, pos2.y);
+					
+					width = Math.max(width, page_links[i].childNodes[k].offsetWidth);
+					height = Math.max(height, page_links[i].childNodes[k].offsetHeight);
 				}
 			}
 	
-			page_links[i].x1 = left
-	        page_links[i].y1 = top
-	        page_links[i].x2 = left + width
-	        page_links[i].y2 = top + height
+			page_links[i].x1 = pos.x
+	        page_links[i].y1 = pos.y
+	        page_links[i].x2 = pos.x + width
+	        page_links[i].y2 = pos.y + height
 			page_links[i].height = height
 			page_links[i].width = width
 			page_links[i].box = null
