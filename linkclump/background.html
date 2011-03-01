@@ -58,13 +58,12 @@
 			set_param('exclude_words', '')
 			set_param('new_window', false)
 			set_param('smart_select', true)
+			set_param('os', function() {if (navigator.appVersion.indexOf("Win") != -1) {return '1'} else {return '0'}}) // 1=win, 0=linux_mac
 			set_param('mouse_button', function() {if (get_param('os') == 1) {return '2'} else {return '0'}})
 			set_param('key_code', function() {if (get_param('os') == 1) {return ''} else {return '16'}})
 			
 			
 			if (get_param('version') == undefined) {
-				
-				if(get_param('os') == undefined) { // truley new user, remove in next version
 			    	function showSetup() {
 				        chrome.windows.create({
 				            url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init',
@@ -80,7 +79,6 @@
 				
 				// set version so options doesn't pop up automtically again
 				set_param('version', '1.1.0');
-				set_param('os', function() {if (navigator.appVersion.indexOf("Win") != -1) {return '1'} else {return '0'}}) // 1=win, 0=linux_mac
 			}
 			
 			
