@@ -64,19 +64,17 @@
 			
 			
 			if (get_param('version') == undefined) {
-			    	function showSetup() {
-				        chrome.windows.create({
+			    function showSetup() {
+				       chrome.windows.create({
 				            url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init',
 				            width: 800,
 				            height: 700,
 				            left: screen.width / 2 - 800 / 2,
 				            top: screen.height / 2 - 700 / 2
 				        });
-				    }
-
-				    showSetup();
 				}
-				
+
+				showSetup();
 				// set version so options doesn't pop up automtically again
 				set_param('version', '1.1.0');
 			}
