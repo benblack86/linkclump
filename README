@@ -12,6 +12,9 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v1.5
++ linkclump box appearing on mouse move on lazy mouse fix
+
 v1.4
 + fixed background bug
 + removed some jquery code that was too slow

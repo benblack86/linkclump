@@ -87,6 +87,7 @@ var linkclump = {
 
 
 	mousemove : function(event){
+		linkclump.mouse_button = event.button
 	    linkclump.prevent_escalation(event)
 
 	    if (linkclump.allow_selection()) {
