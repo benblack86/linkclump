@@ -187,9 +187,7 @@ var linkclump = {
 				continue outerloop
 	        }
 
-
 			var pos = linkclump.getXY(page_links[i])
-			
 			var width = page_links[i].offsetWidth
 			var height = page_links[i].offsetHeight
 
@@ -197,12 +195,12 @@ var linkclump = {
 			for(var k = 0; k < page_links[i].childNodes.length; k++) {
 				if(page_links[i].childNodes[k].nodeName == "IMG") {
 					pos2 = linkclump.getXY(page_links[i].childNodes[k]);
+					if(pos.y >= pos2.y) {
+						pos.y = pos2.y
 					
-					pos.x = Math.min(pos.x, pos2.x);
-					pos.y = Math.min(pos.y, pos2.y);
-					
-					width = Math.max(width, page_links[i].childNodes[k].offsetWidth);
-					height = Math.max(height, page_links[i].childNodes[k].offsetHeight);
+						width = Math.max(width, page_links[i].childNodes[k].offsetWidth);
+						height = Math.max(height, page_links[i].childNodes[k].offsetHeight);
+					}
 				}
 			}
 	
