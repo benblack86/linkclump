@@ -1,7 +1,7 @@
 {
   "name": "Linkclump",
-  "version": "1.5",
-  "description": "Open multiple links by dragging a selection box around them using your mouse.",
+  "version": "2.0.11",
+  "description": "Lets you open, copy or bookmark multiple links at the same time.",
   "background_page": "background.html",
   "options_page": "pages/options.html",
   "icons": {"16": "images/16x16.png",
@@ -10,12 +10,12 @@
   "content_scripts": [
     {
     "matches": ["<all_urls>"],
-    "js": ["libs/jquery-1.4.4.js", "linkclump.js"],
+    "js": ["linkclump.js"],
     "run_at": "document_end",
     "all_frames": true
     }
   ],
   "permissions": [
-    "tabs", "http://*/*", "https://*/*"
+    "tabs", "bookmarks", "http://*/*", "https://*/*"
   ]
 }

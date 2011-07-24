@@ -3,83 +3,191 @@
     <head>
         <title>Linkclump Background</title>
         <script type="text/javascript">
-        	function set_param(key, value) {
-				if (localStorage[key] == undefined) {
-					if (typeof value == "function") {
-						localStorage[key] = value()
-					}
-					else {
-						localStorage[key] = value
-					}
+		Array.prototype.unique =
+		  function() {
+		    var a = [];
+		    var l = this.length;
+		    for(var i=0; i<l; i++) {
+		      for(var j=i+1; j<l; j++) {
+		        // If this[i] is found later in the array
+		        if (this[i].url == this[j].url)
+		          j = ++i;
+		      }
+		      a.push(this[i]);
+		    }
+		    return a;
+		  };
+
+			function open_tab(urls, delay, window_id) {
+				var url = urls.shift();
+					
+				chrome.tabs.create({
+					windowId: window_id,
+					url: url.url,
+					selected: false
+				});
+				
+				if(urls.length > 0) {
+					window.setTimeout(function() {open_tab(urls, delay, window_id)}, delay*1000);
 				}
+				
 			}
-			
-			function get_param(key) {
-				return localStorage[key]
-			}
-			
-            chrome.extension.onRequest.addListener(function(request, sender, callback){
-                if (request.message == 'openLink') {
-                    if (request.new_window == true) {
-                        chrome.windows.create()
-                    }
-                    
-                    for (i = 0; i < request.urls.length; i++) {
-                        chrome.tabs.create({
-                            url: request.urls[i],
-                            selected: false
-                        });
-                    }
-                    
-                    if (request.new_window == true) {
-                        chrome.windows.getCurrent(function(window){
-                            chrome.tabs.getAllInWindow(window.id, function(tabs){
-                                chrome.tabs.remove(tabs[0].id)
-                            })
-                        })
-                    }
-				} else if (request.message == 'init') {
-					var exclude = get_param('exclude_words').split(",")
-					if (exclude[0] == "") {
-						exclude.shift()
+
+			chrome.extension.onRequest.addListener(function(request, sender, callback){
+				switch(request.message) {
+                case 'activate':
+					if(request.setting.options.block) {
+						request.urls = request.urls.unique();
 					}
 					
-					callback({
-						mouse_button: get_param('mouse_button'),
-						key_code: get_param('key_code'),
-						os: parseInt(get_param('os')),
-						smart_select: get_param('smart_select') == 'true' ? true : false,
-						new_window: get_param('new_window') == 'true' ? true : false,
-						exclude_words: exclude
-					});
+					if(request.urls.length == 0) {
+						return;
+					}
+					
+					if(request.setting.options.reverse) {
+						request.urls.reverse();
+					}
+
+					switch(request.setting.action) {
+					case 'copy':
+						var obj = document.getElementById("copybox");
+						var text = "";
+						for (i = 0; i < request.urls.length; i++) {
+							switch(request.setting.options.copy) {
+							case "0":
+								text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
+								break;
+							case "1": 
+								text += request.urls[i].url+"\n";
+								break;
+							case "2":
+								text += request.urls[i].title+"\n";
+								break;
+							case "3":
+								text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a>\n';
+								break;
+							}
+						}
+						obj.value = text;
+						obj.select();
+						document.execCommand("copy", false, null);
+						break;
+					case 'bm':
+						chrome.bookmarks.getTree(
+							function(bookmarkTreeNodes) {
+								for(var i in bookmarkTreeNodes[0].children) {
+									if(bookmarkTreeNodes[0].children[i].title.toLowerCase() == "other bookmarks") {
+										chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[i].id, 'title': 'Linkclump-'+Date.now()},
+											function(newFolder) {
+												for (j = 0; j < request.urls.length; j++) {
+													chrome.bookmarks.create({'parentId': newFolder.id,
+													                         'title': request.urls[j].title,
+													                         'url': request.urls[j].url});
+												}
+											}
+										);
+									}
+									
+								}
+							}
+						);
+					
+						
+						break;
+					case 'win':
+						chrome.windows.create({}, function(window){
+							open_tab(request.urls, request.setting.options.delay, window.id);
+							chrome.tabs.getAllInWindow(window.id, function(tabs){
+                                chrome.tabs.remove(tabs[0].id)
+                            });
+						});
+						break;
+					case 'tabs':
+						chrome.windows.getCurrent(function(window){
+							open_tab(request.urls, request.setting.options.delay, window.id);
+	                    });
+						break;
+					}
+					
+					break;
+				case 'init':
+					callback(JSON.parse(localStorage['settings']));
+					break;
+				case 'block':
+					callback(localStorage['sites'].split("\n"));
+					break;
 				}
             });
+
+
+
 			
-			set_param('exclude_words', '')
-			set_param('new_window', false)
-			set_param('smart_select', true)
-			set_param('os', function() {if (navigator.appVersion.indexOf("Win") != -1) {return '1'} else {return '0'}}) // 1=win, 0=linux_mac
-			set_param('mouse_button', function() {if (get_param('os') == 1) {return '2'} else {return '0'}})
-			set_param('key_code', function() {if (get_param('os') == 1) {return ''} else {return '16'}})
-			
-			
-			if (get_param('version') == undefined) {
+			if (localStorage['version'] == undefined) {
 			    function showSetup() {
 				       chrome.windows.create({
 				            url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init',
 				            width: 800,
-				            height: 700,
+				            height: 850,
 				            left: screen.width / 2 - 800 / 2,
 				            top: screen.height / 2 - 700 / 2
 				        });
 				}
+				
+				// create default settings for new user
+				var settings = {"101": {
+					"mouse": 2,
+					"key": 0,
+					"action": "tabs",
+					"color": "#FFA500",
+					"options": {
+						"smart": 0,
+						"ignore": [],
+						"delay": 0,
+						"block": false,
+						"reverse": false
+					}
+				}};
+				
+				// if not windows then use different mouse/key
+				if (navigator.appVersion.indexOf("Win") == -1) {
+					settings[101].mouse = 0;
+					settings[101].key = 16;
+				}
+
+				// save settings to store
+				localStorage['sites'] = "";
+				localStorage['settings'] = JSON.stringify(settings);
 
 				showSetup();
-				// set version so options doesn't pop up automtically again
-				set_param('version', '1.1.0');
+			}
+			
+			if(localStorage['version'] == '1.1.0') {
+				var exclude = localStorage['exclude_words'].split(",")
+				if (exclude[0] == "") {
+					exclude.shift();
+				}
+				
+				var settings = {"101": {
+					"mouse": localStorage['mouse_button'],
+					"key": localStorage['key_code'],
+					"action": (localStorage['new_window'] == 'true') ? "win" : "tabs",
+					"color": "#FFA500",
+					"options": {
+						"smart": (localStorage['smart_select'] == 'true') ? 0 : 1,
+						"ignore": exclude,
+						"delay": 0,
+						"block": false,
+						"reverse": false
+					}
+				}};
+				
+				localStorage['sites'] = "";
+				localStorage['settings'] = JSON.stringify(settings);
+				localStorage['version'] = '2.0';
 			}
 			
 			
         </script>
     </head>
+	<textarea id="copybox" value=""></textarea>
 </html>

@@ -1,8 +1,9 @@
 var linkclump = {
 	z_index : 2147483647,
-	params : null,
+	settings : null,
+	setting : -1,
 	allowed: false,
-	key_pressed: null,
+	key_pressed: 0,
 	mouse_button: null,
 	stop_menu: false,
 	box_on: false,
@@ -13,34 +14,46 @@ var linkclump = {
 	links : [],
 	box : null,
 	overlay : null,
+	os: ((navigator.appVersion.indexOf("Win") == -1) ? 0 : 1),  // 1 = win, 0 = linux/mac
 	
 	initialize : function () {
 		chrome.extension.sendRequest({
 		    message: 'init'
-		}, function(state){
-		    linkclump.update_param(state)
+		}, function(settings){
+		    linkclump.settings = settings;
+			//console.log(JSON.stringify(settings));
+		});
+		
+		chrome.extension.sendRequest({
+		    message: 'block'
+		}, function(sites) {
+			var allowed = 1;
+			for(var i in sites) {
+				if(sites[i] == '') continue;
+				var re = new RegExp(sites[i],"i");
+				
+				if(re.test(window.location.href)) {
+					allowed = 0;
+					console.log("Linkclump is blocked on this site: "+sites[i]+"~"+window.location.href)
+				}
+			}
+				
+			if(allowed) {
+				window.addEventListener("mousedown", linkclump.mousedown, true)
+				window.addEventListener("keydown", linkclump.keydown, true)
+				window.addEventListener("keyup", linkclump.keyup, true)
+				window.addEventListener("blur", linkclump.blur, true)
+				document.addEventListener("contextmenu", linkclump.contextmenu, true)
+			}
 		});
 
 		chrome.extension.onRequest.addListener(function(request, sender, callback){
 		    if (request.message == 'update') {
-		        linkclump.update_param(request.params)
+		        linkclump.settings = request.settings;
 		    }
 		});
 		
-		window.addEventListener("mousedown", linkclump.mousedown, true)
-		window.addEventListener("keydown", linkclump.keydown, true)
-		window.addEventListener("keyup", linkclump.keyup, true)
-		document.addEventListener("contextmenu", linkclump.contextmenu, true)
     },
-
-	update_param : function(params){
-	    linkclump.params = params
-	    //var str = "";
-	    //for (param in params) {
-	    //    str += param + ":" + params[param] + "|"
-	    //};
-	    //console.log(str)
-	},
 
 	mousedown : function(event){
 		linkclump.mouse_button = event.button
@@ -59,14 +72,13 @@ var linkclump = {
 
 	        // create the box
 	        if (linkclump.box == null) {
-				linkclump.box = $('<span />');
-	            linkclump.box.css('zIndex', linkclump.z_index);
-				linkclump.box.css('margin', '0px auto');
-				linkclump.box.css('border', '2px dotted orange');
-				linkclump.box.css('position', 'absolute');
-				linkclump.box.css('padding', 0);
-				linkclump.box.css('float', 'none');
-				linkclump.box.hide().appendTo($('body'));
+				linkclump.box = document.createElement("span")
+				linkclump.box.style.margin = "0px auto"
+				linkclump.box.style.border = "2px dotted"+linkclump.settings[linkclump.setting].color;
+				linkclump.box.style.position = "absolute"
+				linkclump.box.style.zIndex = linkclump.z_index
+				linkclump.box.style.visibility = "hidden"
+				document.body.appendChild(linkclump.box)
 	        }
 
 	        // update position
@@ -80,7 +92,7 @@ var linkclump = {
 	    }
 
 		// turn on menu for windows
-	    if (linkclump.params.os == 1) {
+	    if (linkclump.os == 1) {
 			linkclump.stop_menu = false
 	    }
 	},
@@ -103,8 +115,8 @@ var linkclump = {
 	},
 
 	update_box : function(x, y) {
-		x = Math.min(x, $(document).width()-7);
-		y = Math.min(y, $(document).height()-7);
+		x = Math.min(x, document.width-7);
+		y = Math.min(y, document.height-7);
 	
 		if(x > linkclump.box.x) {
 			linkclump.box.x1 = linkclump.box.x;
@@ -121,10 +133,10 @@ var linkclump = {
 			linkclump.box.y2 = linkclump.box.y;
 		}
 		
-		linkclump.box.css('left', linkclump.box.x1+"px");
-		linkclump.box.css('width', linkclump.box.x2-linkclump.box.x1+"px");
-		linkclump.box.css('top', linkclump.box.y1+"px");
-		linkclump.box.css('height', linkclump.box.y2-linkclump.box.y1+"px");
+		linkclump.box.style.left = linkclump.box.x1+"px";
+		linkclump.box.style.width = linkclump.box.x2-linkclump.box.x1+"px";
+		linkclump.box.style.top = linkclump.box.y1+"px";
+		linkclump.box.style.height = linkclump.box.y2-linkclump.box.y1+"px";
 	},
 
 
@@ -164,7 +176,7 @@ var linkclump = {
 	},
 
 	start : function () {
-	    linkclump.box.show();
+	    linkclump.box.style.visibility = "visible";
 
 	    // find all links (find them each time as they could have moved)
 	    var page_links = document.links;
@@ -173,9 +185,9 @@ var linkclump = {
 	            continue
 	        }
 
-	        if (linkclump.params.exclude_words.length > 0) {
-	            for (var k = 0; k < linkclump.params.exclude_words.length; k++) {
-	                if (page_links[i].innerHTML.toLowerCase().indexOf(linkclump.params.exclude_words[k]) > -1) {
+	        if (linkclump.settings[linkclump.setting].options.ignore.length > 0) {
+	            for (var k = 0; k < linkclump.settings[linkclump.setting].options.ignore.length; k++) {
+	                if (page_links[i].innerHTML.toLowerCase().indexOf(linkclump.settings[linkclump.setting].options.ignore[k]) > -1) {
 	                    continue outerloop
 	                }
 	            }
@@ -212,7 +224,7 @@ var linkclump = {
 			page_links[i].width = width
 			page_links[i].box = null
 
-	        if (linkclump.params.smart_select && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i)) {
+	        if (linkclump.settings[linkclump.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i)) {
 	            page_links[i].important = true
 	        }
 	        else {
@@ -225,7 +237,7 @@ var linkclump = {
 	    linkclump.box_on = true
 
 	    // turn off menu for windows
-	    if (linkclump.params.os == 1) {
+	    if (linkclump.os == 1) {
 	        linkclump.stop_menu = true
 	    }
 	},
@@ -243,20 +255,20 @@ var linkclump = {
 	    }
 
 	    // turn on menu for linux
-	    if (linkclump.params.os == 0 && linkclump.params.key_code != linkclump.key_pressed) {
+	    if (linkclump.os == 0 && linkclump.settings[linkclump.setting].key != linkclump.key_pressed) {
 	        linkclump.stop_menu == false
 	    }
 	},
 
 	clean_up : function () {
 	    // remove the box
-	    linkclump.box.hide();
+	    linkclump.box.style.visibility = "hidden"
 	    linkclump.box_on = false
 
 	    // remove the link boxes
 	    for (var i = 0; i < linkclump.links.length; i++) {
 	        if (linkclump.links[i].box != null) {
-	            linkclump.links[i].box.remove()
+	            document.body.removeChild(linkclump.links[i].box);
 	            linkclump.links[i].box = null
 	        }
 	    }
@@ -265,13 +277,13 @@ var linkclump = {
 	    // wipe clean the smart select
 	    linkclump.smart_select = false
 		linkclump.mouse_button = -1
-		linkclump.key_pressed = null;
+		linkclump.key_pressed = 0;
 	},
 
 	scroll : function() {
 		if (linkclump.allow_selection()) {
 			var y = linkclump.mouse_y-window.scrollY;
-			var win_height = $(window).height();
+			var win_height = window.innerHeight;
 
 			if (y > win_height - 20) { //down
 				var speed = win_height - y
@@ -337,7 +349,7 @@ var linkclump = {
 	    for (var i = 0; i < linkclump.links.length; i++) {
 	        if ((!linkclump.smart_select || linkclump.links[i].important) && !(linkclump.links[i].x1 > linkclump.box.x2 || linkclump.links[i].x2 < linkclump.box.x1 || linkclump.links[i].y1 > linkclump.box.y2 || linkclump.links[i].y2 < linkclump.box.y1)) {
 	            if (open) {
-	                open_tabs.push(linkclump.links[i].href)
+	                open_tabs.push({"url": linkclump.links[i].href, "title": linkclump.links[i].innerText})
 	            }
 
 	            // check if important links have been selected and possibly redo
@@ -354,26 +366,26 @@ var linkclump = {
 	            }
 
 	            if (linkclump.links[i].box == null) {
-					link_box = $('<span id="linkclump-link" />');
-		            link_box.css('zIndex', linkclump.z_index);
-		            link_box.css('width', linkclump.links[i].width + "px");
-	                link_box.css('height', linkclump.links[i].height + "px");
-	                link_box.css('top', linkclump.links[i].y1 + "px");
-	                link_box.css('left', linkclump.links[i].x1 + "px");
-					link_box.css('margin', '0px auto');
-					link_box.css('border', '1px solid red');
-					link_box.css('position', 'absolute');
-					link_box.appendTo($('body'));
-
-	                linkclump.links[i].box = link_box
+					var link_box = document.createElement("span")
+					link_box.style.id = "linkclump-link"; //? link_box = $('<span id="linkclump-link" />');
+					link_box.style.margin = "0px auto";
+					link_box.style.border = "1px solid red";
+					link_box.style.position = "absolute"
+					link_box.style.width = linkclump.links[i].width + "px"
+					link_box.style.height = linkclump.links[i].height + "px"
+					link_box.style.top = linkclump.links[i].y1 + "px"
+					link_box.style.left = linkclump.links[i].x1 + "px"
+					link_box.style.zIndex = linkclump.z_index
+					document.body.appendChild(link_box);
+					linkclump.links[i].box = link_box;
 	            }
 	            else {
-	                linkclump.links[i].box.show();
+	                linkclump.links[i].box.style.visibility = "visible";
 	            }
 	        }
 	        else {
 	            if (linkclump.links[i].box != null) {
-	                linkclump.links[i].box.hide();
+	                linkclump.links[i].box.style.visibility = "hidden";
 	            }
 	        }
 	    }
@@ -386,37 +398,56 @@ var linkclump = {
 
 	    if (open_tabs.length > 0) {
 	        chrome.extension.sendRequest({
-	            message: 'openLink',
+	            message: 'activate',
 	            urls: open_tabs,
-	            new_window: linkclump.params.new_window
+	            setting: linkclump.settings[linkclump.setting]
 	        });
 	    }
 
 	    return true
 	},
 
+	allow_key : function(keyCode) {
+		for(var i in linkclump.settings) {
+			if(linkclump.settings[i].key == keyCode) {
+				return true;
+			}
+		}
+		return false;
+	},
 
 
 	keydown : function(event){
 	    linkclump.key_pressed = event.keyCode
-	    if (linkclump.params.os == 0 && linkclump.params.key_code == linkclump.key_pressed) {
+	    if (linkclump.os == 0 && linkclump.allow_key(linkclump.key_pressed)) {
 	        linkclump.stop_menu = true
 	    }
+	},
+	
+	blur : function() {
+		linkclump.keyup();
 	},
 
 	keyup : function(event){
 	    // turn off menu for linux
-	    if (linkclump.params.os == 0) {
+	    if (linkclump.os == 0) {
 	        linkclump.stop_menu = false
 	    }
-	    linkclump.key_pressed = null
+	    linkclump.key_pressed = 0;
 	},
 
 
 	allow_selection : function(){
-	    if ((linkclump.params.key_code == '' || linkclump.params.key_code == linkclump.key_pressed) && linkclump.mouse_button == linkclump.params.mouse_button) {
-			return true
-	    }
+		for(var i in linkclump.settings) {
+			// need to check if key is 0 as key_pressed might not be accurate
+			if(linkclump.settings[i].mouse == linkclump.mouse_button && linkclump.settings[i].key == linkclump.key_pressed) {
+				linkclump.setting = i;
+				if(linkclump.box != null) {
+					linkclump.box.style.border = "2px dotted "+linkclump.settings[i].color;
+				}
+				return true;
+			}
+		}
 	    return false
 	},
 

@@ -1,2 +1,36 @@
+WINDOWS
 - change all options and restart browser
+- setup open as new tabs - right - color red - smart select off - delay 2 - reverse, test
+- setup bookmarks - left - shift - color green - smart select on, block, Stest
+
+MAC
 - new window option selected with key, open links, go back to current page and try selecting without key
+- setup open as new window - left - x key - color blue - smart select on - delay 1, test
+- setup copy to clipboard - right - alt - color white - smart select off - reverse - URLS with titles, test
+
+LINUX
+- setup copy to clipboard - right - y key - color gold - smart select on - as HTML, test
+- setup open as new tabs - left - color grey - smart select off - reverse - ignore "hello", test
+
+
+
+
+
+Linkclump gives you the ability to drag a selection box around links using your mouse to quickly open as new tabs, open in new window, save as bookmarks, or copy to clipboard. Similar to Snap Links or Multi Links for Firefox.
+
+FEATURES
+- Action: choose to open links as new tabs, into a new window, copy to clipboard or saved to your bookmarks. You can setup multiple actions.
+
+- Activation: choose how to activated the selection box using different mouse and key combinations (including shift/alt/ctrl).
+
+- Smart Select: tries to select only the important links on the page. Turn off this option to open all selected links.
+
+- Auto Scroll: the page will automatically scroll up/down to make it easier to select all the links at once.
+
+- Exclude Words: exclude links that contain certain words.
+
+- Delay: set a delay between the opening of each tab.
+
+- OS Tested: works on windows, mac and linux operating systems.
+
+Visit https://github.com/benblack86/linkclump for troubleshooting and how to get involved.
