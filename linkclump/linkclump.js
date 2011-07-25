@@ -115,9 +115,9 @@ var linkclump = {
 	},
 
 	update_box : function(x, y) {
-		x = Math.min(x, document.width-7);
-		y = Math.min(y, document.height-7);
-	
+		x = Math.min(x, Math.max(document.width, document.documentElement.clientWidth)-7);
+		y = Math.min(y, Math.max(document.height, document.documentElement.clientHeight)-7);
+		
 		if(x > linkclump.box.x) {
 			linkclump.box.x1 = linkclump.box.x;
 			linkclump.box.x2 = x;
