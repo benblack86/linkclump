@@ -115,8 +115,10 @@ var linkclump = {
 	},
 
 	update_box : function(x, y) {
-		x = Math.min(x, Math.max(document.width, document.documentElement.clientWidth)-7);
-		y = Math.min(y, Math.max(document.height, document.documentElement.clientHeight)-7);
+		var width = Math.max(document.documentElement["clientWidth"], document.body["scrollWidth"], document.documentElement["scrollWidth"], document.body["offsetWidth"], document.documentElement["offsetWidth"]);  // taken from jquery
+		var height = Math.max(document.documentElement["clientHeight"], document.body["scrollHeight"], document.documentElement["scrollHeight"], document.body["offsetHeight"], document.documentElement["offsetHeight"]);  // taken from jquery
+		x = Math.min(x, width-7);
+		y = Math.min(y, height-7);
 		
 		if(x > linkclump.box.x) {
 			linkclump.box.x1 = linkclump.box.x;
@@ -283,7 +285,7 @@ var linkclump = {
 	scroll : function() {
 		if (linkclump.allow_selection()) {
 			var y = linkclump.mouse_y-window.scrollY;
-			var win_height = window.innerHeight;
+			var win_height = window.document.documentElement["clientHeight"];  // taken from jquery
 
 			if (y > win_height - 20) { //down
 				var speed = win_height - y
