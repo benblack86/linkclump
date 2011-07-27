@@ -114,7 +114,12 @@
 					callback(JSON.parse(localStorage['settings']));
 					break;
 				case 'block':
-					callback(localStorage['sites'].split("\n"));
+					var sites = localStorage['sites'];
+					if(sites == undefined) {
+						callback([]);
+					} else {
+						callback(sites.split("\n"));
+					}
 					break;
 				}
             });

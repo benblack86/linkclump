@@ -69,6 +69,17 @@
 					if(localStorage['version'] == undefined) {
 						localStorage['version'] = '2.0';
 						tour(1);
+						
+						//if(window.location.href.match(/init/)) {
+						// inject Linkclump into windows that don't contain the code
+						chrome.windows.getAll({ populate: true }, function(windows) {
+							for (var i = 0; i < windows.length; ++i) {
+								for (var j = 0; j < windows[i].tabs.length; ++j) {
+									if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
+									chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
+								}
+							}
+						});
 					} else {
 						tour(2);
 					}
