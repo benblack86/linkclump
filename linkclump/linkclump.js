@@ -15,6 +15,7 @@ var linkclump = {
 	box : null,
 	overlay : null,
 	os: ((navigator.appVersion.indexOf("Win") == -1) ? 0 : 1),  // 1 = win, 0 = linux/mac
+	timer: 0,
 	
 	initialize : function () {
 		chrome.extension.sendRequest({
@@ -58,42 +59,51 @@ var linkclump = {
 	mousedown : function(event){
 		linkclump.mouse_button = event.button
 
-	    if (linkclump.allow_selection()) {
-	        linkclump.prevent_escalation(event)
-
-	        // stop user from selecting text/elements
-	        document.body.style.khtmlUserSelect = "none"
-
-	        // clean up any mistakes
-	        if (linkclump.box_on) {
-	            console.log("box wasn't removed from previous opertion")
-	            linkclump.clean_up()
-	        }
-
-	        // create the box
-	        if (linkclump.box == null) {
-				linkclump.box = document.createElement("span")
-				linkclump.box.style.margin = "0px auto"
-				linkclump.box.style.border = "2px dotted"+linkclump.settings[linkclump.setting].color;
-				linkclump.box.style.position = "absolute"
-				linkclump.box.style.zIndex = linkclump.z_index
-				linkclump.box.style.visibility = "hidden"
-				document.body.appendChild(linkclump.box)
-	        }
-
-	        // update position
-			linkclump.box.x = event.pageX;
-			linkclump.box.y = event.pageY;
-			linkclump.update_box(event.pageX, event.pageY);
-
-	        // setup mouse move and mouse up
-	        window.addEventListener("mousemove", linkclump.mousemove, true)
-	        window.addEventListener("mouseup", linkclump.mouseup, true)
-	    }
-
 		// turn on menu for windows
 	    if (linkclump.os == 1) {
 			linkclump.stop_menu = false
+	    }
+
+	    if (linkclump.allow_selection()) {
+	        linkclump.prevent_escalation(event)
+	        
+	        // if mouse up timer is set then clear it as it was just caused by bounce
+	        if(linkclump.timer != 0) {
+	        	//console.log("bounced!");
+	        	clearTimeout(linkclump.timer);
+	        	linkclump.timer = 0;
+	        	
+	        	// keep menu off for windows
+	    		if (linkclump.os == 1) {
+					linkclump.stop_menu = true
+	    		}
+	        } else {
+		        // clean up any mistakes
+		        if (linkclump.box_on) {
+		            console.log("box wasn't removed from previous opertion")
+		            linkclump.clean_up()
+		        }
+		      	
+		      	// create the box
+		        if (linkclump.box == null) {
+					linkclump.box = document.createElement("span")
+					linkclump.box.style.margin = "0px auto"
+					linkclump.box.style.border = "2px dotted"+linkclump.settings[linkclump.setting].color;
+					linkclump.box.style.position = "absolute"
+					linkclump.box.style.zIndex = linkclump.z_index
+					linkclump.box.style.visibility = "hidden"
+					document.body.appendChild(linkclump.box)
+		        }
+
+		        // update position
+				linkclump.box.x = event.pageX;
+				linkclump.box.y = event.pageY;
+				linkclump.update_box(event.pageX, event.pageY);
+	
+		        // setup mouse move and mouse up
+		        window.addEventListener("mousemove", linkclump.mousemove, true)
+		        window.addEventListener("mouseup", linkclump.mouseup, true)
+		    }
 	    }
 	},
 
@@ -106,11 +116,12 @@ var linkclump = {
 	        linkclump.update_box(event.pageX, event.pageY)
 
 	        // while detect keeps on calling false then recall the method
-	        while (!linkclump.detech(event.pageX, event.pageY, false)) {
+	        while (!linkclump.detech(event.pageX, event.pageY, false)) {}
+	    } else {
+	    	// only stop if the mouseup timer is no longer set
+	    	if(linkclump.timer == 0) {
+	        	linkclump.stop()
 	        }
-	    }
-	    else {
-	        linkclump.stop()
 	    }
 	},
 
@@ -143,14 +154,23 @@ var linkclump = {
 
 
 	mouseup : function (event) {
-	    linkclump.prevent_escalation(event)
-
-	    if (linkclump.allow_selection()) {
-			linkclump.update_box(event.pageX, event.pageY);
-	        linkclump.detech(event.pageX, event.pageY, true);
-	    }
-
-	    linkclump.stop()
+		linkclump.prevent_escalation(event)
+		
+		if(linkclump.box_on) {
+			// all the detection of the mouse to bounce
+			if (linkclump.allow_selection() && linkclump.timer == 0) {
+				linkclump.timer = setTimeout(function () {
+					linkclump.update_box(event.pageX, event.pageY);
+		    		linkclump.detech(event.pageX, event.pageY, true);
+	
+		    		linkclump.stop()
+		    		linkclump.timer = 0;
+				}, 100);
+			}
+		} else {
+			// false alarm
+			linkclump.stop();
+		}
 	},
 	
 	getXY : function (element) {
@@ -178,6 +198,10 @@ var linkclump = {
 	},
 
 	start : function () {
+		// stop user from selecting text/elements
+		document.body.style.khtmlUserSelect = "none"
+	
+		// turn on the box
 	    linkclump.box.style.visibility = "visible";
 
 	    // find all links (find them each time as they could have moved)
@@ -238,7 +262,7 @@ var linkclump = {
 
 	    linkclump.box_on = true
 
-	    // turn off menu for windows
+	    // turn off menu for windows so mouse up doesn't trigger context menu
 	    if (linkclump.os == 1) {
 	        linkclump.stop_menu = true
 	    }
@@ -421,6 +445,7 @@ var linkclump = {
 
 	keydown : function(event){
 	    linkclump.key_pressed = event.keyCode
+	    // turn menu off for linux
 	    if (linkclump.os == 0 && linkclump.allow_key(linkclump.key_pressed)) {
 	        linkclump.stop_menu = true
 	    }
@@ -431,7 +456,7 @@ var linkclump = {
 	},
 
 	keyup : function(event){
-	    // turn off menu for linux
+	    // turn menu on for linux
 	    if (linkclump.os == 0) {
 	        linkclump.stop_menu = false
 	    }
