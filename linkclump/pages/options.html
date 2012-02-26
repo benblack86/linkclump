@@ -374,7 +374,7 @@
 						} else if(name == 'delay') {
 							var delay;
 							try {
-								delay = parseInt($("#form_option_"+name).val());
+								delay = parseFloat($("#form_option_"+name).val());
 							} catch(err) {
 								delay = 0;
 							}

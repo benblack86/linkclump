@@ -13,6 +13,10 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v2.0.17
++ Set "block repeat links in selection" to default to true
++ Allowed floats for the delay
+
 v2.0.16
 + Delayed mouse up clean up to deal with "bouncing"
 
