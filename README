@@ -10,8 +10,13 @@ TROUBLESHOOTING
 
 - Does not do what you want it to do? There are a hand full of extension/add ons for different browsers that allow you to open multiple links and therefore there are going to be differences with functionality. I've tried to create this extension so that it is fast and versatile. You are very welcome and encouraged to contribute new features and code improvements to the Linkclump project.
 
+- Known Issues: when zoomed out the scrolling functionality will be jerky
 
 VERSION HISTORY
+
+v2.1.1
++ Fixed scrolling bug issue 
++ Improved scrolling by monitoring mouse out event
 
 v2.0.17
 + Set "block repeat links in selection" to default to true

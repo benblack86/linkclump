@@ -14,6 +14,7 @@ var linkclump = {
 	links : [],
 	box : null,
 	overlay : null,
+	scroll_bug_ignore : false,
 	os: ((navigator.appVersion.indexOf("Win") == -1) ? 0 : 1),  // 1 = win, 0 = linux/mac
 	timer: 0,
 	
@@ -44,7 +45,7 @@ var linkclump = {
 				window.addEventListener("keydown", linkclump.keydown, true)
 				window.addEventListener("keyup", linkclump.keyup, true)
 				window.addEventListener("blur", linkclump.blur, true)
-				document.addEventListener("contextmenu", linkclump.contextmenu, true)
+				window.addEventListener("contextmenu", linkclump.contextmenu, true)
 			}
 		});
 
@@ -80,7 +81,7 @@ var linkclump = {
 	        } else {
 		        // clean up any mistakes
 		        if (linkclump.box_on) {
-		            console.log("box wasn't removed from previous opertion")
+		            console.log("box wasn't removed from previous operation")
 		            linkclump.clean_up()
 		        }
 		      	
@@ -103,16 +104,23 @@ var linkclump = {
 		        // setup mouse move and mouse up
 		        window.addEventListener("mousemove", linkclump.mousemove, true)
 		        window.addEventListener("mouseup", linkclump.mouseup, true)
+		        window.addEventListener("mousewheel", linkclump.mousewheel, true)
+		        window.addEventListener("mouseout", linkclump.mouseout, true)
 		    }
 	    }
 	},
 
 
 	mousemove : function(event){
-		linkclump.mouse_button = event.button
+		if(!linkclump.scroll_bug_ignore) {
+			linkclump.mouse_button = event.button
+		}
+		
+		//linkclump.mouse_button = event.button
 	    linkclump.prevent_escalation(event)
 
-	    if (linkclump.allow_selection()) {
+	    if (linkclump.allow_selection() || linkclump.scroll_bug_ignore) {
+	    	linkclump.scroll_bug_ignore = false;
 	        linkclump.update_box(event.pageX, event.pageY)
 
 	        // while detect keeps on calling false then recall the method
@@ -151,7 +159,16 @@ var linkclump = {
 		linkclump.box.style.top = linkclump.box.y1+"px";
 		linkclump.box.style.height = linkclump.box.y2-linkclump.box.y1+"px";
 	},
+	
+	mousewheel : function (event) {
+		linkclump.scroll_bug_ignore = true
+	},
 
+	mouseout : function (event) {
+		linkclump.mousemove(event)
+		// the mouse wheel event might also call this event
+		linkclump.scroll_bug_ignore = true
+	},
 
 	mouseup : function (event) {
 		linkclump.prevent_escalation(event)
@@ -275,6 +292,8 @@ var linkclump = {
 	    // turn off mouse move and mouse up
 	    window.removeEventListener("mousemove", linkclump.mousemove, true)
 	    window.removeEventListener("mouseup", linkclump.mouseup, true)
+	    window.removeEventListener("mousewheel", linkclump.mousewheel, true)
+		window.removeEventListener("mouseout", linkclump.mouseout, true)
 
 	    if (linkclump.box_on) {
 	        linkclump.clean_up()
@@ -308,8 +327,8 @@ var linkclump = {
 
 	scroll : function() {
 		if (linkclump.allow_selection()) {
-			var y = linkclump.mouse_y-window.scrollY;
-			var win_height = window.document.documentElement["clientHeight"];  // taken from jquery
+			var y = linkclump.mouse_y-window.scrollY
+			var win_height = window.innerHeight
 
 			if (y > win_height - 20) { //down
 				var speed = win_height - y
@@ -326,6 +345,8 @@ var linkclump = {
 				linkclump.mouse_y += speed
 				linkclump.update_box(linkclump.mouse_x, linkclump.mouse_y)
 				linkclump.detech(linkclump.mouse_x, linkclump.mouse_y, false)
+				
+				linkclump.scroll_bug_ignore = true
 				return
 			}
 			else if(window.scrollY > 0 && y < 20) { //up
@@ -343,6 +364,8 @@ var linkclump = {
 				linkclump.mouse_y -= speed
 				linkclump.update_box(linkclump.mouse_x, linkclump.mouse_y)
 				linkclump.detech(linkclump.mouse_x, linkclump.mouse_y, false)
+				
+				linkclump.scroll_bug_ignore = true
 				return
 			}
 		}
