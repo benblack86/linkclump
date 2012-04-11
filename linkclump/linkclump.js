@@ -230,7 +230,8 @@ var linkclump = {
 
 	        if (linkclump.settings[linkclump.setting].options.ignore.length > 0) {
 	            for (var k = 0; k < linkclump.settings[linkclump.setting].options.ignore.length; k++) {
-	                if (page_links[i].innerHTML.toLowerCase().indexOf(linkclump.settings[linkclump.setting].options.ignore[k]) > -1) {
+	            	var pattern = new RegExp(linkclump.settings[linkclump.setting].options.ignore[k], 'i');
+	                if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
 	                    continue outerloop
 	                }
 	            }

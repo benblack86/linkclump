@@ -14,6 +14,9 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v2.2.1
++ Ignore words now works on href and innerHTML
+
 v2.1.1
 + Fixed scrolling bug issue 
 + Improved scrolling by monitoring mouse out event

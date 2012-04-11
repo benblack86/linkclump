@@ -1,6 +1,6 @@
 {
   "name": "Linkclump",
-  "version": "2.1.1",
+  "version": "2.2.1",
   "description": "Lets you open, copy or bookmark multiple links at the same time.",
   "background_page": "background.html",
   "options_page": "pages/options.html",
