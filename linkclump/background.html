@@ -108,14 +108,14 @@
 					case 'win':
 						chrome.windows.getCurrent(function(current_window){
 					
-							chrome.windows.create({url: request.urls.shift().url, "focused" : request.setting.options.focus}, function(window){
+							chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
 								if(request.urls.length > 0) {
 									open_tab(request.urls, request.setting.options.delay, window.id, null, 0);
 								}
 							});
 							
-							if(!request.setting.options.focus) {
-								chrome.windows.update(current_window.id, {focused: true});
+							if(request.setting.options.unfocus) {
+								chrome.windows.update(current_window.id, {"focused": true});
 							}
 						});
 						break;
