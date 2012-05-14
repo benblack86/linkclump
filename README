@@ -14,6 +14,11 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v2.3.0
++ Open tabs after current tab
++ Allowed new window to open behind
++ Added close tab time
+
 v2.2.1
 + Ignore words now works on href and innerHTML
 

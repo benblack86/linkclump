@@ -18,17 +18,28 @@
 		    return a;
 		  };
 
-			function open_tab(urls, delay, window_id) {
-				var url = urls.shift();
-					
-				chrome.tabs.create({
+			function open_tab(urls, delay, window_id, tab_position, close_time) {
+				var obj = {
 					windowId: window_id,
-					url: url.url,
+					url: urls.shift().url,
 					selected: false
+				}
+				
+				if(tab_position != null) {
+					obj.index = tab_position
+					tab_position++;
+				}
+					
+				chrome.tabs.create(obj, function(tab) {
+					if(close_time > 0) {
+						window.setTimeout(function() {
+							chrome.tabs.remove(tab.id);
+						}, close_time*1000);
+					}
 				});
 				
 				if(urls.length > 0) {
-					window.setTimeout(function() {open_tab(urls, delay, window_id)}, delay*1000);
+					window.setTimeout(function() {open_tab(urls, delay, window_id, tab_position, close_time)}, delay*1000);
 				}
 				
 			}
@@ -55,7 +66,7 @@
 						for (i = 0; i < request.urls.length; i++) {
 							switch(request.setting.options.copy) {
 							case "0":
-								text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
+								text = request.urls[i].title+"\t"+request.urls[i].url+"\n";
 								break;
 							case "1": 
 								text += request.urls[i].url+"\n";
@@ -95,17 +106,31 @@
 						
 						break;
 					case 'win':
-						chrome.windows.create({}, function(window){
-							open_tab(request.urls, request.setting.options.delay, window.id);
-							chrome.tabs.getAllInWindow(window.id, function(tabs){
-                                chrome.tabs.remove(tabs[0].id)
-                            });
+						chrome.windows.getCurrent(function(current_window){
+					
+							chrome.windows.create({url: request.urls.shift().url, "focused" : request.setting.options.focus}, function(window){
+								if(request.urls.length > 0) {
+									open_tab(request.urls, request.setting.options.delay, window.id, null, 0);
+								}
+							});
+							
+							if(!request.setting.options.focus) {
+								chrome.windows.update(current_window.id, {focused: true});
+							}
 						});
 						break;
 					case 'tabs':
-						chrome.windows.getCurrent(function(window){
-							open_tab(request.urls, request.setting.options.delay, window.id);
-	                    });
+						chrome.tabs.get(sender.tab.id, function(tab) {
+							chrome.windows.getCurrent(function(window){
+								var tab_index = null;
+								
+								if(!request.setting.options.end) {
+									tab_index = tab.index+1;
+								}
+							
+								open_tab(request.urls, request.setting.options.delay, window.id, tab_index, request.setting.options.close);
+	                   	 	})
+	                   	 });
 						break;
 					}
 					
@@ -148,8 +173,10 @@
 						"smart": 0,
 						"ignore": [],
 						"delay": 0,
+						"close": 0,
 						"block": true,
-						"reverse": false
+						"reverse": false,
+						"end": false
 					}
 				}};
 				
@@ -166,29 +193,25 @@
 				showSetup();
 			}
 			
-			if(localStorage['version'] == '1.1.0') {
-				var exclude = localStorage['exclude_words'].split(",")
-				if (exclude[0] == "") {
-					exclude.shift();
+			if(localStorage['version'] == '2.0') {
+				settings = JSON.parse(localStorage['settings'])
+				
+				for(var key in settings) {
+					if(settings[key].action == "tabs") {
+						settings[key].options.end = false;
+						settings[key].options.close = 0;
+					}
+					
+					if(settings[key].action == "win") {
+						settings[key].options.unfocus = false;
+					}
 				}
 				
-				var settings = {"101": {
-					"mouse": localStorage['mouse_button'],
-					"key": localStorage['key_code'],
-					"action": (localStorage['new_window'] == 'true') ? "win" : "tabs",
-					"color": "#FFA500",
-					"options": {
-						"smart": (localStorage['smart_select'] == 'true') ? 0 : 1,
-						"ignore": exclude,
-						"delay": 0,
-						"block": false,
-						"reverse": false
-					}
-				}};
-				
+				console.log(settings);
+
 				localStorage['sites'] = "";
 				localStorage['settings'] = JSON.stringify(settings);
-				localStorage['version'] = '2.0';
+				localStorage['version'] = '3';
 			}
 			
 			

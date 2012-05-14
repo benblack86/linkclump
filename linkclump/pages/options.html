@@ -12,8 +12,8 @@
 						{"name": "Right"}
 						],
 					"actions": {
-						"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse"]},
-						"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "block", "reverse"]},
+						"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
+						"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
 						"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
 						"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"]}
 						},
@@ -22,8 +22,11 @@
 						"ignore": {"name": "ignore links with words", "type": "textbox", "extra": "links containing these words will be ignored; separate words with a comma ,"},
 						"copy": {"name": "copy format", "type": "selection", "data": ["URLS with titles", "URLS only", "titles only", "as HTML"], "extra": "format of the links saved to the clipboard"},
 						"delay": {"name": "delay in opening", "type": "textbox", "extra":"number of seconds between the opening of each link"},
-						"block": {"name": "block repeat links in selection", "type": "checkbox", "extra":"repeat links in a selection wouldn't be opened"},
-						"reverse": {"name": "reverse order", "type": "checkbox", "extra":"links will be opened in reverse order"}
+						"close": {"name": "close tab time", "type": "textbox", "extra":"number of seconds before closing opened tab (0 means the tab wouldn't close)"},
+						"block": {"name": "block repeat links in selection", "type": "checkbox", "extra":"select to block repeat links from opening"},
+						"reverse": {"name": "reverse order", "type": "checkbox", "extra":"select to have links opened in reverse order"},
+						"end": {"name": "open tabs at the end", "type": "checkbox", "extra": "select to have links opened at the end of all other tabs"},
+						"unfocus": {"name": "do not focus on new window", "type": "checkbox", "extra": "select to stop the new window from coming to the front"}
 						}
 					};
 			var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
@@ -67,7 +70,7 @@
 					setup_text(keys);
 
 					if(localStorage['version'] == undefined) {
-						localStorage['version'] = '2.0';
+						localStorage['version'] = '3';
 						tour(1);
 						
 						//if(window.location.href.match(/init/)) {
@@ -371,7 +374,7 @@
 							}
 							
 							param.options[name] = ignore;
-						} else if(name == 'delay') {
+						} else if(name == 'delay' || name = 'close') {
 							var delay;
 							try {
 								delay = parseFloat($("#form_option_"+name).val());
