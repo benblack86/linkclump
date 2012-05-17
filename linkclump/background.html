@@ -66,7 +66,7 @@
 						for (i = 0; i < request.urls.length; i++) {
 							switch(request.setting.options.copy) {
 							case "0":
-								text = request.urls[i].title+"\t"+request.urls[i].url+"\n";
+								text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
 								break;
 							case "1": 
 								text += request.urls[i].url+"\n";
