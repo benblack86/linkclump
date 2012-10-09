@@ -1,7 +1,10 @@
 WINDOWS
-- change all options and restart browser
 - setup open as new tabs - right - color red - smart select off - delay 2 - reverse, test
-- setup bookmarks - left - shift - color green - smart select on, block, Stest
+- setup bookmarks - left - shift - color green - smart select on, block, test
+- goto http://www.nationalgeographic.com/ and type a badly spelt word into search, right click to correct
+- setup open as new window - right - alt - ignore "comment" - delay of 2 - close of 10 - open tabs at end - test at hack news
+- restart browser and check settings
+
 
 MAC
 - new window option selected with key, open links, go back to current page and try selecting without key
@@ -11,7 +14,7 @@ MAC
 LINUX
 - setup copy to clipboard - right - y key - color gold - smart select on - as HTML, test
 - setup open as new tabs - left - color grey - smart select off - reverse - ignore "hello", test
-
+- goto guide page on options and see if it works
 
 
 

@@ -14,6 +14,12 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v2.4.0
++ Allowed home/end buttons to be pressed
++ Added link count
++ Updated files to new chrome standard
++ Fixed interference with spell checker
+
 v2.3.0
 + Open tabs after current tab
 + Allowed new window to open behind
