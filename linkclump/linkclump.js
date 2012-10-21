@@ -4,6 +4,8 @@ var Z_INDEX = 2147483647;
 var OS_WIN = 1;
 var OS_LINUX = 0;
 var LEFT_BUTTON = 0;
+var EXCLUDE_LINKS = 0;
+var INCLUDE_LINKS = 1;
 
 var settings = null;
 var setting = -1;
@@ -246,16 +248,31 @@ function start() {
 
 	// find all links (find them each time as they could have moved)
 	var page_links = document.links;
+	
 	outerloop: for (var i = 0; i < page_links.length; i++) {
 		if (page_links[i].href.match(/javascript\:/i)) {
 			continue
 		}
 
-		if (this.settings[this.setting].options.ignore.length > 0) {
-			for (var k = 0; k < this.settings[this.setting].options.ignore.length; k++) {
+		// include/exclude links (creating reg exp should be done at the start rather than for each link)
+		if (this.settings[this.setting].options.ignore.length > 1) {
+			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
 				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], 'i');
+				var notFound = true;
 				if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
-					continue outerloop
+					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
+						continue outerloop;
+					}
+					if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+						notFound = false;
+						break;
+					}
+				}
+			}
+			
+			if(notFound) {
+				if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+					continue outerloop;
 				}
 			}
 		}
@@ -263,7 +280,7 @@ function start() {
 		// attempt to ignore invisible links (can't ignore overflow)
 		var comp = window.getComputedStyle(page_links[i], null);
 		if (comp.visibility == 'hidden' || comp.display == 'none') {
-			continue outerloop
+			continue outerloop;
 		}
 
 		var pos = this.getXY(page_links[i])

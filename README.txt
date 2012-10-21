@@ -14,6 +14,9 @@ TROUBLESHOOTING
 
 VERSION HISTORY
 
+v2.5.0
++ Open links that only include any/all words
+
 v2.4.0
 + Allowed home/end buttons to be pressed
 + Added link count

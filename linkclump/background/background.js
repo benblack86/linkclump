@@ -183,7 +183,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 			"color": "#FFA500",
 			"options": {
 				"smart": 0,
-				"ignore": [],
+				"ignore": [0],
 				"delay": 0,
 				"close": 0,
 				"block": true,
@@ -206,7 +206,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 	}
 
 	if(localStorage['version'] == '2.0') {
-		settings = JSON.parse(localStorage['settings'])
+		var settings = JSON.parse(localStorage['settings'])
 
 		for(var key in settings) {
 			if(settings[key].action == "tabs") {
@@ -224,5 +224,17 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 		localStorage['sites'] = "";
 		localStorage['settings'] = JSON.stringify(settings);
 		localStorage['version'] = '3';
+	}
+	
+	if(localStorage['version'] == '3') {
+		var settings = JSON.parse(localStorage['settings'])
+		
+		for(var key in settings) {
+			// set option as zero (important for people who do have words setup)
+			settings[key].ignore.unshift(0);
+			
+			localStorage['settings'] = JSON.stringify(settings);
+			localStorage['version'] = '4';
+		}
 	}
 //});

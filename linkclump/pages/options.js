@@ -1,27 +1,64 @@
 var config = {
-		"triggers": [
-		             {"name": "Left"},
-		             {"name": "Middle"},
-		             {"name": "Right"}
-		             ],
-		             "actions": {
-		            	 "win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
-		            	 "tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
-		            	 "bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
-		            	 "copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"]}
-		             },
-		             "options": {
-		            	 "smart": {"name": "smart select", "type": "selection", "data": ["on", "off"], "extra": "with smart select turned on linkclump tries to select only the important links"},
-		            	 "ignore": {"name": "ignore links with words", "type": "textbox", "extra": "links containing these words will be ignored; separate words with a comma ,"},
-		            	 "copy": {"name": "copy format", "type": "selection", "data": ["URLS with titles", "URLS only", "titles only", "as link HTML", "as list link HTML"], "extra": "format of the links saved to the clipboard"},
-		            	 "delay": {"name": "delay in opening", "type": "textbox", "extra":"number of seconds between the opening of each link"},
-		            	 "close": {"name": "close tab time", "type": "textbox", "extra":"number of seconds before closing opened tab (0 means the tab wouldn't close)"},
-		            	 "block": {"name": "block repeat links in selection", "type": "checkbox", "extra":"select to block repeat links from opening"},
-		            	 "reverse": {"name": "reverse order", "type": "checkbox", "extra":"select to have links opened in reverse order"},
-		            	 "end": {"name": "open tabs at the end", "type": "checkbox", "extra": "select to have links opened at the end of all other tabs"},
-		            	 "unfocus": {"name": "do not focus on new window", "type": "checkbox", "extra": "select to stop the new window from coming to the front"}
-		             }
+	"triggers": 
+		[{"name": "Left"}, {"name": "Middle"}, {"name": "Right"}],
+	"actions": {
+		"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
+		"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
+		"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
+		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "include-some", "include-all", "copy", "block", "reverse"]}
+	},
+	"options": {
+		"smart": {
+			"name": "smart select",
+			"type": "selection", 
+			"data": ["on", "off"],
+			"extra": "with smart select turned on linkclump tries to select only the important links"
+		},
+	"ignore": {
+		"name": "filter links",
+		"type": "selection-textbox",
+		"data": ["exclude links with words", "include links with words"],
+		"extra": "filter links that include/exclude these words; separate words with a comma ,"
+		},
+	"copy": {
+		"name": "copy format",
+		"type": "selection",
+		"data": ["URLS with titles", "URLS only", "titles only", "as link HTML", "as list link HTML"],
+		"extra": "format of the links saved to the clipboard"
+		},
+	"delay": {
+		"name": "delay in opening",
+		"type": "textbox",
+		"extra":"number of seconds between the opening of each link"
+		},
+	"close": {
+		"name": "close tab time",
+		"type": "textbox",
+		"extra":"number of seconds before closing opened tab (0 means the tab wouldn't close)"
+		},
+	"block": {
+		"name": "block repeat links in selection",
+		"type": "checkbox",
+		"extra":"select to block repeat links from opening"
+		},
+	"reverse": {
+		"name": "reverse order",
+		"type": "checkbox",
+		"extra":"select to have links opened in reverse order"
+		},
+	"end": {
+		"name": "open tabs at the end",
+		"type": "checkbox",
+		"extra": "select to have links opened at the end of all other tabs"
+		},
+	"unfocus": {
+		"name": "do not focus on new window",
+		"type": "checkbox",
+		"extra": "select to stop the new window from coming to the front"
+		}
+	}
 };
+
 var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
 var params = null
 var div_history = new Array();
@@ -59,7 +96,7 @@ $(function() {
 		setup_text(keys);
 
 		if(localStorage['version'] == undefined) {
-			localStorage['version'] = '3';
+			localStorage['version'] = '4';
 			tour1();
 
 			//if(window.location.href.match(/init/)) {
@@ -78,9 +115,10 @@ $(function() {
 	});
 });
 
-function close_form() {
+function close_form(event) {
 	$('#form-background').fadeOut();
-	$('#page2').fadeIn();
+
+	event.preventDefault();
 }
 
 function tour1() {
@@ -124,6 +162,21 @@ function setup_action(param, id) {
 			}
 			text += param.options[j];
 			break;
+		case "selection-textbox":
+			if(param.options[j].length < 2) {
+				continue;
+			}
+			var selection = param.options[j][0];
+			var words = "";
+			for(var i = 1; i < param.options[j].length; i++) {
+				words += param.options[j][i];
+				
+				if(i < param.options[j].length-1) {
+					words += ", ";
+				}
+			}
+			text += op.data[selection]+"; "+words;
+			break;
 		}
 
 		list.append("<li>"+text+"</li>");
@@ -133,15 +186,17 @@ function setup_action(param, id) {
 	setting.append(list);
 
 	var edit = $("<a href='#' class='button edit'>Edit</a>").click({'i':id},
-			function(event) {
-		load_action(event.data.i, $(this).parent().parent());
-	}
+		function(event) {
+			load_action(event.data.i, $(this).parent().parent());
+			return false;
+		}
 	);
 
 	var del = $("<a href='#' class='button delete'>Delete</a>").click({'i':id},
-			function(event) {
-		delete_action(event.data.i, $(this).parent());
-	}
+		function(event) {
+			delete_action(event.data.i, $(this).parent());
+			return false;
+		}
 	);
 
 	setting.append(del);
@@ -220,7 +275,7 @@ function check_selection() {
 			return;
 		}
 	}
-
+	
 	if(!$('.warning').is(':hidden')) {
 		$('.warning').fadeOut();
 	}
@@ -251,6 +306,16 @@ function display_options(action) {
 
 		case "checkbox":
 			p.append('<input type="checkbox" name="'+op.name+'" id="form_option_'+config.actions[action].options[i]+'"/>');
+			break;
+			
+		case "selection-textbox":
+			var selector = $("<select id='form_option_selection_"+config.actions[action].options[i]+"'>");
+			for(var j in op.data) {
+				selector.append('<option value="'+j+'">'+op.data[j]+'</option>');
+			}
+			p.append(selector);
+			p.append('</p><label> </label><p>');
+			p.append('<input type="text" name="'+op.name+'" id="form_option_text_'+config.actions[action].options[i]+'"/>');
 			break;
 		}
 
@@ -303,8 +368,9 @@ function display_keys(mouse_button) {
 	return keys;
 }
 
-function load_new_action() {
+function load_new_action(event) {
 	load_action(null);
+	event.preventDefault();
 }
 
 function load_action(id) {  // into form
@@ -347,20 +413,39 @@ function load_action(id) {  // into form
 					$("#form_option_"+i).attr("checked", false);
 				}
 				break;
+				
+			case "selection-textbox":
+				if(param.options[i].length > 1) {
+					var selection = param.options[i][0];
+					var text = "";
+					for(var k = 1; k < param.options[i].length; k++) {
+						text += param.options[i][k]+",";
+					}
+					
+					$("#form_option_selection_"+i).val(selection);
+					$("#form_option_text_"+i).val(text);
+				}
+				
+				break;
 			}
 
 		}
 	}
 
-	check_selection();
-
+	// hide warning and let it show later if required
+	$('.warning').hide();
+	
+	// place the form at the top of the window+10
 	$('.form').css('margin-top', $(window).scrollTop()+10);
-	$('#page2').fadeOut();
+	
+	// fade in the form and set the background to cover the whole page
 	$('#form-background').fadeIn();
 	$('#form-background').css('height', $(document).height());
+	
+	check_selection();
 }
 
-function save_action() {
+function save_action(event) {
 	var id = $("#form_id").val();
 
 	var param = {};
@@ -378,11 +463,14 @@ function save_action() {
 			param.options[name] = $("#form_option_"+name).is(':checked');
 		} else {
 			if(name == 'ignore') {
-				var ignore = $("#form_option_"+name).val().replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
-				if (ignore[0] == "") {
-					ignore.shift()
+				var ignore = $("#form_option_text_"+name).val().replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
+				// if the last entry is empty then just remove from array
+				if (ignore.length > 0 && ignore[ignore.length-1] == "") {
+					ignore.pop();
 				}
-
+				// add selection to the start of the array
+				ignore.unshift(param.options[name] = $("#form_option_selection_"+name).val());
+				
 				param.options[name] = ignore;
 			} else if(name == 'delay' || name == 'close') {
 				var delay;
@@ -416,7 +504,7 @@ function save_action() {
 	}
 
 	save_params()
-	close_form();
+	close_form(event);
 }
 
 function delete_action(id, div) {
@@ -425,14 +513,15 @@ function delete_action(id, div) {
 	div.fadeOut("swing", function(){
 		var del = $("<div class='undo'>Action has been deleted </div>");
 		var undo = $("<a>undo</a>").click({'i':id, 'param':params[id]},
-				function(event) {
-			div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
-			params[event.data.i] = event.data.param;
+			function(event) {
+				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
+				params[event.data.i] = event.data.param;
 
-			delete(div_history[event.data.i]);
+				delete(div_history[event.data.i]);
 
-			save_params();
-		}
+				save_params();
+				return false;
+			}
 		);
 		del.append(undo);
 
