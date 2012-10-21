@@ -97,7 +97,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 			chrome.bookmarks.getTree(
 					function(bookmarkTreeNodes) {
 						for(var i in bookmarkTreeNodes[0].children) {
-							if(bookmarkTreeNodes[0].children[i].title.toLowerCase() == "other bookmarks") {
+							if(bookmarkTreeNodes[0].children[i].title != undefined && bookmarkTreeNodes[0].children[i].title.toLowerCase() == "other bookmarks") {
 								chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[i].id, 'title': 'Linkclump-'+Date.now()},
 										function(newFolder) {
 									for (j = 0; j < request.urls.length; j++) {
@@ -163,7 +163,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 
 
 
-//chrome.runtime.onInstalled.addListener(function() {
+function onUpdate() {
 	if (localStorage['version'] == undefined) {
 		function showSetup() {
 			chrome.windows.create({
@@ -231,10 +231,16 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 		
 		for(var key in settings) {
 			// set option as zero (important for people who do have words setup)
-			settings[key].ignore.unshift(0);
+			if(settings[key].options.ignore != undefined) {
+				settings[key].options.ignore.unshift(0);
+			} else {
+				settings[key].options.ignore = [0];
+			}
 			
 			localStorage['settings'] = JSON.stringify(settings);
 			localStorage['version'] = '4';
 		}
 	}
-//});
+}
+
+onUpdate();

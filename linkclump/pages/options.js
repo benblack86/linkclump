@@ -5,7 +5,7 @@ var config = {
 		"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
 		"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
 		"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
-		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "include-some", "include-all", "copy", "block", "reverse"]}
+		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"]}
 	},
 	"options": {
 		"smart": {

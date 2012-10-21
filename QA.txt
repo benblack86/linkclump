@@ -1,40 +1,59 @@
 WINDOWS
-- setup open as new tabs - right - color red - smart select off - delay 2 - reverse, test
-- setup bookmarks - left - shift - color green - smart select on, block, test
+- setup open as new tabs
+  # right
+  # color red
+  # smart select off
+  # delay 2
+  # reverse on
+  # block repeat links off
+- setup bookmarks
+  # left + shift
+  # color green
+  # smart select on
+  # block repeat links on
 - goto http://www.nationalgeographic.com/ and type a badly spelt word into search, right click to correct
-- setup open as new window - right - alt - exclude (find words on hackernews) - delay of 2 - close of 10 - open tabs at end, test
-- setup open as new tabs - right - ctrl - include (find words on hackernews), test
+- setup open as new tabs
+  # right + alt
+  # color blue
+  # exclude links with words (find words on hackernews)
+  # delay of 2
+  # close of 10
+  # open tabs at end
+- setup open as new windows
+  # right + ctrl
+  # color yellow
+  # include links with words (find words on hackernews)
 - restart browser and check settings
-- todo for 2.5.0: check that old data is converted to new ok
+
 
 MAC
-- new window option selected with key, open links, go back to current page and try selecting without key
-- setup open as new window - left - x key - color blue - smart select on - delay 1, test
-- setup copy to clipboard - right - alt - color white - smart select off - reverse - URLS with titles, test
+- setup open as new window
+  # left + x key
+  # color blue
+  # smart select on
+  # delay 1
+- try the above setup, once the new window pops up,go back to current page and try selecting without key
+- setup copy to clipboard
+  # right + alt
+  # color white
+  # smart select off
+  # reverse
+  # URLS with titles
+- restart browser and check settings
+
 
 LINUX
-- setup copy to clipboard - right - y key - color gold - smart select on - as HTML, test
-- setup open as new tabs - left - color grey - smart select off - reverse - ignore "hello", test
+- setup copy to clipboard
+  # right + y key
+  # color gold
+  # smart select on
+  # as HTML
+- setup open as new tabs 
+  # left
+  # color grey
+  # smart select off
+  # reverse
+  # exclude links with words "comments"
 - goto guide page on options and see if it works
+- restart browser and check settings
 
-
-
-
-Linkclump gives you the ability to drag a selection box around links using your mouse to quickly open as new tabs, open in new window, save as bookmarks, or copy to clipboard. Similar to Snap Links or Multi Links for Firefox.
-
-FEATURES
-- Action: choose to open links as new tabs, into a new window, copy to clipboard or saved to your bookmarks. You can setup multiple actions.
-
-- Activation: choose how to activated the selection box using different mouse and key combinations (including shift/alt/ctrl).
-
-- Smart Select: tries to select only the important links on the page. Turn off this option to open all selected links.
-
-- Auto Scroll: the page will automatically scroll up/down to make it easier to select all the links at once.
-
-- Exclude Words: exclude links that contain certain words.
-
-- Delay: set a delay between the opening of each tab.
-
-- OS Tested: works on windows, mac and linux operating systems.
-
-Visit https://github.com/benblack86/linkclump for troubleshooting and how to get involved.
