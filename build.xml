@@ -1,0 +1,35 @@
+<project name="MyProject" default="build" basedir=".">
+	<target name="build" depends="clean,test">
+		<!-- gets the version number from the manifest file -->
+		<loadfile srcFile="src/manifest.json" property="version">
+			<filterchain>
+				<!-- "s" option allows "." to match newline -->
+				<replaceregex pattern='.*version": "(.*?)".*' flags="s" byline="false" replace="\1" />
+		  </filterchain>
+		</loadfile>
+		
+		<echo>Version: ${version}</echo>
+		
+		<zip destfile="linkclump.${version}.zip" basedir="src" />
+	</target>
+	
+	<target name="clean">
+		<echo>Deleting old zip file</echo>
+		<delete>
+			<fileset dir="." includes="linkclump*.zip" />
+		</delete>
+	</target>
+	
+	<target name="test">
+		<exec executable="java" failonerror="true">
+			<arg line="-jar" />
+			<arg path="jtd/JsTestDriver-1.3.5.jar" />
+			<arg line="--port 9876" />
+			<arg line="--browser C:\Users\benjamin\AppData\Local\Google\Chrome\Application\chrome.exe" />
+			<arg line="--basePath ." />
+			<arg line="--raiseOnFailure true" />
+			<arg line="--config jtd/jsTestDriver.conf" />
+			<arg line="--tests all" />
+		</exec>     
+	</target>
+</project>

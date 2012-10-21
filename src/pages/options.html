@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <title>Options</title>
+        <script type="text/javascript" src="../libs/jquery-1.8.2.min.js"></script>
+        <script type="text/javascript" src="../libs/colorpicker/jquery.colorpicker.js"></script>
+		<script type="text/javascript" src="options.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css" />
+		<link rel="stylesheet" href="../libs/colorpicker/jquery.colorpicker.css" type="text/css" media="screen"/>
+    </head>
+    <body>
+		<div id="page1" class="page">
+			<div class="info-box">
+				<img src="../images/linkclump.png" />
+				<p>Welcome and thank you for trying out linkclump. To use linkclump you should press and hold <span id="key_name"></span> the <b><span id="mouse_name"></span></b> mouse button, then drag the selection box around the links you want to open. When you release the mouse button all the links will be <b><span id="action_name"></span></b>. You are now ready to go!</p>
+				
+				<div id="test">
+				<p>Use the test area below to try out linkclump or click the option button at the bottom of the page to explore the many options available.</p>
+				<br />
+				<iframe id="test_area" src="test_area.html" height="300"></iframe>
+				</div>
+				<br /><br /><a href="#" id="guide2" class="button">Options</a>
+			</div>
+		</div>
+		
+		
+		<div id="page2" class="page">
+			
+			<div id="welcome" class="info-box">
+				<img src="../images/linkclump.png" />
+				<p>Welcome to the options page, where you can change the default behaviour and add new actions. If you have forgotten how linkclump works then click guide for a reminder. Source code is available on <a href="https://github.com/benblack86/linkclump">GitHub</a>. 
+				You can find me on twitter <a href="http://www.twitter.com/benblack86">@benblack86</a>.</p>
+				<a href="#" id="guide1" class="button">Guide</a>
+			</div>
+			
+			<div id="rate" class="info-box">
+				<p>Do you love linkclump? Then please leave a rating, it will only take a few seconds. Thank you :-)</p>
+				<a href="https://chrome.google.com/webstore/detail/linkclump/lfpjkncokllnfokkgpkobnkbkmelfefj" class="button">Rate</a>
+			</div>
+			
+			<div id="actions" class="info-box">
+				<h2>Actions</h2>
+				<div id="settings">
+				</div>
+				<a href="#" id="add" class="button">Add Action</a>
+			</div>
+			
+			<div id="block" class="info-box">
+				<h2>Blacklist</h2>
+					<p>To stop linkclump on certain sites, please list the URLs below (one per line).
+					
+					<textarea rows='6' cols='72' id="form_block"></textarea></p>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div id="form-background">
+			<div class="form">
+				<h2>Activation</h2>
+				<p>To activate the selection box you should press and hold...</p>
+				<div class="warning">WARNING: the chosen mouse/key match another action already setup</div>
+				<p><label for="form_mouse">Mouse button</label><select id="form_mouse"></select></p>
+				<p><label for="form_key">+ <span id="form_optional">Optional</span> key</label><select id="form_key"></select></p>
+				<p><label for="form_color">Selection box color</label><select id='form_color'></select></p>
+				<input type="hidden" id="form_id" value="">
+				
+				<h2>Action</h2>
+				<p>Selected links should be...</p>
+				<fieldset id="form_action"></fieldset>
+				
+				<h2>Advanced Options</h2>
+				<p>Available options for the action...</p>
+				<div id="form_options"></div>
+				<div id="form_extra"></div>
+				
+				<br />
+				<a href="#" id="cancel" class="button cancel">Cancel</a>
+				<a href="#" id="save" class="button save">Save</a>
+			</div>
+		</div>
+	</body>
+</html>
+
