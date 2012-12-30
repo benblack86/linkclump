@@ -8,6 +8,11 @@ TROUBLESHOOTING
 - Does not do what you want it to do? There are a hand full of extension/add ons for different browsers that allow you to open multiple links and therefore there are going to be differences with functionality. I've tried to create this extension so that it is fast and versatile. You are very welcome and encouraged to contribute new features and code improvements to the Linkclump project.
 - Known Issues: when zoomed out the scrolling functionality will be jerky
 
+TODO
+- create better messaging format used in communication between background and linkclump so that it can also report data corruption
+- maybe format folders similar to maven
+
+
 VERSION HISTORY
 
 v2.5.0

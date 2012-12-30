@@ -146,6 +146,7 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 
 		break;
 	case 'init':
+		// TODO: create a better message format to hold the data so it can also report data corrupt issues to the user
 		var settings = new Object();
 		settings.settings = JSON.parse(localStorage['settings'])
 		var sites = localStorage['sites'];
