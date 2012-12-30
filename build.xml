@@ -1,5 +1,6 @@
-<project name="MyProject" default="build" basedir=".">
-	<target name="build" depends="clean,test">
+<project name="Linkclumo" default="build" basedir=".">
+	<!-- ant has no if/else statments so have to use this if_.. format -->
+	<target name="build" depends="clean,test_if_mac,test_if_not_mac">
 		<!-- gets the version number from the manifest file -->
 		<loadfile srcFile="src/manifest.json" property="version">
 			<filterchain>
@@ -20,16 +21,32 @@
 		</delete>
 	</target>
 	
-	<target name="test">
+	<condition property="is_mac">
+		<os family="mac" />
+	</condition>
+	
+	<condition property="is_not_mac">
+		<not>
+			<os family="mac" />
+		</not>
+	</condition>
+	
+	<target name="test_if_mac" if="is_mac">
+		<echo>Running Js Test Driver [see http://code.google.com/p/js-test-driver/]</echo>
 		<exec executable="java" failonerror="true">
 			<arg line="-jar" />
 			<arg path="jtd/JsTestDriver-1.3.5.jar" />
 			<arg line="--port 9876" />
-			<arg line="--browser C:\Users\benjamin\AppData\Local\Google\Chrome\Application\chrome.exe" />
+			<!-- on windows you normally provide the path to the browser -->
+			<arg line="--browser open" />
 			<arg line="--basePath ." />
 			<arg line="--raiseOnFailure true" />
 			<arg line="--config jtd/jsTestDriver.conf" />
 			<arg line="--tests all" />
-		</exec>     
+		</exec>
+	</target>
+	
+	<target name="test_if_not_mac" if="is_not_mac">
+		<echo>Js Test Driver is currently only setup for Mac testing</echo>
 	</target>
 </project>
