@@ -59,14 +59,25 @@ var config = {
 	}
 };
 
+var OS_WIN = 0;
+var OS_LINUX = 1;
+var OS_MAC = 2;
+
 var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
 var params = null
 var div_history = new Array();
 var config_history = new Array();
 var keys = display_keys(0);
 var warning = null;
+var os = ((navigator.appVersion.indexOf("Win") == -1) ? ((navigator.appVersion.indexOf("Mac") == -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 $(function() {
+	// temp check to not load if in test mode
+	if (document.getElementById('guide2') == null) {
+		return
+	}
+	
+	
 	document.getElementById('guide2').addEventListener('click', tour2);
 	document.getElementById('guide1').addEventListener('click', tour1);
 	document.getElementById('add').addEventListener('click', load_new_action);
@@ -342,15 +353,18 @@ function display_keys(mouse_button) {
 	keys[16] = 'shift';
 	keys[17] = 'ctrl';
 
-	// OS is not linux
-	if (navigator.appVersion.indexOf("Linux") == -1) {
+	if (os != OS_LINUX) {
 		keys[18] = 'alt';
+	}
+	
+	if (os == OS_MAC) {
+		keys[91] = 'command';
 	}
 
 	// if not left or windows then allow no key
 	var optional = $('#form_optional');
 	optional.empty();
-	if(mouse_button != 2 || navigator.appVersion.indexOf("Win") > -1) {
+	if(mouse_button != 2 || os == OS_WIN) {
 		keys[0] = '';
 		optional.append("Optional");
 	} else {

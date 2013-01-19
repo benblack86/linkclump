@@ -11,9 +11,14 @@ TROUBLESHOOTING
 TODO
 - create better messaging format used in communication between background and linkclump so that it can also report data corruption
 - maybe format folders similar to maven
+- organize code to make it easier to test (http://stackoverflow.com/questions/572897/how-does-javascript-prototype-work#_=_ and http://ejohn.org/apps/learn/#64)
 
 
 VERSION HISTORY
+
+v2.6.0
++ Added "command" as a key option for macs
++ Added another basic test
 
 v2.5.0
 + Open links that only include any/all words

@@ -1,23 +1,28 @@
-<project name="Linkclumo" default="build" basedir=".">
+<project name="Linkclump" default="build" basedir=".">
+	
 	<!-- ant has no if/else statments so have to use this if_.. format -->
-	<target name="build" depends="clean,test_if_mac,test_if_not_mac">
+	<target name="build" depends="properties,clean,test_if_mac,test_if_not_mac">
+		<zip destfile="versions/${zip_name}" basedir="src" />
+	</target>
+	
+	<target name="properties">
 		<!-- gets the version number from the manifest file -->
 		<loadfile srcFile="src/manifest.json" property="version">
 			<filterchain>
 				<!-- "s" option allows "." to match newline -->
-				<replaceregex pattern='.*version": "(.*?)".*' flags="s" byline="false" replace="\1" />
-		  </filterchain>
+				<replaceregex pattern='.*version": "(.*?)".*' flags="s" byline="false" replace="\1" />	
+			</filterchain>
 		</loadfile>
-		
+		<property name="zip_name" value="linkclump.${version}.zip" />
+				
 		<echo>Version: ${version}</echo>
-		
-		<zip destfile="linkclump.${version}.zip" basedir="src" />
+		<echo>Zip Name: ${zip_name}</echo>
 	</target>
 	
 	<target name="clean">
-		<echo>Deleting old zip file</echo>
+		<echo>Deleting old zip file ${zip_name}</echo>
 		<delete>
-			<fileset dir="." includes="linkclump*.zip" />
+			<fileset dir="versions" includes="${zip_name}" />
 		</delete>
 	</target>
 	

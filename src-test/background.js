@@ -48,5 +48,3 @@ UpgradeTest.prototype.testUpgradeV4 = function() {
 	assertEquals(JSON.stringify(settings["102"].options.ignore), JSON.stringify([ 0 ]));
 	assertEquals(localStorage['version'], 4);
 };
-
-
