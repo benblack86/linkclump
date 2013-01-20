@@ -86,13 +86,6 @@ $(function() {
 	document.getElementById('cancel').addEventListener('click', close_form);
 	document.getElementById('save').addEventListener('click', save_action);
 	
-	
-	var isUbuntu = (navigator.appVersion.indexOf("Ubuntu")!=-1);
-	
-	if(isUbuntu) {
-		$("#test").hide();
-	}
-	
 	setup_form();
 	$('#form_block').val(localStorage['sites']);
 
