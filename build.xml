@@ -41,7 +41,7 @@
 		<exec executable="java" failonerror="true">
 			<arg line="-jar" />
 			<arg path="jtd/JsTestDriver-1.3.5.jar" />
-			<arg line="--port 9876" />
+			<arg line="--port 9879" />
 			<!-- on windows you normally provide the path to the browser -->
 			<arg line="--browser open" />
 			<arg line="--basePath ." />

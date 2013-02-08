@@ -72,6 +72,8 @@ var warning = null;
 var os = ((navigator.appVersion.indexOf("Win") == -1) ? ((navigator.appVersion.indexOf("Mac") == -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 $(function() {
+	var isFirstTime = window.location.href.indexOf("init=true") > -1;
+	
 	// temp check to not load if in test mode
 	if (document.getElementById('guide2') == null) {
 		return
@@ -87,32 +89,21 @@ $(function() {
 	document.getElementById('save').addEventListener('click', save_action);
 	
 	setup_form();
-	$('#form_block').val(localStorage['sites']);
 
 	chrome.extension.sendMessage({
 		message: 'init'
 	}, function(response){
-		params = response.settings;
+		params = response;
 
-		for(var i in params) {
-			$('#settings').append(setup_action(params[i], i));
+		for(var i in params.actions) {
+			$('#settings').append(setup_action(params.actions[i], i));
 		}
 		setup_text(keys);
+		
+		$('#form_block').val(params.blocked.join('\n'));
 
-		if(localStorage['version'] == undefined) {
-			localStorage['version'] = '4';
+		if(isFirstTime) {
 			tour1();
-
-			//if(window.location.href.match(/init/)) {
-			// inject Linkclump into windows that don't contain the code
-			chrome.windows.getAll({ populate: true }, function(windows) {
-				for (var i = 0; i < windows.length; ++i) {
-					for (var j = 0; j < windows[i].tabs.length; ++j) {
-						if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
-						chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
-					}
-				}
-			});
 		} else {
 			tour2();
 		}
@@ -249,8 +240,8 @@ function setup_form() {
 
 function setup_text(keys) {
 	var param;
-	for(var i in params) {
-		param = params[i];
+	for(var i in params.actions) {
+		param = params.actions[i];
 		break;
 	}
 	if(param == undefined) {
@@ -270,8 +261,8 @@ function check_selection() {
 	var k = $('#form_key').val();
 	var id = $('#form_id').val();
 
-	for(var i in params) {
-		if(i != id && params[i].mouse == m && params[i].key == k) {
+	for(var i in params.actions) {
+		if(i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
 			if($('.warning').is(':hidden')) {
 				$('.warning').fadeIn();
 			}
@@ -349,10 +340,6 @@ function display_keys(mouse_button) {
 	if (os != OS_LINUX) {
 		keys[18] = 'alt';
 	}
-	
-	if (os == OS_MAC) {
-		keys[91] = 'command';
-	}
 
 	// if not left or windows then allow no key
 	var optional = $('#form_optional');
@@ -390,7 +377,7 @@ function load_action(id) {  // into form
 		$("#form_key").val(16);
 		$(".colorpicker-trigger").css('background-color', '#'+colors[Math.floor(Math.random()*colors.length)]);
 	} else {
-		var param = params[id];
+		var param = params.actions[id];
 		$("#form_id").val(id);
 
 		$("#form_mouse").val(param.mouse);
@@ -498,14 +485,14 @@ function save_action(event) {
 		}
 	}
 
-	if(id == "" || params[id] == null) {
+	if(id == "" || params.actions[id] == null) {
 		var newDate = new Date;
 		id = newDate.getTime();
 
-		params[id] = param;
+		params.actions[id] = param;
 		$('#settings').append(setup_action(param, id));
 	} else {
-		params[id] = param;
+		params.actions[id] = param;
 		var update = setup_action(param, id);
 		$('#action_'+id).replaceWith(update);
 	}
@@ -515,14 +502,12 @@ function save_action(event) {
 }
 
 function delete_action(id, div) {
-
-
 	div.fadeOut("swing", function(){
 		var del = $("<div class='undo'>Action has been deleted </div>");
-		var undo = $("<a>undo</a>").click({'i':id, 'param':params[id]},
+		var undo = $("<a>undo</a>").click({'i':id, 'param':params.actions[id]},
 			function(event) {
 				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
-				params[event.data.i] = event.data.param;
+				params.actions[event.data.i] = event.data.param;
 
 				delete(div_history[event.data.i]);
 
@@ -535,7 +520,7 @@ function delete_action(id, div) {
 		$(this).replaceWith(del).fadeIn("swing");
 
 		div_history[id] = del;
-		delete(params[id]);
+		delete(params.actions[id]);
 
 		save_params();
 
@@ -545,23 +530,18 @@ function delete_action(id, div) {
 }
 
 function save_params() {
-	localStorage['settings'] = JSON.stringify(params);
-
-	chrome.windows.getAll({
-		populate: true
-	}, function(windowList){
-		windowList.forEach(function(window){
-			window.tabs.forEach(function(tab){
-				chrome.tabs.sendMessage(tab.id, {
-					message: 'update',
-					settings: params
-				}, null);
-			})
-		})
+	chrome.extension.sendMessage({
+		message: 'update',
+		settings: params
 	});
 }
 
 function save_block() {
 	// replace any whitespace at end to stop empty site listings
-	localStorage['sites'] = $('#form_block').val().replace(/^\s+|\s+$/g, '');
+	var sites = $('#form_block').val().replace(/^\s+|\s+$/g, '').split('\n');
+	
+	if (Array.isArray(sites)) {
+		params.blocked = sites;
+		save_params();
+	}
 }

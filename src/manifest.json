@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
   "name": "Linkclump",
-  "version": "2.6.0",
+  "version": "2.7.2",
   "description": "Lets you open, copy or bookmark multiple links at the same time.",
   "background": {
-    "scripts": ["background/background.js"],
+    "scripts": ["settings_manager.js", "background.js"],
     "persistent": false
   },
   "options_page": "pages/options.html",

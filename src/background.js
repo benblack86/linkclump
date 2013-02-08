@@ -1,5 +1,9 @@
-Array.prototype.unique =
-	function() {
+var OS_WIN = 1;
+var OS_LINUX = 0;
+var os = ((navigator.appVersion.indexOf("Win") == -1) ? OS_LINUX : OS_WIN);
+var settingsManager = new SettingsManager(os);
+
+Array.prototype.unique = function() {
 	var a = [];
 	var l = this.length;
 	for(var i=0; i<l; i++) {
@@ -146,102 +150,53 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 
 		break;
 	case 'init':
-		// TODO: create a better message format to hold the data so it can also report data corrupt issues to the user
-		var settings = new Object();
-		settings.settings = JSON.parse(localStorage['settings'])
-		var sites = localStorage['sites'];
-		if(sites == undefined) {
-			sites = [];
-		} else {
-			sites = sites.split("\n");
-		}
-
-		settings.sites = sites;
-		callback(settings);
+		callback(settingsManager.load());
+		break;
+	case 'update':
+		settingsManager.save(request.settings);
+	
+		chrome.windows.getAll({
+			populate: true
+		}, function(windowList){
+			windowList.forEach(function(window){
+				window.tabs.forEach(function(tab){
+					chrome.tabs.sendMessage(tab.id, {
+						message: 'update',
+						settings: settingsManager.load()
+					}, null);
+				})
+			})
+		});
+	
 		break;
 	}
 });
 
 
-
-function onUpdate() {
-	if (localStorage['version'] == undefined) {
-		function showSetup() {
-			chrome.windows.create({
-				url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init',
-				width: 800,
-				height: 850,
-				left: screen.width / 2 - 800 / 2,
-				top: screen.height / 2 - 700 / 2
-			});
-		}
-
-		// create default settings for new user
-		var settings = {"101": {
-			"mouse": 2,
-			"key": 0,
-			"action": "tabs",
-			"color": "#FFA500",
-			"options": {
-				"smart": 0,
-				"ignore": [0],
-				"delay": 0,
-				"close": 0,
-				"block": true,
-				"reverse": false,
-				"end": false
-			}
-		}};
-
-		// if not windows then use different mouse/key
-		if (navigator.appVersion.indexOf("Win") == -1) {
-			settings[101].mouse = 0;
-			settings[101].key = 16;
-		}
-
-		// save settings to store
-		localStorage['sites'] = "";
-		localStorage['settings'] = JSON.stringify(settings);
-
-		showSetup();
-	}
-
-	if(localStorage['version'] == '2.0') {
-		var settings = JSON.parse(localStorage['settings'])
-
-		for(var key in settings) {
-			if(settings[key].action == "tabs") {
-				settings[key].options.end = false;
-				settings[key].options.close = 0;
-			}
-
-			if(settings[key].action == "win") {
-				settings[key].options.unfocus = false;
-			}
-		}
-
-		console.log(settings);
-
-		localStorage['sites'] = "";
-		localStorage['settings'] = JSON.stringify(settings);
-		localStorage['version'] = '3';
-	}
+if (!settingsManager.isInit()) {
+	// initialize settings manager with defaults and to stop this appearing again
+	settingsManager.init();
 	
-	if(localStorage['version'] == '3') {
-		var settings = JSON.parse(localStorage['settings'])
-		
-		for(var key in settings) {
-			// set option as zero (important for people who do have words setup)
-			if(settings[key].options.ignore != undefined) {
-				settings[key].options.ignore.unshift(0);
-			} else {
-				settings[key].options.ignore = [0];
+	// inject Linkclump into windows currently open to make it just work
+	chrome.windows.getAll({ populate: true }, function(windows) {
+		for (var i = 0; i < windows.length; ++i) {
+			for (var j = 0; j < windows[i].tabs.length; ++j) {
+				if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
+				chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
 			}
-			
-			localStorage['settings'] = JSON.stringify(settings);
-			localStorage['version'] = '4';
 		}
-	}
+	});
+	
+	// pop up window to show tour and options page
+	chrome.windows.create({
+		url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init=true',
+		width: 800,
+		height: 850,
+		left: screen.width / 2 - 800 / 2,
+		top: screen.height / 2 - 700 / 2
+	});
+} else if (!settingsManager.isLatest()) {
+	settingsManager.update();
 }
 
-onUpdate();
+

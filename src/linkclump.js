@@ -29,17 +29,20 @@ var timer = 0;
 chrome.extension.sendMessage({
 	message: 'init'
 }, function(response){
-	settings = response.settings;
-	//console.log(JSON.stringify(settings));
+	settings = response.actions;
+	
+	if (response.hasOwnProperty("error")) {
+		console.log(JSON.stringify(settings));
+	}
 
 	var allowed = 1;
-	for(var i in response.sites) {
-		if(response.sites[i] == '') continue;
-		var re = new RegExp(response.sites[i],"i");
+	for(var i in response.blocked) {
+		if(response.blocked[i] == '') continue;
+		var re = new RegExp(response.blocked[i],"i");
 
 		if(re.test(window.location.href)) {
 			allowed = 0;
-			console.log("Linkclump is blocked on this site: "+response.sites[i]+"~"+window.location.href)
+			console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href)
 		}
 	}
 
@@ -54,7 +57,7 @@ chrome.extension.sendMessage({
 
 chrome.extension.onMessage.addListener(function(request, sender, callback){
 	if (request.message == 'update') {
-		this.settings = request.settings;
+		this.settings = request.settings.actions;
 	}
 });
 
