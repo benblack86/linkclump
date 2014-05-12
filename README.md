@@ -8,6 +8,10 @@ The build process uses ant (run `ant` at the command line) and will run tests an
 
 ## Changelog
 
+### v2.7.3
++ Fixed bug with bookmarking in non-english languages
++ Moved troubleshooting to the options page
+
 ### v2.7.0
 + Did some basic refactoring and creating SettingsManager
 
