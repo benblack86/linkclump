@@ -54,6 +54,26 @@ function copyToClipboard( text ){
     document.body.removeChild(copyDiv);
 }
 
+function timeConverter(a){
+	var year = a.getFullYear();
+	var month = pad(a.getMonth()+1, 2)
+	var day = pad(a.getDate(), 2);
+	var hour = pad(a.getHours(),2);
+	var min = pad(a.getMinutes(),2);
+	var sec = pad(a.getSeconds(),2);
+	var time = year+'-'+month+'-'+day+' '+hour+':'+min+':'+sec;
+	return time;
+}
+
+function pad(number, length) {
+	var str = '' + number;
+	while (str.length < length) {
+		str = '0' + str;
+	}
+   
+	return str;
+}
+
 chrome.extension.onMessage.addListener(function(request, sender, callback){
 	switch(request.message) {
 	case 'activate':
@@ -99,24 +119,20 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 			break;
 		case 'bm':
 			chrome.bookmarks.getTree(
-					function(bookmarkTreeNodes) {
-						for(var i in bookmarkTreeNodes[0].children) {
-							if(bookmarkTreeNodes[0].children[i].title != undefined && bookmarkTreeNodes[0].children[i].title.toLowerCase() == "other bookmarks") {
-								chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[i].id, 'title': 'Linkclump-'+Date.now()},
-										function(newFolder) {
-									for (j = 0; j < request.urls.length; j++) {
-										chrome.bookmarks.create({'parentId': newFolder.id,
-											'title': request.urls[j].title,
-											'url': request.urls[j].url});
-									}
-								}
-								);
+				function(bookmarkTreeNodes) {
+					// make assumption that bookmarkTreeNodes[0].children[1] refers to the "other bookmarks" folder
+					// as different languages will not use the english name to refer to the folder
+					chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[1].id, 'title': 'Linkclump '+timeConverter(new Date())},
+						function(newFolder) {
+							for (j = 0; j < request.urls.length; j++) {
+								chrome.bookmarks.create({'parentId': newFolder.id,
+									'title': request.urls[j].title,
+									'url': request.urls[j].url});
 							}
-
 						}
-					}
+					);
+				}
 			);
-
 
 			break;
 		case 'win':

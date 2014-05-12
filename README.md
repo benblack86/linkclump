@@ -1,17 +1,10 @@
 # Linkclump
 
-## Troubleshooting
-- Not working? Visit the Linkclump options page (link is found on the Extension page) and make sure you are pressing the correct mouse button and key combination. Please note that chrome automatically disables in-browser extensions on the chrome webstore/extension web pages for security purposes, therefore Linkclump will not work on this page or other pages on this website.
-- Problems saving or opening the options page?  Please check you have the latest version of Chrome (at least v23 on windows, v22 on mac/linux) by typing in "chrome://chrome/" in the address bar. The latest version of this extension is using the latest standards and therefore requires the latest version of Chrome. 
-- Double tabs? Make sure you don't have a similar extension installed. If you also have "Snap Links Lite" installed it might appear that you are only using Linkclump, but actually these extensions are also working in the background and will try to open tabs also.
-- Mandatory key? If you want to use the right mouse button on the Linux/Mac operating systems then you have to select a key. This is due to the way Chrome is designed on these systems and is necessary to make Linkclump work. Left and middle mouse buttons are not affected.
-- To use on local pages (i.e. file:// URLs) you need to go to the extensions page (chrome://settings/extensions) and click on the little arrow next to the Linkclump logo. "Allow access to file URLs" option will then appear, which you should tick.
-- Does not do what you want it to do? There are a hand full of extension/add ons for different browsers that allow you to open multiple links and therefore there are going to be differences with functionality. I've tried to create this extension so that it is fast and versatile. You are very welcome and encouraged to contribute new features and code improvements to the Linkclump project.
-- Known Issues: when zoomed out the scrolling functionality will be jerky
-
 ## Todo
 - refactor/organize code to make it easier to test (http://ejohn.org/apps/learn/#64)
 
+## Build
+The build process uses ant (run `ant` at the command line) and will run tests and create a zip file that can be uploaded to the chrome store.
 
 ## Changelog
 

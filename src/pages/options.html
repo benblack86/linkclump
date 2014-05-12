@@ -30,10 +30,7 @@
 				<p>Welcome to the options page, where you can change the default behaviour and add new actions. If you have forgotten how linkclump works then click guide for a reminder. Source code is available on <a href="https://github.com/benblack86/linkclump">GitHub</a>. 
 				You can find me on twitter <a href="http://www.twitter.com/benblack86">@benblack86</a>.</p>
 				<a href="#" id="guide1" class="button">Guide</a>
-			</div>
-			
-			<div id="rate" class="info-box">
-				<p>Do you love linkclump? Then please leave a rating, it will only take a few seconds. Thank you :-)</p>
+				<p>Do you love linkclump? Then please leave a rating, thank you :-)</p>
 				<a href="https://chrome.google.com/webstore/detail/linkclump/lfpjkncokllnfokkgpkobnkbkmelfefj/reviews" class="button">Rate</a>
 			</div>
 			
@@ -44,12 +41,25 @@
 				<a href="#" id="add" class="button">Add Action</a>
 			</div>
 			
+			<div class="info-box">
+				<h2>FAQ</h2>
+				<br />
+				<ul>
+					<li><b>To use on local pages (i.e. file:// URLs)</b> you need to go to the extensions page (chrome://extensions) and tick the option "Allow access to file URLs" for the Linkclump extension.</li>
+					<li><b>Double tabs?</b> Make sure you don't have a similar extension installed. If you also have "Snap Links Lite" installed it might appear that you are only using Linkclump, but actually these extensions are also working in the background and will try to open tabs also.</li>
+					<li><b>Mandatory key?</b> If you want to use the right mouse button on the Linux/Mac operating systems then you have to select a key. This is due to the way Chrome is designed on these systems and is necessary to make Linkclump work. Left and middle mouse buttons are not affected.</li>
+					<li><b>Not working?</b> Make sure you are pressing the correct mouse button and key combination. Please note that chrome automatically disables in-browser extensions on the chrome webstore/extension web pages for security purposes.</li>
+					<li><b>Does not do what you want it to do?</b> There are a hand full of extension/add ons for different browsers that allow you to open multiple links and therefore there are going to be differences with functionality. I've tried to create this extension so that it is fast and versatile. You are very welcome and encouraged to contribute new features and code improvements to the Linkclump project.</li>
+					<li><b>Issues when zoomed out?</b> When zoomed out the scrolling functionality will be jerky and there isn't much that can be done about it.</li>
+				</ul>
+				<br />
+			</div>
+			
 			<div id="block" class="info-box">
 				<h2>Blacklist</h2>
-					<p>To stop linkclump on certain sites, please list the URLs below (one per line).
+				<p>To stop linkclump on certain sites, please list the URLs below (one per line).
 					
-					<textarea rows='6' cols='72' id="form_block"></textarea></p>
-				</div>
+				<textarea rows='6' cols='72' id="form_block"></textarea></p>
 			</div>
 		</div>
 		

@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #F4E4CB;
+    background-color: #F4F4F4;
     background-image: url('../images/background.png');
     background-repeat: no-repeat;
     background-position: 10% 0%;
@@ -62,11 +62,12 @@ a:hover.button {
 	border-bottom: 3px solid #000;
 	margin: 2px;
 	padding: 5px;
+	background-color: #E6FAF0;
 }
 
 .info-box .setting {
 	overflow: hidden;
-	background-color: #E6E6E6;
+	background-color: #FBFBFB;
 	margin: 10px;
 	margin-bottom: 20px;
 	padding: 5px;
