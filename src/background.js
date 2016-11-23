@@ -108,6 +108,10 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 					break;
 				case "4":
 					text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a></li>\n';
+					break;
+				case "5":
+					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
+					break;
 				}
 			}
 			
