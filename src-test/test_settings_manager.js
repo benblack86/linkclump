@@ -116,7 +116,7 @@ TestSettingsManager.prototype.testError = function() {
 		}
 	
 	var settings = sm.load();
-	assertEquals("Error: SyntaxError: Unexpected token u|Data:undefined", settings.error);
+	assertEquals("Error: SyntaxError: Unexpected token u in JSON at position 0|Data:undefined", settings.error);
 	assertEquals(good_settings.actions, settings.actions);
 	
 	// load again and there should be no error
