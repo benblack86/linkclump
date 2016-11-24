@@ -6,11 +6,11 @@ function SettingsManager(environment) {
 	this.environment = environment;
 }
 
-SettingsManager.prototype.load = function() {
-	// load data from local storage
-	var data = localStorage["settings"];
-	
+SettingsManager.prototype.load = function() {	
 	try {
+		// load data from local storage
+		var data = localStorage["settings"];
+		
 		// attempt to parse, if unable then make the assumption it has been corrupted
 		return JSON.parse(data)
 	} catch(error) {
