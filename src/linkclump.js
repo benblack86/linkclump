@@ -29,29 +29,33 @@ var timer = 0;
 chrome.extension.sendMessage({
 	message: 'init'
 }, function(response){
-	settings = response.actions;
-	
-	if (response.hasOwnProperty("error")) {
-		console.log(JSON.stringify(settings));
-	}
-
-	var allowed = 1;
-	for(var i in response.blocked) {
-		if(response.blocked[i] == '') continue;
-		var re = new RegExp(response.blocked[i],"i");
-
-		if(re.test(window.location.href)) {
-			allowed = 0;
-			console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href)
+	if (response == null) {
+		console.log("Unable to load linkclump due to null response")
+	} else {
+		if (response.hasOwnProperty("error")) {
+			console.log("Unable to properly load linkclump, returning to default settings: "+JSON.stringify(response));
 		}
-	}
+		
+		settings = response.actions;
+		
+		var allowed = 1;
+		for(var i in response.blocked) {
+			if(response.blocked[i] == '') continue;
+			var re = new RegExp(response.blocked[i],"i");
 
-	if(allowed) {
-		window.addEventListener("mousedown", this.mousedown, true)
-		window.addEventListener("keydown", this.keydown, true)
-		window.addEventListener("keyup", this.keyup, true)
-		window.addEventListener("blur", this.blur, true)
-		window.addEventListener("contextmenu", this.contextmenu, true)
+			if(re.test(window.location.href)) {
+				allowed = 0;
+				console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href)
+			}
+		}
+
+		if(allowed) {
+			window.addEventListener("mousedown", this.mousedown, true)
+			window.addEventListener("keydown", this.keydown, true)
+			window.addEventListener("keyup", this.keyup, true)
+			window.addEventListener("blur", this.blur, true)
+			window.addEventListener("contextmenu", this.contextmenu, true)
+		}
 	}
 });
 
