@@ -1,5 +1,7 @@
 # Linkclump
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9e38a24d7f524c6ca73c07e8948d58a7)](https://www.codacy.com/app/benblack86/linkclump?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=benblack86/linkclump&amp;utm_campaign=Badge_Grade)
+
 ## Todo
 - refactor/organize code to make it easier to test (http://ejohn.org/apps/learn/#64)
 
