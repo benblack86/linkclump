@@ -107,7 +107,7 @@ function setup_action(param, id) {
 			text += op.data[param.options[j]];
 			break;
 		case "textbox":
-			if(param.options[j] === '' || param.options[j] === '0') {
+			if(param.options[j] === "" || param.options[j] === "0") {
 				continue;
 			}
 			text += param.options[j];
