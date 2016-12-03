@@ -69,46 +69,7 @@ var div_history = new Array();
 var config_history = new Array();
 var keys = display_keys(0);
 var warning = null;
-var os = ((navigator.appVersion.indexOf("Win") == -1) ? ((navigator.appVersion.indexOf("Mac") == -1) ? OS_LINUX : OS_MAC) : OS_WIN);
-
-$(function() {
-	var isFirstTime = window.location.href.indexOf("init=true") > -1;
-	
-	// temp check to not load if in test mode
-	if (document.getElementById('guide2') == null) {
-		return
-	}
-	
-	
-	document.getElementById('guide2').addEventListener('click', tour2);
-	document.getElementById('guide1').addEventListener('click', tour1);
-	document.getElementById('add').addEventListener('click', load_new_action);
-	document.getElementById('form_block').addEventListener('keyup', save_block);
-	document.getElementById('form_key').addEventListener('change', check_selection);
-	document.getElementById('cancel').addEventListener('click', close_form);
-	document.getElementById('save').addEventListener('click', save_action);
-	
-	setup_form();
-
-	chrome.extension.sendMessage({
-		message: 'init'
-	}, function(response){
-		params = response;
-
-		for(var i in params.actions) {
-			$('#settings').append(setup_action(params.actions[i], i));
-		}
-		setup_text(keys);
-		
-		$('#form_block').val(params.blocked.join('\n'));
-
-		if(isFirstTime) {
-			tour1();
-		} else {
-			tour2();
-		}
-	});
-});
+var os = ((navigator.appVersion.indexOf("Win") === -1) ? ((navigator.appVersion.indexOf("Mac") === -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 function close_form(event) {
 	$('#form-background').fadeOut();
@@ -146,7 +107,7 @@ function setup_action(param, id) {
 			text += op.data[param.options[j]];
 			break;
 		case "textbox":
-			if(param.options[j] == '' || param.options[j] == '0') {
+			if(param.options[j] === '' || param.options[j] === '0') {
 				continue;
 			}
 			text += param.options[j];
@@ -262,7 +223,7 @@ function check_selection() {
 	var id = $('#form_id').val();
 
 	for(var i in params.actions) {
-		if(i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
+		if(i != id && params.actions[i].mouse === m && params.actions[i].key === k) {
 			if($('.warning').is(':hidden')) {
 				$('.warning').fadeIn();
 			}
@@ -344,7 +305,7 @@ function display_keys(mouse_button) {
 	// if not left or windows then allow no key
 	var optional = $('#form_optional');
 	optional.empty();
-	if(mouse_button != 2 || os == OS_WIN) {
+	if(mouse_button !== 2 || os === OS_WIN) {
 		keys[0] = '';
 		optional.append("Optional");
 	} else {
@@ -453,20 +414,20 @@ function save_action(event) {
 	for(var opt in config.actions[param.action].options) {
 		var name = config.actions[param.action].options[opt];
 		var type = config.options[name].type;
-		if(type == "checkbox") {
+		if(type === "checkbox") {
 			param.options[name] = $("#form_option_"+name).is(':checked');
 		} else {
-			if(name == 'ignore') {
+			if(name === 'ignore') {
 				var ignore = $("#form_option_text_"+name).val().replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
 				// if the last entry is empty then just remove from array
-				if (ignore.length > 0 && ignore[ignore.length-1] == "") {
+				if (ignore.length > 0 && ignore[ignore.length-1] === "") {
 					ignore.pop();
 				}
 				// add selection to the start of the array
 				ignore.unshift(param.options[name] = $("#form_option_selection_"+name).val());
 				
 				param.options[name] = ignore;
-			} else if(name == 'delay' || name == 'close') {
+			} else if(name === 'delay' || name === 'close') {
 				var delay;
 				try {
 					delay = parseFloat($("#form_option_"+name).val());
@@ -485,7 +446,7 @@ function save_action(event) {
 		}
 	}
 
-	if(id == "" || params.actions[id] == null) {
+	if(id === "" || params.actions[id] == null) {
 		var newDate = new Date;
 		id = newDate.getTime();
 
@@ -545,3 +506,42 @@ function save_block() {
 		save_params();
 	}
 }
+
+$(function() {
+	var isFirstTime = window.location.href.indexOf("init=true") > -1;
+
+	// temp check to not load if in test mode
+	if (document.getElementById('guide2') == null) {
+		return
+	}
+
+
+	document.getElementById('guide2').addEventListener('click', tour2);
+	document.getElementById('guide1').addEventListener('click', tour1);
+	document.getElementById('add').addEventListener('click', load_new_action);
+	document.getElementById('form_block').addEventListener('keyup', save_block);
+	document.getElementById('form_key').addEventListener('change', check_selection);
+	document.getElementById('cancel').addEventListener('click', close_form);
+	document.getElementById('save').addEventListener('click', save_action);
+
+	setup_form();
+
+	chrome.extension.sendMessage({
+		message: 'init'
+	}, function(response){
+		params = response;
+
+		for(var i in params.actions) {
+			$('#settings').append(setup_action(params.actions[i], i));
+		}
+		setup_text(keys);
+
+		$('#form_block').val(params.blocked.join('\n'));
+
+		if(isFirstTime) {
+			tour1();
+		} else {
+			tour2();
+		}
+	});
+});

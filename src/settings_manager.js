@@ -83,12 +83,12 @@ SettingsManager.prototype.update = function() {
 		var settings = JSON.parse(localStorage['settings'])
 
 		for(var key in settings) {
-			if(settings[key].action == "tabs") {
+			if(settings[key].action === "tabs") {
 				settings[key].options.end = false;
 				settings[key].options.close = 0;
 			}
 
-			if(settings[key].action == "win") {
+			if(settings[key].action === "win") {
 				settings[key].options.unfocus = false;
 			}
 		}
@@ -116,7 +116,7 @@ SettingsManager.prototype.update = function() {
 		}
 	}
 	
-	if (localStorage['version'] == '4') {
+	if (localStorage['version'] === '4') {
 		var old_settings = JSON.parse(localStorage['settings'])
 		var sites = localStorage['sites'];
 		if(sites == undefined) {
@@ -126,7 +126,7 @@ SettingsManager.prototype.update = function() {
 		}
 		
 		// if sites is empty then set to empty array
-		if (sites.length == 1) {
+		if (sites.length === 1) {
 			sites[0] == "";
 			sites = [];
 		}

@@ -1,6 +1,6 @@
 var OS_WIN = 1;
 var OS_LINUX = 0;
-var os = ((navigator.appVersion.indexOf("Win") == -1) ? OS_LINUX : OS_WIN);
+var os = ((navigator.appVersion.indexOf("Win") === -1) ? OS_LINUX : OS_WIN);
 var settingsManager = new SettingsManager(os);
 
 Array.prototype.unique = function() {
@@ -8,7 +8,7 @@ Array.prototype.unique = function() {
 	var l = this.length;
 	for(var i=0; i<l; i++) {
 		for(var j=i+1; j<l; j++) {
-			if (this[i].url == this[j].url)
+			if (this[i].url === this[j].url)
 				j = ++i;
 		}
 		a.push(this[i]);
@@ -54,6 +54,15 @@ function copyToClipboard( text ){
     document.body.removeChild(copyDiv);
 }
 
+function pad(number, length) {
+	var str = '' + number;
+	while (str.length < length) {
+		str = '0' + str;
+	}
+
+	return str;
+}
+
 function timeConverter(a){
 	var year = a.getFullYear();
 	var month = pad(a.getMonth()+1, 2)
@@ -65,23 +74,14 @@ function timeConverter(a){
 	return time;
 }
 
-function pad(number, length) {
-	var str = '' + number;
-	while (str.length < length) {
-		str = '0' + str;
-	}
-   
-	return str;
-}
-
-chrome.extension.onMessage.addListener(function(request, sender, callback){
+function handleRequests(request, sender, callback){
 	switch(request.message) {
 	case 'activate':
 		if(request.setting.options.block) {
 			request.urls = request.urls.unique();
 		}
 
-		if(request.urls.length == 0) {
+		if(request.urls.length === 0) {
 			return;
 		}
 
@@ -190,7 +190,9 @@ chrome.extension.onMessage.addListener(function(request, sender, callback){
 	
 		break;
 	}
-});
+}
+
+chrome.extension.onMessage.addListener(handleRequests)
 
 
 if (!settingsManager.isInit()) {

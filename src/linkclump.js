@@ -71,7 +71,7 @@ function mousedown(event){
 	mouse_button = event.button
 
 	// turn on menu for windows
-	if (os == OS_WIN) {
+	if (os === OS_WIN) {
 		stop_menu = false
 	}
 
@@ -200,6 +200,11 @@ function mouseout(event) {
 	this.mousemove(event)
 	// the mouse wheel event might also call this event
 	this.scroll_bug_ignore = true
+}
+
+function prevent_escalation(event){
+	event.stopPropagation();
+	event.preventDefault();
 }
 
 function mouseup(event) {
@@ -333,26 +338,6 @@ function start() {
 	}
 }
 
-function stop() {
-	// allow user to select text/elements
-	document.body.style.khtmlUserSelect = "";
-
-	// turn off mouse move and mouse up
-	window.removeEventListener("mousemove", this.mousemove, true)
-	window.removeEventListener("mouseup", this.mouseup, true)
-	window.removeEventListener("mousewheel", this.mousewheel, true)
-	window.removeEventListener("mouseout", this.mouseout, true)
-
-	if (this.box_on) {
-		this.clean_up()
-	}
-
-	// turn on menu for linux
-	if (os == OS_LINUX && this.settings[this.setting].key != this.key_pressed) {
-		this.stop_menu == false
-	}
-}
-
 function clean_up() {
 	// remove the box
 	box.style.visibility = "hidden";
@@ -372,6 +357,26 @@ function clean_up() {
 	this.smart_select = false
 	this.mouse_button = -1
 	this.key_pressed = 0
+}
+
+function stop() {
+	// allow user to select text/elements
+	document.body.style.khtmlUserSelect = "";
+
+	// turn off mouse move and mouse up
+	window.removeEventListener("mousemove", this.mousemove, true)
+	window.removeEventListener("mouseup", this.mouseup, true)
+	window.removeEventListener("mousewheel", this.mousewheel, true)
+	window.removeEventListener("mouseout", this.mouseout, true)
+
+	if (this.box_on) {
+		this.clean_up()
+	}
+
+	// turn on menu for linux
+	if (os == OS_LINUX && this.settings[this.setting].key != this.key_pressed) {
+		this.stop_menu == false
+	}
 }
 
 function scroll() {
@@ -564,11 +569,6 @@ function allow_selection(){
 		}
 	}
 	return false
-}
-
-function prevent_escalation(event){
-	event.stopPropagation();
-	event.preventDefault();
 }
 
 function contextmenu(event){

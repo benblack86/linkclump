@@ -120,7 +120,7 @@ TestSettingsManager.prototype.testError = function() {
 	assertEquals(good_settings.actions, settings.actions);
 	
 	// load again and there should be no error
-	var settings = sm.load();
+	settings = sm.load();
 	assertUndefined(settings.error);
 	assertEquals(good_settings, settings);
 }
