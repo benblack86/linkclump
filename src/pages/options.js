@@ -107,7 +107,8 @@ function setup_action(param, id) {
 			text += op.data[param.options[j]];
 			break;
 		case "textbox":
-			if(param.options[j] === "" || param.options[j] === "0") {
+		    // TODO not sure if param.options[j] returns a string or int
+			if(param.options[j] === "" || param.options[j] == "0") {
 				continue;
 			}
 			text += param.options[j];
@@ -223,7 +224,8 @@ function check_selection() {
 	var id = $('#form_id').val();
 
 	for(var i in params.actions) {
-		if(i != id && params.actions[i].mouse === m && params.actions[i].key === k) {
+	    // not sure if mouse/key are strings or ints
+		if(i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
 			if($('.warning').is(':hidden')) {
 				$('.warning').fadeIn();
 			}
@@ -305,7 +307,8 @@ function display_keys(mouse_button) {
 	// if not left or windows then allow no key
 	var optional = $('#form_optional');
 	optional.empty();
-	if(mouse_button !== 2 || os === OS_WIN) {
+	// NOTE mouse_button is sometimes a string, sometimes an int
+	if(mouse_button != 2 || os === OS_WIN) {
 		keys[0] = '';
 		optional.append("Optional");
 	} else {

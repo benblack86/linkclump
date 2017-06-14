@@ -141,9 +141,9 @@ function mousedown(event){
 
 
 function mousemove(event){
-	if(!this.scroll_bug_ignore) {
-		this.mouse_button = event.button
-	}
+	//if(!this.scroll_bug_ignore) {
+	//	this.mouse_button = event.button
+	//}
 
 	//this.mouse_button = event.button
 	this.prevent_escalation(event)
