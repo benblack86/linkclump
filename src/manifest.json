@@ -20,7 +20,7 @@
     }
   ],
   "permissions": [
-    "tabs", "bookmarks", "http://*/*", "https://*/*"
+    "tabs", "bookmarks", "history", "http://*/*", "https://*/*"
   ],
   "web_accessible_resources": [
     "pages/test_area.html"

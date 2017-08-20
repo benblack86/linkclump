@@ -52,6 +52,7 @@ SettingsManager.prototype.init = function() {
 						"delay": 0,
 						"close": 0,
 						"block": true,
+						"history": false,
 						"reverse": false,
 						"end": false
 					}

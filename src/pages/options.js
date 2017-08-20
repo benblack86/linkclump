@@ -2,10 +2,10 @@ var config = {
 	"triggers": 
 		[{"name": "Left"}, {"name": "Middle"}, {"name": "Right"}],
 	"actions": {
-		"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
-		"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
-		"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
-		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"]}
+		"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "history", "reverse", "unfocus"]},
+		"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "history", "reverse", "end"]},
+		"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "history", "reverse"]},
+		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "history", "reverse"]}
 	},
 	"options": {
 		"smart": {
@@ -40,6 +40,11 @@ var config = {
 		"name": "block repeat links in selection",
 		"type": "checkbox",
 		"extra":"select to block repeat links from opening"
+		},
+	"history": {
+		"name": "filter visited links",
+		"type": "checkbox",
+		"extra":"filter matching links against browser history"
 		},
 	"reverse": {
 		"name": "reverse order",
