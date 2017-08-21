@@ -170,11 +170,14 @@ function handleRequests(request, sender, callback){
 			request.urls = request.urls.unique();
 		}
 
+		console.log(Date.now())
+
 		if(request.setting.options.history){
 
-			// setting startTime to 0 and maxResults to Number.MAX_SAFE_INTEGER so to get every links in chrome history
-			chrome.history.search({text:"", startTime:0, maxResults:2^32-1}, function(items){
+			// setting startTime to 0 and maxResults to largest 32bit signed interger so to get every links in chrome history
+			chrome.history.search({text:"", startTime:0, maxResults:2147483647}, function(items){
 
+				console.log(items.length)
 				allHistories = items.map(function(e){
 					return e.url;
 				});
@@ -183,6 +186,7 @@ function handleRequests(request, sender, callback){
 
 					return allHistories.indexOf(e.url) === -1;
 				});
+				console.log(Date.now())
 
 				handleActivate(request, sender)
 
