@@ -42,7 +42,7 @@ var config = {
 		"extra":"select to block repeat links from opening"
 		},
 	"history": {
-		"name": "filter visited links",
+		"name": "filter visited links(uncheck to improve performance)",
 		"type": "checkbox",
 		"extra":"filter matching links against browser history"
 		},
