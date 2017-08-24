@@ -74,6 +74,95 @@ function timeConverter(a){
 	return time;
 }
 
+function handleActivate(request, sender){
+	if(request.urls.length === 0) {
+			return;
+		}
+
+	if(request.setting.options.reverse) {
+		request.urls.reverse();
+	}
+
+	switch(request.setting.action) {
+	case 'copy':
+		var text = "";
+		for (i = 0; i < request.urls.length; i++) {
+			switch(request.setting.options.copy) {
+			case "0":
+				text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
+				break;
+			case "1":
+				text += request.urls[i].url+"\n";
+				break;
+			case "2":
+				text += request.urls[i].title+"\n";
+				break;
+			case "3":
+				text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a>\n';
+				break;
+			case "4":
+				text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a></li>\n';
+				break;
+			case "5":
+				text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
+				break;
+			}
+		}
+
+		if(request.setting.options.copy == 4) {
+			text = '<ul>\n'+text+'</ul>\n'
+		}
+
+		copyToClipboard(text);
+		break;
+	case 'bm':
+		chrome.bookmarks.getTree(
+			function(bookmarkTreeNodes) {
+				// make assumption that bookmarkTreeNodes[0].children[1] refers to the "other bookmarks" folder
+				// as different languages will not use the english name to refer to the folder
+				chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[1].id, 'title': 'Linkclump '+timeConverter(new Date())},
+					function(newFolder) {
+						for (j = 0; j < request.urls.length; j++) {
+							chrome.bookmarks.create({'parentId': newFolder.id,
+								'title': request.urls[j].title,
+								'url': request.urls[j].url});
+						}
+					}
+				);
+			}
+		);
+
+		break;
+	case 'win':
+		chrome.windows.getCurrent(function(current_window){
+
+			chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
+				if(request.urls.length > 0) {
+					openTab(request.urls, request.setting.options.delay, window.id, null, 0);
+				}
+			});
+
+			if(request.setting.options.unfocus) {
+				chrome.windows.update(current_window.id, {"focused": true});
+			}
+		});
+		break;
+	case 'tabs':
+		chrome.tabs.get(sender.tab.id, function(tab) {
+			chrome.windows.getCurrent(function(window){
+				var tab_index = null;
+
+				if(!request.setting.options.end) {
+					tab_index = tab.index+1;
+				}
+
+				openTab(request.urls, request.setting.options.delay, window.id, tab_index, request.setting.options.close);
+			})
+		});
+		break;
+	}
+}
+
 function handleRequests(request, sender, callback){
 	switch(request.message) {
 	case 'activate':
@@ -81,91 +170,29 @@ function handleRequests(request, sender, callback){
 			request.urls = request.urls.unique();
 		}
 
-		if(request.urls.length === 0) {
-			return;
-		}
+		console.log(Date.now())
 
-		if(request.setting.options.reverse) {
-			request.urls.reverse();
-		}
+		if(request.setting.options.history){
 
-		switch(request.setting.action) {
-		case 'copy':
-			var text = "";
-			for (i = 0; i < request.urls.length; i++) {
-				switch(request.setting.options.copy) {
-				case "0":
-					text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
-					break;
-				case "1": 
-					text += request.urls[i].url+"\n";
-					break;
-				case "2":
-					text += request.urls[i].title+"\n";
-					break;
-				case "3":
-					text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a>\n';
-					break;
-				case "4":
-					text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a></li>\n';
-					break;
-				case "5":
-					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
-					break;
-				}
-			}
-			
-			if(request.setting.options.copy == 4) {
-				text = '<ul>\n'+text+'</ul>\n'
-			}
-			
-			copyToClipboard(text);
-			break;
-		case 'bm':
-			chrome.bookmarks.getTree(
-				function(bookmarkTreeNodes) {
-					// make assumption that bookmarkTreeNodes[0].children[1] refers to the "other bookmarks" folder
-					// as different languages will not use the english name to refer to the folder
-					chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[1].id, 'title': 'Linkclump '+timeConverter(new Date())},
-						function(newFolder) {
-							for (j = 0; j < request.urls.length; j++) {
-								chrome.bookmarks.create({'parentId': newFolder.id,
-									'title': request.urls[j].title,
-									'url': request.urls[j].url});
-							}
-						}
-					);
-				}
-			);
+			// setting startTime to 0 and maxResults to largest 32bit signed interger so to get every links in chrome history
+			chrome.history.search({text:"", startTime:0, maxResults:2147483647}, function(items){
 
-			break;
-		case 'win':
-			chrome.windows.getCurrent(function(current_window){
-
-				chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
-					if(request.urls.length > 0) {
-						openTab(request.urls, request.setting.options.delay, window.id, null, 0);
-					}
+				console.log(items.length)
+				allHistories = items.map(function(e){
+					return e.url;
 				});
 
-				if(request.setting.options.unfocus) {
-					chrome.windows.update(current_window.id, {"focused": true});
-				}
-			});
-			break;
-		case 'tabs':
-			chrome.tabs.get(sender.tab.id, function(tab) {
-				chrome.windows.getCurrent(function(window){
-					var tab_index = null;
+				request.urls = request.urls.filter(function(e){
 
-					if(!request.setting.options.end) {
-						tab_index = tab.index+1;
-					}
+					return allHistories.indexOf(e.url) === -1;
+				});
+				console.log(Date.now())
 
-					openTab(request.urls, request.setting.options.delay, window.id, tab_index, request.setting.options.close);
-				})
-			});
-			break;
+				handleActivate(request, sender)
+
+			})
+		}else{
+			handleActivate(request, sender)
 		}
 
 		break;

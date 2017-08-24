@@ -24,6 +24,7 @@ TestSettingsManager.prototype.testInitWindows = function() {
 					"delay": 0,
 					"close": 0,
 					"block": true,
+					"history": false,
 					"reverse": false,
 					"end": false
 				}
@@ -59,6 +60,7 @@ TestSettingsManager.prototype.testInitLinux = function() {
 					"delay": 0,
 					"close": 0,
 					"block": true,
+					"history": false,
 					"reverse": false,
 					"end": false
 				}
@@ -83,13 +85,17 @@ TestSettingsManager.prototype.testSave = function() {
 	assertEquals(0, settings.actions[101].options.smart)
 	
 	settings.actions[101].options.smart = 1;
+	settings.actions[101].options.history = true;
 	
 	sm.save(settings);
 	
 	var new_settings = sm.load();
 	
 	assertEquals(1, new_settings.actions[101].options.smart)
+	assertEquals(true, new_settings.actions[101].options.history)
 }
+
+
 
 TestSettingsManager.prototype.testError = function() {
 	var sm = new SettingsManager(OS_WIN);
@@ -107,6 +113,7 @@ TestSettingsManager.prototype.testError = function() {
 						"delay": 0,
 						"close": 0,
 						"block": true,
+						"history": false,
 						"reverse": false,
 						"end": false
 					}
