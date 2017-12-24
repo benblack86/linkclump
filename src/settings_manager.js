@@ -42,8 +42,8 @@ SettingsManager.prototype.init = function() {
 	var settings = {
 			"actions": {
 				"101": {
-					"mouse": 2,
-					"key": 0,
+					"mouse": 0,  // left mouse button
+					"key": 90,   // z key
 					"action": "tabs",
 					"color": "#FFA500",
 					"options": {
@@ -59,13 +59,7 @@ SettingsManager.prototype.init = function() {
 			},
 			"blocked": []
 		};
-	
-	// if not windows then use different mouse/key
-	if (this.environment != OS_WIN) {
-		settings.actions[101].mouse = 0;
-		settings.actions[101].key = 16;
-	}
-	
+
 	// save settings to store
 	localStorage['settings'] = JSON.stringify(settings);
 	localStorage['version'] = 5;

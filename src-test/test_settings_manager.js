@@ -14,8 +14,8 @@ TestSettingsManager.prototype.testInitWindows = function() {
 	var good_settings = {
 		"actions": {
 			"101": {
-				"mouse": 2,
-				"key": 0,
+				"mouse": 0,
+				"key": 90,
 				"action": "tabs",
 				"color": "#FFA500",
 				"options": {
@@ -50,7 +50,7 @@ TestSettingsManager.prototype.testInitLinux = function() {
 		"actions": {
 			"101": {
 				"mouse": 0,
-				"key": 16,
+				"key": 90,
 				"action": "tabs",
 				"color": "#FFA500",
 				"options": {
@@ -97,8 +97,8 @@ TestSettingsManager.prototype.testError = function() {
 	var good_settings = {
 			"actions": {
 				"101": {
-					"mouse": 2,
-					"key": 0,
+					"mouse": 0,
+					"key": 90,
 					"action": "tabs",
 					"color": "#FFA500",
 					"options": {
