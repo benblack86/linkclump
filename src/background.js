@@ -1,7 +1,4 @@
-var OS_WIN = 1;
-var OS_LINUX = 0;
-var os = ((navigator.appVersion.indexOf("Win") === -1) ? OS_LINUX : OS_WIN);
-var settingsManager = new SettingsManager(os);
+var settingsManager = new SettingsManager();
 
 Array.prototype.unique = function() {
 	var a = [];
@@ -16,28 +13,28 @@ Array.prototype.unique = function() {
 	return a;
 };
 
-function openTab(urls, delay, window_id, tab_position, close_time) {
+function openTab(urls, delay, windowId, tabPosition, closeTime) {
 	var obj = {
-			windowId: window_id,
+			windowId: windowId,
 			url: urls.shift().url,
 			selected: false
-	}
+	};
 
-	if(tab_position != null) {
-		obj.index = tab_position
-		tab_position++;
+	if(tabPosition != null) {
+		obj.index = tabPosition;
+		tabPosition++;
 	}
 
 	chrome.tabs.create(obj, function(tab) {
-		if(close_time > 0) {
+		if(closeTime > 0) {
 			window.setTimeout(function() {
 				chrome.tabs.remove(tab.id);
-			}, close_time*1000);
+			}, closeTime*1000);
 		}
 	});
 
 	if(urls.length > 0) {
-		window.setTimeout(function() {openTab(urls, delay, window_id, tab_position, close_time)}, delay*1000);
+		window.setTimeout(function() {openTab(urls, delay, windowId, tabPosition, closeTime)}, delay*1000);
 	}
 
 }

@@ -64,11 +64,9 @@ var OS_LINUX = 1;
 var OS_MAC = 2;
 
 var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
-var params = null
-var div_history = new Array();
-var config_history = new Array();
+var params = null;
+var div_history = [];
 var keys = display_keys(0);
-var warning = null;
 var os = ((navigator.appVersion.indexOf("Win") === -1) ? ((navigator.appVersion.indexOf("Mac") === -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 function close_form(event) {
@@ -79,13 +77,13 @@ function close_form(event) {
 
 function tour1() {
 	setup_text(keys);
-	$("#page2").fadeOut(0)
+	$("#page2").fadeOut(0);
 	$("#page1").fadeIn();
 	$('#test_area').focus();
 }
 
 function tour2() {
-	$("#page1").fadeOut(0)
+	$("#page1").fadeOut(0);
 	$("#page2").fadeIn();
 }
 
@@ -98,7 +96,7 @@ function setup_action(param, id) {
 		setting.append(" and \""+keys[param.key]+"\" key ");
 	}
 
-	var list = $("<ul>")
+	var list = $("<ul>");
 	for(var j in param.options) {
 		var op = config.options[j];
 		var text = op.name+": ";
@@ -184,7 +182,7 @@ function setup_form() {
 	});
 
 
-	var action = $("#form_action")
+	var action = $("#form_action");
 	for(var i in config.actions) {
 		var act = $('<input type="radio" name="action" value="'+i+'" id="form_'+i+'"/>'+config.actions[i].name+'<br/>')
 
@@ -206,7 +204,7 @@ function setup_text(keys) {
 		param = params.actions[i];
 		break;
 	}
-	if(param == undefined) {
+	if(param === undefined) {
 		return;
 	}
 	$('#mouse_name').text(config.triggers[param.mouse].name);
@@ -295,24 +293,13 @@ function display_options(action) {
 function display_keys(mouse_button) {
 	var key = $("#form_key");
 	key.empty();
-	var keys = new Array();
+	var keys = [];
 
 	keys[16] = 'shift';
 	keys[17] = 'ctrl';
 
-	if (os != OS_LINUX) {
+	if (os !== OS_LINUX) {
 		keys[18] = 'alt';
-	}
-
-	// if not left or windows then allow no key
-	var optional = $('#form_optional');
-	optional.empty();
-	// NOTE mouse_button is sometimes a string, sometimes an int
-	if(mouse_button != 2 || os === OS_WIN) {
-		keys[0] = '';
-		optional.append("Optional");
-	} else {
-		optional.append("Mandatory");
 	}
 
 	// add on alpha characters
@@ -333,7 +320,7 @@ function load_new_action(event) {
 
 function load_action(id) {  // into form
 
-	if(id == null) {
+	if(id === null) {
 		display_keys(0);
 		display_options("tabs");
 		$("#form_id").val("");
@@ -449,7 +436,7 @@ function save_action(event) {
 		}
 	}
 
-	if(id === "" || params.actions[id] == null) {
+	if(id === "" || params.actions[id] === null) {
 		var newDate = new Date;
 		id = newDate.getTime();
 
@@ -461,7 +448,7 @@ function save_action(event) {
 		$('#action_'+id).replaceWith(update);
 	}
 
-	save_params()
+	save_params();
 	close_form(event);
 }
 
@@ -514,7 +501,7 @@ $(function() {
 	var isFirstTime = window.location.href.indexOf("init=true") > -1;
 
 	// temp check to not load if in test mode
-	if (document.getElementById('guide2') == null) {
+	if (document.getElementById('guide2') === null) {
 		return
 	}
 
