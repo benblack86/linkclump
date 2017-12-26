@@ -66,7 +66,7 @@ var OS_MAC = 2;
 var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
 var params = null;
 var div_history = [];
-var keys = display_keys(0);
+var keys = displayKeys();
 var os = ((navigator.appVersion.indexOf("Win") === -1) ? ((navigator.appVersion.indexOf("Mac") === -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 function close_form(event) {
@@ -167,7 +167,6 @@ function setup_form() {
 	}
 
 	mouse.change(function(event) {
-		display_keys($(this)[0][$(this)[0].selectedIndex].value);
 		check_selection();
 	});
 
@@ -188,7 +187,7 @@ function setup_form() {
 
 
 		act.click(function(event) {
-			display_options(event.currentTarget.value)
+			displayOptions(event.currentTarget.value)
 		}
 		);
 
@@ -237,7 +236,7 @@ function check_selection() {
 	}
 }
 
-function display_options(action) {
+function displayOptions(action) {
 	var options = $("#form_options");
 	options.empty();
 
@@ -290,7 +289,7 @@ function display_options(action) {
 	}
 }
 
-function display_keys(mouse_button) {
+function displayKeys() {
 	var key = $("#form_key");
 	key.empty();
 	var keys = [];
@@ -321,8 +320,8 @@ function load_new_action(event) {
 function load_action(id) {  // into form
 
 	if(id === null) {
-		display_keys(0);
-		display_options("tabs");
+		displayKeys();
+		displayOptions("tabs");
 		$("#form_id").val("");
 		$("#form_mouse").val(0);
 		$("#form_key").val(16);
@@ -332,14 +331,14 @@ function load_action(id) {  // into form
 		$("#form_id").val(id);
 
 		$("#form_mouse").val(param.mouse);
-		display_keys(param.mouse);
+		displayKeys();
 		$("#form_key").val(param.key);
 
 		$(".colorpicker-trigger").css("background-color", param.color);
 
 		$("#form_"+param.action).attr("checked","checked");
 
-		display_options(param.action);
+		displayOptions(param.action);
 
 		for(var i in param.options) {
 			switch(config.options[i].type) {

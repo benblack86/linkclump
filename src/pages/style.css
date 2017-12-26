@@ -23,12 +23,12 @@ a.button {
 	border-radius: 3px;
 	margin: 10px;
 	padding: 2px;
-	background: -webkit-linear-gradient(top, #FDFDFD, #A6A6A6);
+	background: #D0D0D0;
 	cursor:pointer;
 }
 
 a:hover.button {
-	background: -webkit-linear-gradient(top, #FDFDFD, #606060);
+	background: #606060;
 }
 
 .page {
