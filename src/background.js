@@ -137,7 +137,7 @@ function handleRequests(request, sender, callback){
 
 			break;
 		case "win":
-			chrome.windows.getCurrent(function(current_window){
+			chrome.windows.getCurrent(function(currentWindow){
 
 				chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
 					if(request.urls.length > 0) {
@@ -146,7 +146,7 @@ function handleRequests(request, sender, callback){
 				});
 
 				if(request.setting.options.unfocus) {
-					chrome.windows.update(current_window.id, {"focused": true});
+					chrome.windows.update(currentWindow.id, {"focused": true});
 				}
 			});
 			break;

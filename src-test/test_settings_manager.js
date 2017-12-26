@@ -1,4 +1,4 @@
-TestSettingsManager = new TestCase("Settings Manager");
+var TestSettingsManager = new TestCase("Settings Manager");
 
 TestSettingsManager.prototype.setUp = function() {
 	// clear storage each time

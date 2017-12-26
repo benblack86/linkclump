@@ -1,4 +1,4 @@
-OptionTest = new TestCase("Option");
+var OptionTest = new TestCase("Option");
 
 OptionTest.prototype.testDisplayKeys = function() {
 	os = OS_WIN;

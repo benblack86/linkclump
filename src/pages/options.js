@@ -105,7 +105,7 @@ function setup_action(param, id) {
 			text += op.data[param.options[j]];
 			break;
 		case "textbox":
-		    // TODO not sure if param.options[j] returns a string or int
+			// TODO not sure if param.options[j] returns a string or int
 			if(param.options[j] === "" || param.options[j] == "0") {
 				continue;
 			}
@@ -136,7 +136,7 @@ function setup_action(param, id) {
 
 		list.append("<li>"+text+"</li>");
 	}
-	list.append("<li>selection box color: <div style='background-color: "+param.color+"' class='color'></div></li>")
+	list.append("<li>selection box color: <div style='background-color: "+param.color+"' class='color'></div></li>");
 
 	setting.append(list);
 
@@ -335,7 +335,7 @@ function load_action(id) {  // into form
 		display_keys(param.mouse);
 		$("#form_key").val(param.key);
 
-		$(".colorpicker-trigger").css("background-color", param.color)
+		$(".colorpicker-trigger").css("background-color", param.color);
 
 		$("#form_"+param.action).attr("checked","checked");
 
