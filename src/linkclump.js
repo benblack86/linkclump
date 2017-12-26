@@ -59,15 +59,51 @@ chrome.extension.sendMessage({
 });
 
 chrome.extension.onMessage.addListener(function(request, sender, callback){
-	if (request.message == "update") {
+	if (request.message === "update") {
 		this.settings = request.settings.actions;
 	}
 });
 
+function mousemove(event){
+    this.prevent_escalation(event);
 
+    if (this.allow_selection() || this.scroll_bug_ignore) {
+        this.scroll_bug_ignore = false;
+        this.update_box(event.pageX, event.pageY);
+
+        // while detect keeps on calling false then recall the method
+        while (!this.detech(event.pageX, event.pageY, false)) {}
+    } else {
+        // only stop if the mouseup timer is no longer set
+        if(this.timer === 0) {
+            this.stop()
+        }
+    }
+}
+
+function clean_up() {
+    // remove the box
+    box.style.visibility = "hidden";
+    count_label.style.visibility = "hidden";
+    box_on = false;
+
+    // remove the link boxes
+    for (var i = 0; i < this.links.length; i++) {
+        if (this.links[i].box !== null) {
+            document.body.removeChild(this.links[i].box);
+            this.links[i].box = null
+        }
+    }
+    this.links = [];
+
+    // wipe clean the smart select
+    this.smart_select = false;
+    this.mouse_button = -1;
+    this.key_pressed = 0;
+}
 
 function mousedown(event){
-	mouse_button = event.button
+	mouse_button = event.button;
 
 	// turn on menu for windows
 	if (os === OS_WIN) {
@@ -77,18 +113,18 @@ function mousedown(event){
 	if (allow_selection()) {
 		// don't prevent for windows right click as it breaks spell checker
 		// do prevent for left as otherwise the page becomes highlighted
-		if (os == OS_LINUX || (os == OS_WIN && mouse_button == LEFT_BUTTON)) {
+		if (os === OS_LINUX || (os === OS_WIN && mouse_button === LEFT_BUTTON)) {
 			prevent_escalation(event)
 		}
 
 		// if mouse up timer is set then clear it as it was just caused by bounce
-		if(timer != 0) {
+		if(timer !== 0) {
 			//console.log("bounced!");
 			clearTimeout(timer);
 			timer = 0;
 
 			// keep menu off for windows
-			if (os == OS_WIN) {
+			if (os === OS_WIN) {
 				stop_menu = true
 			}
 		} else {
@@ -134,24 +170,6 @@ function mousedown(event){
 			window.addEventListener("mouseup", mouseup, true);
 			window.addEventListener("mousewheel", mousewheel, true);
 			window.addEventListener("mouseout", mouseout, true);
-		}
-	}
-}
-
-
-function mousemove(event){
-	this.prevent_escalation(event);
-
-	if (this.allow_selection() || this.scroll_bug_ignore) {
-		this.scroll_bug_ignore = false;
-		this.update_box(event.pageX, event.pageY);
-
-		// while detect keeps on calling false then recall the method
-		while (!this.detech(event.pageX, event.pageY, false)) {}
-	} else {
-		// only stop if the mouseup timer is no longer set
-		if(this.timer == 0) {
-			this.stop()
 		}
 	}
 }
@@ -206,7 +224,7 @@ function mouseup(event) {
 
 	if(this.box_on) {
 		// all the detection of the mouse to bounce
-		if (this.allow_selection() && this.timer == 0) {
+		if (this.allow_selection() && this.timer === 0) {
 			this.timer = setTimeout(function () {
 				this.update_box(event.pageX, event.pageY);
 				this.detech(event.pageX, event.pageY, true);
@@ -330,27 +348,6 @@ function start() {
 	if (os === OS_WIN) {
 		this.stop_menu = true;
 	}
-}
-
-function clean_up() {
-	// remove the box
-	box.style.visibility = "hidden";
-	count_label.style.visibility = "hidden";
-	box_on = false;
-
-	// remove the link boxes
-	for (var i = 0; i < this.links.length; i++) {
-		if (this.links[i].box !== null) {
-			document.body.removeChild(this.links[i].box);
-			this.links[i].box = null
-		}
-	}
-	this.links = [];
-
-	// wipe clean the smart select
-	this.smart_select = false;
-	this.mouse_button = -1;
-	this.key_pressed = 0;
 }
 
 function stop() {

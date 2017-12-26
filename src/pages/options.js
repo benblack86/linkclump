@@ -302,7 +302,7 @@ function displayKeys() {
 	}
 
 	// add on alpha characters
-	for (i = 0; i < 26; i++) {
+	for (var i = 0; i < 26; i++) {
 		keys[65+i] = String.fromCharCode(97 + i);
 	}
 
