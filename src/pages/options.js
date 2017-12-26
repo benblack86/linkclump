@@ -195,7 +195,7 @@ function setup_form() {
 		action.append(act);
 	}
 
-	$("input[value="tabs"]").attr("checked", "checked");
+	$('input[value="tabs"]').attr("checked", "checked");
 }
 
 function setup_text(keys) {
