@@ -40,21 +40,21 @@ function openTab(urls, delay, windowId, tabPosition, closeTime) {
 }
 
 function copyToClipboard( text ){
-    var copyDiv = document.createElement('textarea');
+    var copyDiv = document.createElement("textarea");
     copyDiv.contentEditable = true;
     document.body.appendChild(copyDiv);
     copyDiv.innerHTML = text;
     copyDiv.unselectable = "off";
     copyDiv.focus();
-    document.execCommand('SelectAll');
+    document.execCommand("SelectAll");
     document.execCommand("Copy", false, null);
     document.body.removeChild(copyDiv);
 }
 
 function pad(number, length) {
-	var str = '' + number;
+	var str = "" + number;
 	while (str.length < length) {
-		str = '0' + str;
+		str = "0" + str;
 	}
 
 	return str;
@@ -67,13 +67,13 @@ function timeConverter(a){
 	var hour = pad(a.getHours(),2);
 	var min = pad(a.getMinutes(),2);
 	var sec = pad(a.getSeconds(),2);
-	var time = year+'-'+month+'-'+day+' '+hour+':'+min+':'+sec;
+	var time = year+"-"+month+"-"+day+" "+hour+":"+min+":"+sec;
 	return time;
 }
 
 function handleRequests(request, sender, callback){
 	switch(request.message) {
-	case 'activate':
+	case "activate":
 		if(request.setting.options.block) {
 			request.urls = request.urls.unique();
 		}
@@ -87,7 +87,7 @@ function handleRequests(request, sender, callback){
 		}
 
 		switch(request.setting.action) {
-		case 'copy':
+		case "copy":
 			var text = "";
 			for (i = 0; i < request.urls.length; i++) {
 				switch(request.setting.options.copy) {
@@ -101,10 +101,10 @@ function handleRequests(request, sender, callback){
 					text += request.urls[i].title+"\n";
 					break;
 				case "3":
-					text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a>\n';
+					text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+"</a>\n";
 					break;
 				case "4":
-					text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+'</a></li>\n';
+					text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+"</a></li>\n";
 					break;
 				case "5":
 					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
@@ -113,22 +113,22 @@ function handleRequests(request, sender, callback){
 			}
 			
 			if(request.setting.options.copy == 4) {
-				text = '<ul>\n'+text+'</ul>\n'
+				text = "<ul>\n"+text+"</ul>\n"
 			}
 			
 			copyToClipboard(text);
 			break;
-		case 'bm':
+		case "bm":
 			chrome.bookmarks.getTree(
 				function(bookmarkTreeNodes) {
 					// make assumption that bookmarkTreeNodes[0].children[1] refers to the "other bookmarks" folder
 					// as different languages will not use the english name to refer to the folder
-					chrome.bookmarks.create({'parentId': bookmarkTreeNodes[0].children[1].id, 'title': 'Linkclump '+timeConverter(new Date())},
+					chrome.bookmarks.create({"parentId": bookmarkTreeNodes[0].children[1].id, "title": "Linkclump "+timeConverter(new Date())},
 						function(newFolder) {
 							for (j = 0; j < request.urls.length; j++) {
-								chrome.bookmarks.create({'parentId': newFolder.id,
-									'title': request.urls[j].title,
-									'url': request.urls[j].url});
+								chrome.bookmarks.create({"parentId": newFolder.id,
+									"title": request.urls[j].title,
+									"url": request.urls[j].url});
 							}
 						}
 					);
@@ -136,7 +136,7 @@ function handleRequests(request, sender, callback){
 			);
 
 			break;
-		case 'win':
+		case "win":
 			chrome.windows.getCurrent(function(current_window){
 
 				chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
@@ -150,7 +150,7 @@ function handleRequests(request, sender, callback){
 				}
 			});
 			break;
-		case 'tabs':
+		case "tabs":
 			chrome.tabs.get(sender.tab.id, function(tab) {
 				chrome.windows.getCurrent(function(window){
 					var tab_index = null;
@@ -166,10 +166,10 @@ function handleRequests(request, sender, callback){
 		}
 
 		break;
-	case 'init':
+	case "init":
 		callback(settingsManager.load());
 		break;
-	case 'update':
+	case "update":
 		settingsManager.save(request.settings);
 	
 		chrome.windows.getAll({
@@ -178,7 +178,7 @@ function handleRequests(request, sender, callback){
 			windowList.forEach(function(window){
 				window.tabs.forEach(function(tab){
 					chrome.tabs.sendMessage(tab.id, {
-						message: 'update',
+						message: "update",
 						settings: settingsManager.load()
 					}, null);
 				})
@@ -201,14 +201,14 @@ if (!settingsManager.isInit()) {
 		for (var i = 0; i < windows.length; ++i) {
 			for (var j = 0; j < windows[i].tabs.length; ++j) {
 				if (!/^https?:\/\//.test(windows[i].tabs[j].url)) continue;
-				chrome.tabs.executeScript(windows[i].tabs[j].id, { file: 'linkclump.js' });
+				chrome.tabs.executeScript(windows[i].tabs[j].id, { file: "linkclump.js" });
 			}
 		}
 	});
 	
 	// pop up window to show tour and options page
 	chrome.windows.create({
-		url: document.location.protocol + '//' + document.location.host + '/pages/options.html?init=true',
+		url: document.location.protocol + "//" + document.location.host + "/pages/options.html?init=true",
 		width: 800,
 		height: 850,
 		left: screen.width / 2 - 800 / 2,

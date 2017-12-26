@@ -70,7 +70,7 @@ var keys = display_keys(0);
 var os = ((navigator.appVersion.indexOf("Win") === -1) ? ((navigator.appVersion.indexOf("Mac") === -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 function close_form(event) {
-	$('#form-background').fadeOut();
+	$("#form-background").fadeOut();
 
 	event.preventDefault();
 }
@@ -79,7 +79,7 @@ function tour1() {
 	setup_text(keys);
 	$("#page2").fadeOut(0);
 	$("#page1").fadeIn();
-	$('#test_area').focus();
+	$("#test_area").focus();
 }
 
 function tour2() {
@@ -147,7 +147,7 @@ function setup_action(param, id) {
 		}
 	);
 
-	var del = $("<a href='#' class='button delete'>Delete</a>").click({'i':id},
+	var del = $("<a href='#' class='button delete'>Delete</a>").click({"i":id},
 		function(event) {
 			delete_action(event.data.i, $(this).parent());
 			return false;
@@ -195,7 +195,7 @@ function setup_form() {
 		action.append(act);
 	}
 
-	$("input[value='tabs']").attr("checked", "checked");
+	$("input[value="tabs"]").attr("checked", "checked");
 }
 
 function setup_text(keys) {
@@ -207,44 +207,44 @@ function setup_text(keys) {
 	if(param === undefined) {
 		return;
 	}
-	$('#mouse_name').text(config.triggers[param.mouse].name);
-	$('#action_name').text(config.actions[param.action].name);
+	$("#mouse_name").text(config.triggers[param.mouse].name);
+	$("#action_name").text(config.actions[param.action].name);
 	if(param.key > 0) {
-		$('#key_name').html("the <b>"+keys[param.key]+"</b> key and");
+		$("#key_name").html("the <b>"+keys[param.key]+"</b> key and");
 	} else {
-		$('#key_name').html('');
+		$("#key_name").html("");
 	}
 }
 
 function check_selection() {
-	var m = $('#form_mouse').val();
-	var k = $('#form_key').val();
-	var id = $('#form_id').val();
+	var m = $("#form_mouse").val();
+	var k = $("#form_key").val();
+	var id = $("#form_id").val();
 
 	for(var i in params.actions) {
 	    // not sure if mouse/key are strings or ints
 		if(i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
-			if($('.warning').is(':hidden')) {
-				$('.warning').fadeIn();
+			if($(".warning").is(":hidden")) {
+				$(".warning").fadeIn();
 			}
 
 			return;
 		}
 	}
 	
-	if(!$('.warning').is(':hidden')) {
-		$('.warning').fadeOut();
+	if(!$(".warning").is(":hidden")) {
+		$(".warning").fadeOut();
 	}
 }
 
 function display_options(action) {
-	var options = $('#form_options');
+	var options = $("#form_options");
 	options.empty();
 
 	for(var i in config.actions[action].options) {
 		var op = config.options[config.actions[action].options[i]];
-		var title = $('<label>'+op.name+'</label>');
-		var p = $('<p />');
+		var title = $("<label>"+op.name+"</label>");
+		var p = $("<p />");
 		p.append(title);
 
 		switch(op.type) {
@@ -275,14 +275,14 @@ function display_options(action) {
 			break;
 		}
 
-		p.mouseover({'extra':op.extra}, function(event) {
-			var extra = $('#form_extra');
+		p.mouseover({"extra":op.extra}, function(event) {
+			var extra = $("#form_extra");
 			extra.html(event.data.extra);
-			extra.css('top', $(this).position().top);
-			extra.css('left', $(this).position().left+500);
+			extra.css("top", $(this).position().top);
+			extra.css("left", $(this).position().left+500);
 			extra.show();
 		}).mouseout(function() {
-			$('#form_extra').hide();
+			$("#form_extra").hide();
 		});
 
 		options.append(p);
@@ -295,11 +295,11 @@ function display_keys(mouse_button) {
 	key.empty();
 	var keys = [];
 
-	keys[16] = 'shift';
-	keys[17] = 'ctrl';
+	keys[16] = "shift";
+	keys[17] = "ctrl";
 
 	if (os !== OS_LINUX) {
-		keys[18] = 'alt';
+		keys[18] = "alt";
 	}
 
 	// add on alpha characters
@@ -326,7 +326,7 @@ function load_action(id) {  // into form
 		$("#form_id").val("");
 		$("#form_mouse").val(0);
 		$("#form_key").val(16);
-		$(".colorpicker-trigger").css('background-color', '#'+colors[Math.floor(Math.random()*colors.length)]);
+		$(".colorpicker-trigger").css("background-color", "#"+colors[Math.floor(Math.random()*colors.length)]);
 	} else {
 		var param = params.actions[id];
 		$("#form_id").val(id);
@@ -335,7 +335,7 @@ function load_action(id) {  // into form
 		display_keys(param.mouse);
 		$("#form_key").val(param.key);
 
-		$(".colorpicker-trigger").css('background-color', param.color)
+		$(".colorpicker-trigger").css("background-color", param.color)
 
 		$("#form_"+param.action).attr("checked","checked");
 
@@ -378,14 +378,14 @@ function load_action(id) {  // into form
 	}
 
 	// hide warning and let it show later if required
-	$('.warning').hide();
+	$(".warning").hide();
 	
 	// place the form at the top of the window+10
-	$('.form').css('margin-top', $(window).scrollTop()+10);
+	$(".form").css("margin-top", $(window).scrollTop()+10);
 	
 	// fade in the form and set the background to cover the whole page
-	$('#form-background').fadeIn();
-	$('#form-background').css('height', $(document).height());
+	$("#form-background").fadeIn();
+	$("#form-background").css("height", $(document).height());
 	
 	check_selection();
 }
@@ -397,18 +397,18 @@ function save_action(event) {
 
 	param.mouse = $("#form_mouse").val();
 	param.key = $("#form_key").val();
-	param.color = $(".colorpicker-trigger").css('background-color');
-	param.action = $('input[name=action]:radio:checked').val();
+	param.color = $(".colorpicker-trigger").css("background-color");
+	param.action = $("input[name=action]:radio:checked").val();
 	param.options = {};
 
 	for(var opt in config.actions[param.action].options) {
 		var name = config.actions[param.action].options[opt];
 		var type = config.options[name].type;
 		if(type === "checkbox") {
-			param.options[name] = $("#form_option_"+name).is(':checked');
+			param.options[name] = $("#form_option_"+name).is(":checked");
 		} else {
-			if(name === 'ignore') {
-				var ignore = $("#form_option_text_"+name).val().replace(/^ */, '').replace(/, */g, ',').toLowerCase().split(",")
+			if(name === "ignore") {
+				var ignore = $("#form_option_text_"+name).val().replace(/^ */, "").replace(/, */g, ",").toLowerCase().split(",")
 				// if the last entry is empty then just remove from array
 				if (ignore.length > 0 && ignore[ignore.length-1] === "") {
 					ignore.pop();
@@ -417,7 +417,7 @@ function save_action(event) {
 				ignore.unshift(param.options[name] = $("#form_option_selection_"+name).val());
 				
 				param.options[name] = ignore;
-			} else if(name === 'delay' || name === 'close') {
+			} else if(name === "delay" || name === "close") {
 				var delay;
 				try {
 					delay = parseFloat($("#form_option_"+name).val());
@@ -441,11 +441,11 @@ function save_action(event) {
 		id = newDate.getTime();
 
 		params.actions[id] = param;
-		$('#settings').append(setup_action(param, id));
+		$("#settings").append(setup_action(param, id));
 	} else {
 		params.actions[id] = param;
 		var update = setup_action(param, id);
-		$('#action_'+id).replaceWith(update);
+		$("#action_"+id).replaceWith(update);
 	}
 
 	save_params();
@@ -455,7 +455,7 @@ function save_action(event) {
 function delete_action(id, div) {
 	div.fadeOut("swing", function(){
 		var del = $("<div class='undo'>Action has been deleted </div>");
-		var undo = $("<a>undo</a>").click({'i':id, 'param':params.actions[id]},
+		var undo = $("<a>undo</a>").click({"i":id, "param":params.actions[id]},
 			function(event) {
 				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
 				params.actions[event.data.i] = event.data.param;
@@ -482,14 +482,14 @@ function delete_action(id, div) {
 
 function save_params() {
 	chrome.extension.sendMessage({
-		message: 'update',
+		message: "update",
 		settings: params
 	});
 }
 
 function save_block() {
 	// replace any whitespace at end to stop empty site listings
-	var sites = $('#form_block').val().replace(/^\s+|\s+$/g, '').split('\n');
+	var sites = $("#form_block").val().replace(/^\s+|\s+$/g, "").split("\n");
 	
 	if (Array.isArray(sites)) {
 		params.blocked = sites;
@@ -501,32 +501,32 @@ $(function() {
 	var isFirstTime = window.location.href.indexOf("init=true") > -1;
 
 	// temp check to not load if in test mode
-	if (document.getElementById('guide2') === null) {
+	if (document.getElementById("guide2") === null) {
 		return
 	}
 
 
-	document.getElementById('guide2').addEventListener('click', tour2);
-	document.getElementById('guide1').addEventListener('click', tour1);
-	document.getElementById('add').addEventListener('click', load_new_action);
-	document.getElementById('form_block').addEventListener('keyup', save_block);
-	document.getElementById('form_key').addEventListener('change', check_selection);
-	document.getElementById('cancel').addEventListener('click', close_form);
-	document.getElementById('save').addEventListener('click', save_action);
+	document.getElementById("guide2").addEventListener("click", tour2);
+	document.getElementById("guide1").addEventListener("click", tour1);
+	document.getElementById("add").addEventListener("click", load_new_action);
+	document.getElementById("form_block").addEventListener("keyup", save_block);
+	document.getElementById("form_key").addEventListener("change", check_selection);
+	document.getElementById("cancel").addEventListener("click", close_form);
+	document.getElementById("save").addEventListener("click", save_action);
 
 	setup_form();
 
 	chrome.extension.sendMessage({
-		message: 'init'
+		message: "init"
 	}, function(response){
 		params = response;
 
 		for(var i in params.actions) {
-			$('#settings').append(setup_action(params.actions[i], i));
+			$("#settings").append(setup_action(params.actions[i], i));
 		}
 		setup_text(keys);
 
-		$('#form_block').val(params.blocked.join('\n'));
+		$("#form_block").val(params.blocked.join("\n"));
 
 		if(isFirstTime) {
 			tour1();

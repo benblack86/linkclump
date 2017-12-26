@@ -1,4 +1,4 @@
-var CURRENT_VERSION = '5';
+var CURRENT_VERSION = "5";
 
 function SettingsManager() {}
 
@@ -26,11 +26,11 @@ SettingsManager.prototype.save = function(settings) {
 };
 
 SettingsManager.prototype.isInit = function() {
-	return (localStorage['version'] !== undefined);
+	return (localStorage["version"] !== undefined);
 };
 
 SettingsManager.prototype.isLatest = function() {
-	return (localStorage['version'] === CURRENT_VERSION);
+	return (localStorage["version"] === CURRENT_VERSION);
 };
 
 SettingsManager.prototype.init = function() {
@@ -57,8 +57,8 @@ SettingsManager.prototype.init = function() {
 		};
 
 	// save settings to store
-	localStorage['settings'] = JSON.stringify(settings);
-	localStorage['version'] = CURRENT_VERSION;
+	localStorage["settings"] = JSON.stringify(settings);
+	localStorage["version"] = CURRENT_VERSION;
 	
 	return settings;
 };

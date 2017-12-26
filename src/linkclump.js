@@ -27,7 +27,7 @@ var os = ((navigator.appVersion.indexOf("Win") == -1) ? OS_LINUX : OS_WIN);
 var timer = 0;
 
 chrome.extension.sendMessage({
-	message: 'init'
+	message: "init"
 }, function(response){
 	if (response == null) {
 		console.log("Unable to load linkclump due to null response")
@@ -40,7 +40,7 @@ chrome.extension.sendMessage({
 		
 		var allowed = 1;
 		for(var i in response.blocked) {
-			if(response.blocked[i] == '') continue;
+			if(response.blocked[i] == "") continue;
 			var re = new RegExp(response.blocked[i],"i");
 
 			if(re.test(window.location.href)) {
@@ -60,7 +60,7 @@ chrome.extension.sendMessage({
 });
 
 chrome.extension.onMessage.addListener(function(request, sender, callback){
-	if (request.message == 'update') {
+	if (request.message == "update") {
 		this.settings = request.settings.actions;
 	}
 });
@@ -269,7 +269,7 @@ function start() {
 		// include/exclude links (creating reg exp should be done at the start rather than for each link)
 		if (this.settings[this.setting].options.ignore.length > 1) {
 			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
-				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], 'i');
+				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], "i");
 				var notFound = true;
 				if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
 					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
@@ -291,7 +291,7 @@ function start() {
 
 		// attempt to ignore invisible links (can't ignore overflow)
 		var comp = window.getComputedStyle(page_links[i], null);
-		if (comp.visibility == 'hidden' || comp.display == 'none') {
+		if (comp.visibility == "hidden" || comp.display == "none") {
 			continue outerloop;
 		}
 
@@ -470,8 +470,8 @@ function detech(x, y, open){
 			}
 
 			if (this.links[i].box == null) {
-				var link_box = document.createElement("span")
-				link_box.style.id = "linkclump-link"; //? link_box = $('<span id="linkclump-link" />');
+				var link_box = document.createElement("span");
+				link_box.style.id = "linkclump-link";
 				link_box.style.margin = "0px auto";
 				link_box.style.border = "1px solid red";
 				link_box.style.position = "absolute";
@@ -507,7 +507,7 @@ function detech(x, y, open){
 
 	if (open_tabs.length > 0) {
 		chrome.extension.sendMessage({
-			message: 'activate',
+			message: "activate",
 			urls: open_tabs,
 			setting: this.settings[this.setting]
 		});

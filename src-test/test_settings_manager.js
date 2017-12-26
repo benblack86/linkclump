@@ -8,8 +8,8 @@ TestSettingsManager.prototype.setUp = function() {
 TestSettingsManager.prototype.testInitWindows = function() {
 	var sm = new SettingsManager();
 	
-	assertUndefined(localStorage['settings']);
-	assertUndefined(localStorage['version']);
+	assertUndefined(localStorage["settings"]);
+	assertUndefined(localStorage["version"]);
 	
 	var good_settings = {
 		"actions": {
@@ -34,7 +34,7 @@ TestSettingsManager.prototype.testInitWindows = function() {
 	
 	var settings = sm.init();
 
-	assertEquals('5', localStorage['version']);
+	assertEquals("5", localStorage["version"]);
 	assertEquals(good_settings, settings);
 	assertUndefined(settings.error);
 };
@@ -42,8 +42,8 @@ TestSettingsManager.prototype.testInitWindows = function() {
 TestSettingsManager.prototype.testInitLinux = function() {
 	var sm = new SettingsManager();
 	
-	assertUndefined(localStorage['settings']);
-	assertUndefined(localStorage['version']);
+	assertUndefined(localStorage["settings"]);
+	assertUndefined(localStorage["version"]);
 	assertTrue(!sm.isInit());
 	
 	var good_settings = {
@@ -69,7 +69,7 @@ TestSettingsManager.prototype.testInitLinux = function() {
 	
 	var settings = sm.init();
 
-	assertEquals('5', localStorage['version']);
+	assertEquals("5", localStorage["version"]);
 	assertEquals(good_settings, settings);
 	assertUndefined(settings.error);
 	assertTrue(sm.isInit());
