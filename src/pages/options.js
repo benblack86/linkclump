@@ -87,6 +87,103 @@ function tour2() {
 	$("#page2").fadeIn();
 }
 
+function load_action(id) {  // into form
+
+    if(id === null) {
+        displayKeys();
+        displayOptions("tabs");
+        $("#form_id").val("");
+        $("#form_mouse").val(0);
+        $("#form_key").val(16);
+        $(".colorpicker-trigger").css("background-color", "#"+colors[Math.floor(Math.random()*colors.length)]);
+    } else {
+        var param = params.actions[id];
+        $("#form_id").val(id);
+
+        $("#form_mouse").val(param.mouse);
+        displayKeys();
+        $("#form_key").val(param.key);
+
+        $(".colorpicker-trigger").css("background-color", param.color);
+
+        $("#form_"+param.action).attr("checked","checked");
+
+        displayOptions(param.action);
+
+        for(var i in param.options) {
+            switch(config.options[i].type) {
+                case "selection":
+                    $("#form_option_"+i).val(param.options[i]);
+                    break;
+
+                case "textbox":
+                    $("#form_option_"+i).val(param.options[i]);
+                    break;
+
+                case "checkbox":
+                    if(param.options[i]) {
+                        $("#form_option_"+i).attr("checked", true);
+                    } else {
+                        $("#form_option_"+i).attr("checked", false);
+                    }
+                    break;
+
+                case "selection-textbox":
+                    if(param.options[i].length > 1) {
+                        var selection = param.options[i][0];
+                        var text = "";
+                        for(var k = 1; k < param.options[i].length; k++) {
+                            text += param.options[i][k]+",";
+                        }
+
+                        $("#form_option_selection_"+i).val(selection);
+                        $("#form_option_text_"+i).val(text);
+                    }
+
+                    break;
+            }
+
+        }
+    }
+
+    // hide warning and let it show later if required
+    $(".warning").hide();
+
+    // place the form at the top of the window+10
+    $(".form").css("margin-top", $(window).scrollTop()+10);
+
+    // fade in the form and set the background to cover the whole page
+    $("#form-background").fadeIn();
+    $("#form-background").css("height", $(document).height());
+
+    check_selection();
+}
+
+function delete_action(id, div) {
+    div.fadeOut("swing", function(){
+        var del = $("<div class='undo'>Action has been deleted </div>");
+        var undo = $("<a>undo</a>").click({"i":id, "param":params.actions[id]},
+            function(event) {
+                div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
+                params.actions[event.data.i] = event.data.param;
+
+                delete(div_history[event.data.i]);
+
+                save_params();
+                return false;
+            }
+        );
+        del.append(undo);
+
+        $(this).replaceWith(del).fadeIn("swing");
+
+        div_history[id] = del;
+        delete(params.actions[id]);
+
+        save_params();
+    });
+}
+
 function setup_action(param, id) {
 	var setting = $("<div class='setting' id='action_"+id+"'>");
 
@@ -317,78 +414,6 @@ function load_new_action(event) {
 	event.preventDefault();
 }
 
-function load_action(id) {  // into form
-
-	if(id === null) {
-		displayKeys();
-		displayOptions("tabs");
-		$("#form_id").val("");
-		$("#form_mouse").val(0);
-		$("#form_key").val(16);
-		$(".colorpicker-trigger").css("background-color", "#"+colors[Math.floor(Math.random()*colors.length)]);
-	} else {
-		var param = params.actions[id];
-		$("#form_id").val(id);
-
-		$("#form_mouse").val(param.mouse);
-		displayKeys();
-		$("#form_key").val(param.key);
-
-		$(".colorpicker-trigger").css("background-color", param.color);
-
-		$("#form_"+param.action).attr("checked","checked");
-
-		displayOptions(param.action);
-
-		for(var i in param.options) {
-			switch(config.options[i].type) {
-			case "selection":
-				$("#form_option_"+i).val(param.options[i]);
-				break;
-
-			case "textbox":
-				$("#form_option_"+i).val(param.options[i]);
-				break;
-
-			case "checkbox":
-				if(param.options[i]) {
-					$("#form_option_"+i).attr("checked", true);
-				} else {
-					$("#form_option_"+i).attr("checked", false);
-				}
-				break;
-				
-			case "selection-textbox":
-				if(param.options[i].length > 1) {
-					var selection = param.options[i][0];
-					var text = "";
-					for(var k = 1; k < param.options[i].length; k++) {
-						text += param.options[i][k]+",";
-					}
-					
-					$("#form_option_selection_"+i).val(selection);
-					$("#form_option_text_"+i).val(text);
-				}
-				
-				break;
-			}
-
-		}
-	}
-
-	// hide warning and let it show later if required
-	$(".warning").hide();
-	
-	// place the form at the top of the window+10
-	$(".form").css("margin-top", $(window).scrollTop()+10);
-	
-	// fade in the form and set the background to cover the whole page
-	$("#form-background").fadeIn();
-	$("#form-background").css("height", $(document).height());
-	
-	check_selection();
-}
-
 function save_action(event) {
 	var id = $("#form_id").val();
 
@@ -449,34 +474,6 @@ function save_action(event) {
 
 	save_params();
 	close_form(event);
-}
-
-function delete_action(id, div) {
-	div.fadeOut("swing", function(){
-		var del = $("<div class='undo'>Action has been deleted </div>");
-		var undo = $("<a>undo</a>").click({"i":id, "param":params.actions[id]},
-			function(event) {
-				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
-				params.actions[event.data.i] = event.data.param;
-
-				delete(div_history[event.data.i]);
-
-				save_params();
-				return false;
-			}
-		);
-		del.append(undo);
-
-		$(this).replaceWith(del).fadeIn("swing");
-
-		div_history[id] = del;
-		delete(params.actions[id]);
-
-		save_params();
-
-	});
-
-
 }
 
 function save_params() {
