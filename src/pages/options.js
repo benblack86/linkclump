@@ -66,7 +66,7 @@ var OS_MAC = 2;
 var colors = ["458B74", "838B8B", "CCCCCC", "0000FF", "8A2BE2", "D2691E", "6495ED", "DC143C", "006400", "9400D3", "1E90FF", "228B22", "00FF00", "ADFF2F", "FF69B4", "4B0082", "F0E68C", "8B814C", "87CEFA", "32CD32", "000080", "FFA500", "FF4500", "DA70D6", "8B475D", "8B668B", "FF0000", "2E8B57", "8E388E", "FFFF00"];
 var params = null;
 var div_history = [];
-var keys = displayKeys();
+var keys = displayKeys(0);
 var os = ((navigator.appVersion.indexOf("Win") === -1) ? ((navigator.appVersion.indexOf("Mac") === -1) ? OS_LINUX : OS_MAC) : OS_WIN);
 
 function close_form(event) {
@@ -90,18 +90,18 @@ function tour2() {
 function load_action(id) {  // into form
 
     if(id === null) {
-        displayKeys();
+        displayKeys(0);
         displayOptions("tabs");
         $("#form_id").val("");
-        $("#form_mouse").val(0);
-        $("#form_key").val(16);
+        $("#form_mouse").val(0);  // default to left mouse button
+        $("#form_key").val(90);   // and z key
         $(".colorpicker-trigger").css("background-color", "#"+colors[Math.floor(Math.random()*colors.length)]);
     } else {
         var param = params.actions[id];
         $("#form_id").val(id);
 
         $("#form_mouse").val(param.mouse);
-        displayKeys();
+        displayKeys(param.mouse);
         $("#form_key").val(param.key);
 
         $(".colorpicker-trigger").css("background-color", param.color);
@@ -264,6 +264,7 @@ function setup_form() {
 	}
 
 	mouse.change(function(event) {
+        displayKeys($(this)[0][$(this)[0].selectedIndex].value);
 		check_selection();
 	});
 
@@ -316,6 +317,20 @@ function check_selection() {
 	var m = $("#form_mouse").val();
 	var k = $("#form_key").val();
 	var id = $("#form_id").val();
+
+
+    var keyWarning = $('#key_warning');
+    keyWarning.empty();
+	if (k === "0") {
+        keyWarning.append("WARNING: Not using a key could cause unexpected behavior on some websites");
+        if($(".warning2").is(":hidden")) {
+            $(".warning2").fadeIn();
+        }
+	} else {
+        if(!$(".warning2").is(":hidden")) {
+            $(".warning2").fadeOut();
+        }
+	}
 
 	for(var i in params.actions) {
 	    // not sure if mouse/key are strings or ints
@@ -386,7 +401,7 @@ function displayOptions(action) {
 	}
 }
 
-function displayKeys() {
+function displayKeys(mouseButton) {
 	var key = $("#form_key");
 	key.empty();
 	var keys = [];
@@ -398,6 +413,12 @@ function displayKeys() {
 		keys[18] = "alt";
 	}
 
+    // if not left or windows then allow no key
+    // NOTE mouseButton is sometimes a string, sometimes an int
+    if(mouseButton != 2 || os === OS_WIN) {
+        keys[0] = '';
+    }
+
 	// add on alpha characters
 	for (var i = 0; i < 26; i++) {
 		keys[65+i] = String.fromCharCode(97 + i);
@@ -406,6 +427,10 @@ function displayKeys() {
 	for(var i in keys) {
 		key.append('<option value="'+i+'">'+keys[i]+'</option>');
 	}
+
+	// set selected value to z
+    key.val(90);
+
 	return keys;
 }
 
