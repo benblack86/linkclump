@@ -272,39 +272,29 @@ function start() {
 
 	// find all links (find them each time as they could have moved)
 	var page_links = document.links;
+
+	// create include/exclude RegExp once
+	var pattern = new RegExp(this.settings[this.setting].options.ignore.slice(1).join("|"), "i");
 	
-	outerloop: for (var i = 0; i < page_links.length; i++) {
+	for (var i = 0; i < page_links.length; i++) {
+		// check for javascript link
 		if (page_links[i].href.test(/^javascript:/i)) {
 			continue
 		}
 
-		// include/exclude links (creating reg exp should be done at the start rather than for each link)
-		if (this.settings[this.setting].options.ignore.length > 1) {
-			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
-				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], "i");
-				var notFound = true;
-				if (page_links[i].innerHTML.test(pattern) || page_links[i].href.test(pattern)) {
-					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
-						continue outerloop;
-					}
-					if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-						notFound = false;
-						break;
-					}
-				}
+		// include/exclude links
+		if (page_links[i].href.test(pattern) || page_links[i].innerHTML.test(pattern)) {
+			if (this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
+				continue;
 			}
-			
-			if(notFound) {
-				if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-					continue outerloop;
-				}
-			}
+		} else if (this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+			continue;
 		}
 
 		// attempt to ignore invisible links (can't ignore overflow)
 		var comp = window.getComputedStyle(page_links[i], null);
 		if (comp.visibility == "hidden" || comp.display == "none") {
-			continue outerloop;
+			continue;
 		}
 
 		var pos = this.getXY(page_links[i]);
