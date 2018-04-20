@@ -274,7 +274,7 @@ function start() {
 	var page_links = document.links;
 	
 	outerloop: for (var i = 0; i < page_links.length; i++) {
-		if (page_links[i].href.match(/^javascript:/i)) {
+		if (page_links[i].href.test(/^javascript:/i)) {
 			continue
 		}
 
@@ -283,7 +283,7 @@ function start() {
 			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
 				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], "i");
 				var notFound = true;
-				if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
+				if (page_links[i].innerHTML.test(pattern) || page_links[i].href.test(pattern)) {
 					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
 						continue outerloop;
 					}
@@ -331,7 +331,7 @@ function start() {
 		page_links[i].height = height;
 		page_links[i].width = width;
 		page_links[i].box = null;
-		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/^H\d$/);
+		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.test(/^H\d$/);
 
 		this.links.push(page_links[i])
 	}
