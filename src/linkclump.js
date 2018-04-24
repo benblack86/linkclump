@@ -1,11 +1,11 @@
-var END_KEYCODE = 35;
-var HOME_KEYCODE = 36;
-var Z_INDEX = 2147483647;
-var OS_WIN = 1;
-var OS_LINUX = 0;
-var LEFT_BUTTON = 0;
-var EXCLUDE_LINKS = 0;
-var INCLUDE_LINKS = 1;
+const END_KEYCODE = 35;
+const HOME_KEYCODE = 36;
+const Z_INDEX = 2147483647;
+const OS_WIN = 1;
+const OS_LINUX = 0;
+const LEFT_BUTTON = 0;
+const EXCLUDE_LINKS = 0;
+const INCLUDE_LINKS = 1;
 
 var settings = null;
 var setting = -1;
@@ -29,14 +29,14 @@ chrome.extension.sendMessage({
 	message: "init"
 }, function(response){
 	if (response === null) {
-		console.log("Unable to load linkclump due to null response")
+		console.log("Unable to load linkclump due to null response");
 	} else {
 		if (response.hasOwnProperty("error")) {
 			console.log("Unable to properly load linkclump, returning to default settings: "+JSON.stringify(response));
 		}
-		
+
 		settings = response.actions;
-		
+
 		var allowed = 1;
 		for(var i in response.blocked) {
 			if(response.blocked[i] == "") continue;
@@ -44,7 +44,7 @@ chrome.extension.sendMessage({
 
 			if(re.test(window.location.href)) {
 				allowed = 0;
-				console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href)
+				console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href);
 			}
 		}
 
@@ -76,7 +76,7 @@ function mousemove(event){
     } else {
         // only stop if the mouseup timer is no longer set
         if(this.timer === 0) {
-            this.stop()
+            this.stop();
         }
     }
 }
@@ -91,7 +91,7 @@ function clean_up() {
     for (var i = 0; i < this.links.length; i++) {
         if (this.links[i].box !== null) {
             document.body.removeChild(this.links[i].box);
-            this.links[i].box = null
+            this.links[i].box = null;
         }
     }
     this.links = [];
@@ -107,14 +107,14 @@ function mousedown(event){
 
 	// turn on menu for windows
 	if (os === OS_WIN) {
-		stop_menu = false
+		stop_menu = false;
 	}
 
 	if (allow_selection()) {
 		// don't prevent for windows right click as it breaks spell checker
 		// do prevent for left as otherwise the page becomes highlighted
 		if (os === OS_LINUX || (os === OS_WIN && mouse_button === LEFT_BUTTON)) {
-			prevent_escalation(event)
+			prevent_escalation(event);
 		}
 
 		// if mouse up timer is set then clear it as it was just caused by bounce
@@ -125,7 +125,7 @@ function mousedown(event){
 
 			// keep menu off for windows
 			if (os === OS_WIN) {
-				stop_menu = true
+				stop_menu = true;
 			}
 		} else {
 			// clean up any mistakes
@@ -272,39 +272,29 @@ function start() {
 
 	// find all links (find them each time as they could have moved)
 	var page_links = document.links;
-	
-	outerloop: for (var i = 0; i < page_links.length; i++) {
-		if (page_links[i].href.match(/javascript\:/i)) {
-			continue
+
+	// create include/exclude RegExp once
+	var pattern = new RegExp(this.settings[this.setting].options.ignore.slice(1).join("|"), "i");
+
+	for (var i = 0; i < page_links.length; i++) {
+		// check for javascript link
+		if (page_links[i].href.test(/^javascript:/i)) {
+			continue;
 		}
 
-		// include/exclude links (creating reg exp should be done at the start rather than for each link)
-		if (this.settings[this.setting].options.ignore.length > 1) {
-			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
-				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], "i");
-				var notFound = true;
-				if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
-					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
-						continue outerloop;
-					}
-					if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-						notFound = false;
-						break;
-					}
-				}
+		// include/exclude links
+		if (page_links[i].href.test(pattern) || page_links[i].innerHTML.test(pattern)) {
+			if (this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
+				continue;
 			}
-			
-			if(notFound) {
-				if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-					continue outerloop;
-				}
-			}
+		} else if (this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+			continue;
 		}
 
 		// attempt to ignore invisible links (can't ignore overflow)
 		var comp = window.getComputedStyle(page_links[i], null);
 		if (comp.visibility == "hidden" || comp.display == "none") {
-			continue outerloop;
+			continue;
 		}
 
 		var pos = this.getXY(page_links[i]);
@@ -331,15 +321,9 @@ function start() {
 		page_links[i].height = height;
 		page_links[i].width = width;
 		page_links[i].box = null;
+		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.test(/^H\d$/);
 
-		if (this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i)) {
-			page_links[i].important = true;
-		}
-		else {
-			page_links[i].important = false;
-		}
-
-		this.links.push(page_links[i])
+		this.links.push(page_links[i]);
 	}
 
 	this.box_on = true;
@@ -378,7 +362,7 @@ function scroll() {
 		if (y > win_height - 20) { //down
 			var speed = win_height - y;
 			if (speed < 2) {
-				speed = 60 
+				speed = 60;
 			}
 			else if (speed < 10) {
 				speed = 30;
@@ -479,7 +463,7 @@ function detech(x, y, open){
 				this.links[i].box.style.visibility = "visible";
 			}
 
-			total++
+			total++;
 		}
 		else {
 			if (this.links[i].box !== null) {
@@ -504,7 +488,7 @@ function detech(x, y, open){
 		});
 	}
 
-	return true
+	return true;
 }
 
 function allow_key(keyCode) {
@@ -519,13 +503,13 @@ function allow_key(keyCode) {
 
 function keydown(event){
 	if(event.keyCode != END_KEYCODE && event.keyCode != HOME_KEYCODE) {
-		this.key_pressed = event.keyCode
+		this.key_pressed = event.keyCode;
 		// turn menu off for linux
 		if (os === OS_LINUX && this.allow_key(this.key_pressed)) {
-			this.stop_menu = true
+			this.stop_menu = true;
 		}
 	} else {
-		this.scroll_bug_ignore = true
+		this.scroll_bug_ignore = true;
 	}
 }
 
@@ -542,7 +526,7 @@ function keyup(event){
 function remove_key() {
 	// turn menu on for linux
 	if (os === OS_LINUX) {
-		this.stop_menu = false
+		this.stop_menu = false;
 	}
 	this.key_pressed = 0;
 }
@@ -559,14 +543,11 @@ function allow_selection(){
 			return true;
 		}
 	}
-	return false
+	return false;
 }
 
 function contextmenu(event){
 	if (this.stop_menu) {
-		event.preventDefault()
+		event.preventDefault();
 	}
 }
-
-
-
