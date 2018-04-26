@@ -273,38 +273,32 @@ function start() {
 	// find all links (find them each time as they could have moved)
 	var page_links = document.links;
 	
-	outerloop: for (var i = 0; i < page_links.length; i++) {
-		if (page_links[i].href.match(/^javascript:/i)) {
-			continue
+	// create RegExp once
+	var re1 = new RegExp("^javascript:", "i");
+	var re2 = new RegExp(this.settings[this.setting].options.ignore.slice(1).join("|"), "i");
+	var re3 = new RegExp("^H\\d$");
+
+	for (var i = 0; i < page_links.length; i++) {
+		// reject javascript: links
+		if (re1.test(page_links[i].href)) {
+			continue;
 		}
 
-		// include/exclude links (creating reg exp should be done at the start rather than for each link)
+		// include/exclude links
 		if (this.settings[this.setting].options.ignore.length > 1) {
-			for (var k = 1; k < this.settings[this.setting].options.ignore.length; k++) {
-				var pattern = new RegExp(this.settings[this.setting].options.ignore[k], "i");
-				var notFound = true;
-				if (page_links[i].innerHTML.match(pattern) || page_links[i].href.match(pattern)) {
-					if(this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
-						continue outerloop;
-					}
-					if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-						notFound = false;
-						break;
-					}
+			if (re2.test(page_links[i].href) || re2.test(page_links[i].innerHTML)) {
+				if (this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
+					continue;
 				}
-			}
-			
-			if(notFound) {
-				if(this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
-					continue outerloop;
-				}
+			} else if (this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+				continue;
 			}
 		}
 
 		// attempt to ignore invisible links (can't ignore overflow)
 		var comp = window.getComputedStyle(page_links[i], null);
 		if (comp.visibility == "hidden" || comp.display == "none") {
-			continue outerloop;
+			continue;
 		}
 
 		var pos = this.getXY(page_links[i]);
@@ -331,10 +325,9 @@ function start() {
 		page_links[i].height = height;
 		page_links[i].width = width;
 		page_links[i].box = null;
+		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && re3.test(page_links[i].parentNode.nodeName);
 
-		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i);
-
-		this.links.push(page_links[i])
+		this.links.push(page_links[i]);
 	}
 
 	this.box_on = true;
