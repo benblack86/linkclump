@@ -332,12 +332,7 @@ function start() {
 		page_links[i].width = width;
 		page_links[i].box = null;
 
-		if (this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i)) {
-			page_links[i].important = true;
-		}
-		else {
-			page_links[i].important = false;
-		}
+		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && page_links[i].parentNode.nodeName.match(/H\d/i);
 
 		this.links.push(page_links[i])
 	}
@@ -567,6 +562,3 @@ function contextmenu(event){
 		event.preventDefault()
 	}
 }
-
-
-
