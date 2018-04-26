@@ -37,13 +37,13 @@ chrome.extension.sendMessage({
 
 		settings = response.actions;
 
-		var allowed = 1;
+		var allowed = true;
 		for(var i in response.blocked) {
 			if(response.blocked[i] == "") continue;
 			var re = new RegExp(response.blocked[i],"i");
 
 			if(re.test(window.location.href)) {
-				allowed = 0;
+				allowed = false;
 				console.log("Linkclump is blocked on this site: "+response.blocked[i]+"~"+window.location.href);
 			}
 		}
