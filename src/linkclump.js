@@ -274,7 +274,7 @@ function start() {
 	var page_links = document.links;
 	
 	outerloop: for (var i = 0; i < page_links.length; i++) {
-		if (page_links[i].href.match(/javascript\:/i)) {
+		if (page_links[i].href.match(/^javascript:/i)) {
 			continue
 		}
 
