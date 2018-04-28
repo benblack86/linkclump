@@ -1,3 +1,5 @@
 .settings/
 .project
 .DS_Store
+.idea
+*.iml
