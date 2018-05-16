@@ -286,6 +286,11 @@ function start() {
 		if (re1.test(page_links[i].href)) {
 			continue;
 		}
+		
+		// reject href="" or href="#"
+		if (!page_links[i].getAttribute("href") || page_links[i].getAttribute("href")) === "#") {
+			continue;
+		}
 
 		// include/exclude links
 		if (this.settings[this.setting].options.ignore.length > 1) {
