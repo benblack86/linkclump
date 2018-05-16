@@ -288,7 +288,7 @@ function start() {
 		}
 		
 		// reject href="" or href="#"
-		if (!page_links[i].getAttribute("href") || page_links[i].getAttribute("href")) === "#") {
+		if (!page_links[i].getAttribute("href") || page_links[i].getAttribute("href") === "#") {
 			continue;
 		}
 
