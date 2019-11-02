@@ -242,10 +242,15 @@ function mouseup(event) {
 function getXY(element) {
 	var x = 0;
 	var y = 0;
+
 	var parent = element;
+	var style;
+	var matrix;
 	do {
-		x += parent.offsetLeft;
-		y += parent.offsetTop;
+		style = window.getComputedStyle(parent);
+		matrix = new WebKitCSSMatrix(style.webkitTransform);
+		x += parent.offsetLeft + matrix.m41;
+		y += parent.offsetTop + matrix.m42;
 	} while (parent = parent.offsetParent);
 
 	parent = element;

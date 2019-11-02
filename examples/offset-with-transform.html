@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .item {
+      position: absolute;
+      left: 10px;
+      height: 30px;
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>By only transform</h1>
+
+<div style="position: relative; height: 200px;">
+  <div class="item" style="transform: translate(10px, 10px);">
+    <a href="#item-01">item-01</a>
+  </div>
+
+  <div class="item" style="transform: translate(50px, 50px);">
+    <a href="#item-02">item-02</a>
+  </div>
+
+  <div class="item" style="transform: translate(90px, 90px);">
+    <a href="#item-03">item-03</a>
+  </div>
+</div>
+
+<h1>By offset and transform</h1>
+
+<div style="position: relative;">
+  <div class="item" style="left: 10px; top: 10px; transform: translate(10px, 10px);">
+    <a href="#item-01">item-01</a>
+  </div>
+
+  <div class="item" style="left: 50px; top: 50px; transform: translate(50px, 50px);">
+    <a href="#item-02">item-02</a>
+  </div>
+
+  <div class="item" style="left: 90px; top: 90px; transform: translate(90px, 90px);">
+    <a href="#item-03">item-03</a>
+  </div>
+</div>
+
+</body>
+</html>
