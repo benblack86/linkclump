@@ -13,6 +13,5 @@
         "sourceType": "module"
     },
     "rules": {
-    },
-    "ignorePatterns": ["src/libs"]
+    }
 }
