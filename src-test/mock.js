@@ -1,4 +1,4 @@
-/*global chrome*/
+/* eslint no-global-assign: 0, no-undef: 0 */
 
 chrome = {};
 chrome.extension = function() {};

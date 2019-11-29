@@ -1,3 +1,5 @@
+/* eslint no-undef: 0 */
+
 var TestSettingsManager = new TestCase("Settings Manager");
 
 TestSettingsManager.prototype.setUp = function() {

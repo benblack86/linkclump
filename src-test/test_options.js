@@ -1,3 +1,5 @@
+/* eslint no-undef: 0 */
+
 OptionTest = new TestCase("Option");
 
 OptionTest.prototype.testDisplayKeys = function() {
