@@ -1,3 +1,5 @@
+/*global chrome*/
+
 chrome = {};
 chrome.extension = function() {};
 chrome.extension.onMessage = function() {};
