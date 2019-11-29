@@ -18,7 +18,7 @@ SettingsManager.prototype.load = function() {
 
 SettingsManager.prototype.save = function(settings) {
 	// remove any error messages from object (shouldn't be there)
-	if (settings.hasOwnProperty("error")) {
+	if (settings.error !== undefined) {
 		delete settings.error;
 	}
 	

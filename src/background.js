@@ -89,7 +89,7 @@ function handleRequests(request, sender, callback){
 		switch(request.setting.action) {
 		case "copy":
 			var text = "";
-			for (i = 0; i < request.urls.length; i++) {
+			for (let i = 0; i < request.urls.length; i++) {
 				switch(request.setting.options.copy) {
 				case "0":
 					text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
@@ -125,7 +125,7 @@ function handleRequests(request, sender, callback){
 					// as different languages will not use the english name to refer to the folder
 					chrome.bookmarks.create({"parentId": bookmarkTreeNodes[0].children[1].id, "title": "Linkclump "+timeConverter(new Date())},
 						function(newFolder) {
-							for (j = 0; j < request.urls.length; j++) {
+							for (let j = 0; j < request.urls.length; j++) {
 								chrome.bookmarks.create({"parentId": newFolder.id,
 									"title": request.urls[j].title,
 									"url": request.urls[j].url});

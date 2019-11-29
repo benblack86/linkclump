@@ -72,7 +72,9 @@ function mousemove(event) {
 		this.update_box(event.pageX, event.pageY);
 
 		// while detect keeps on calling false then recall the method
-		while (!this.detech(event.pageX, event.pageY, false)) {}
+		while (!this.detech(event.pageX, event.pageY, false)) {
+			// empty
+		}
 	} else {
 		// only stop if the mouseup timer is no longer set
 		if (this.timer === 0) {
@@ -204,7 +206,7 @@ function update_box(x, y) {
 	count_label.style.top = y - 15 + "px";
 }
 
-function mousewheel(event) {
+function mousewheel() {
 	this.scroll_bug_ignore = true;
 }
 
@@ -321,7 +323,7 @@ function start() {
 		// attempt to get the actual size of the link
 		for (var k = 0; k < page_links[i].childNodes.length; k++) {
 			if (page_links[i].childNodes[k].nodeName == "IMG") {
-				pos2 = this.getXY(page_links[i].childNodes[k]);
+				const pos2 = this.getXY(page_links[i].childNodes[k]);
 				if (pos.y >= pos2.y) {
 					pos.y = pos2.y;
 
@@ -377,7 +379,7 @@ function scroll() {
 		var win_height = window.innerHeight;
 
 		if (y > win_height - 20) { //down
-			var speed = win_height - y;
+			let speed = win_height - y;
 			if (speed < 2) {
 				speed = 60;
 			} else if (speed < 10) {
@@ -393,7 +395,7 @@ function scroll() {
 			this.scroll_bug_ignore = true;
 			return;
 		} else if (window.scrollY > 0 && y < 20) { //up
-			var speed = y;
+			let speed = y;
 			if (speed < 2) {
 				speed = 60;
 			} else if (speed < 10) {
