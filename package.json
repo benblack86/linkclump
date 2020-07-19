@@ -1,6 +1,5 @@
 {
   "name": "linkclump",
-  "version": "2.8.9",
   "description": "Chrome extension",
   "repository": {
     "type": "git",

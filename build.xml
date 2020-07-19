@@ -2,7 +2,7 @@
 	
 	<!-- ant has no if/else statments so have to use this if_.. format -->
 	<target name="build" depends="properties,clean,test_if_mac,test_if_not_mac">
-		<zip destfile="versions/${zip_name}" basedir="src" />
+		<zip destfile="${zip_name}" basedir="src" />
 	</target>
 	
 	<target name="properties">
@@ -22,7 +22,7 @@
 	<target name="clean">
 		<echo>Deleting old zip file ${zip_name}</echo>
 		<delete>
-			<fileset dir="versions" includes="${zip_name}" />
+			<fileset dir="." includes="${zip_name}" />
 		</delete>
 	</target>
 	
