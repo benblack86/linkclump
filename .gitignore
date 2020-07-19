@@ -4,3 +4,4 @@
 .idea
 *.iml
 node_modules/
+*.zip
