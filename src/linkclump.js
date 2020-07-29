@@ -293,7 +293,7 @@ function start() {
 		if (re1.test(page_links[i].href)) {
 			continue;
 		}
-		
+
 		// reject href="" or href="#"
 		if (!page_links[i].getAttribute("href") || page_links[i].getAttribute("href") === "#") {
 			continue;
@@ -436,7 +436,7 @@ function detech(x, y, open) {
 	}
 
 	var count = 0;
-	var total = 0;
+	var count_tabs = new Set;
 	var open_tabs = [];
 	for (var i = 0; i < this.links.length; i++) {
 		if ((!this.smart_select || this.links[i].important) && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
@@ -477,7 +477,7 @@ function detech(x, y, open) {
 				this.links[i].box.style.visibility = "visible";
 			}
 
-			total++;
+			count_tabs.add(this.links[i].href);
 		} else {
 			if (this.links[i].box !== null) {
 				this.links[i].box.style.visibility = "hidden";
@@ -491,7 +491,7 @@ function detech(x, y, open) {
 		return false;
 	}
 
-	count_label.innerText = total;
+	count_label.innerText = count_tabs.size;
 
 	if (open_tabs.length > 0) {
 		chrome.extension.sendMessage({
