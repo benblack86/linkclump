@@ -1,3 +1,4 @@
+console.log("Settings Manager");
 var CURRENT_VERSION = "5";
 
 function SettingsManager() {}

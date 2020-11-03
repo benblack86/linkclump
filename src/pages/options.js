@@ -1,60 +1,62 @@
+var isDebug = true;
+
 var config = {
-	"triggers": 
-		[{"name": "Left"}, {"name": "Middle"}, {"name": "Right"}],
+	"triggers":
+		[{ "name": "Left" }, { "name": "Middle" }, { "name": "Right" }],
 	"actions": {
-		"win": {"name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]},
-		"tabs": {"name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]},
-		"bm": {"name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"]},
-		"copy": {"name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"]}
+		"win": { "name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"] },
+		"tabs": { "name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"] },
+		"bm": { "name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"] },
+		"copy": { "name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"] }
 	},
 	"options": {
 		"smart": {
 			"name": "smart select",
-			"type": "selection", 
+			"type": "selection",
 			"data": ["on", "off"],
 			"extra": "with smart select turned on linkclump tries to select only the important links"
 		},
-	"ignore": {
-		"name": "filter links",
-		"type": "selection-textbox",
-		"data": ["exclude links with words", "include links with words"],
-		"extra": "filter links that include/exclude these words; separate words with a comma ,"
+		"ignore": {
+			"name": "filter links",
+			"type": "selection-textbox",
+			"data": ["exclude links with words", "include links with words"],
+			"extra": "filter links that include/exclude these words; separate words with a comma ,"
 		},
-	"copy": {
-		"name": "copy format",
-		"type": "selection",
-		"data": ["URLS with titles", "URLS only", "titles only", "as link HTML", "as list link HTML", "as Markdown"],
-		"extra": "format of the links saved to the clipboard"
+		"copy": {
+			"name": "copy format",
+			"type": "selection",
+			"data": ["URLS with titles", "URLS only", "titles only", "as link HTML", "as list link HTML", "as Markdown"],
+			"extra": "format of the links saved to the clipboard"
 		},
-	"delay": {
-		"name": "delay in opening",
-		"type": "textbox",
-		"extra":"number of seconds between the opening of each link"
+		"delay": {
+			"name": "delay in opening",
+			"type": "textbox",
+			"extra": "number of seconds between the opening of each link"
 		},
-	"close": {
-		"name": "close tab time",
-		"type": "textbox",
-		"extra":"number of seconds before closing opened tab (0 means the tab wouldn't close)"
+		"close": {
+			"name": "close tab time",
+			"type": "textbox",
+			"extra": "number of seconds before closing opened tab (0 means the tab wouldn't close)"
 		},
-	"block": {
-		"name": "block repeat links in selection",
-		"type": "checkbox",
-		"extra":"select to block repeat links from opening"
+		"block": {
+			"name": "block repeat links in selection",
+			"type": "checkbox",
+			"extra": "select to block repeat links from opening"
 		},
-	"reverse": {
-		"name": "reverse order",
-		"type": "checkbox",
-		"extra":"select to have links opened in reverse order"
+		"reverse": {
+			"name": "reverse order",
+			"type": "checkbox",
+			"extra": "select to have links opened in reverse order"
 		},
-	"end": {
-		"name": "open tabs at the end",
-		"type": "checkbox",
-		"extra": "select to have links opened at the end of all other tabs"
+		"end": {
+			"name": "open tabs at the end",
+			"type": "checkbox",
+			"extra": "select to have links opened at the end of all other tabs"
 		},
-	"unfocus": {
-		"name": "do not focus on new window",
-		"type": "checkbox",
-		"extra": "select to stop the new window from coming to the front"
+		"unfocus": {
+			"name": "do not focus on new window",
+			"type": "checkbox",
+			"extra": "select to stop the new window from coming to the front"
 		}
 	}
 };
@@ -89,163 +91,163 @@ function tour2() {
 
 function load_action(id) {  // into form
 
-    if(id === null) {
-        displayKeys(0);
-        displayOptions("tabs");
-        $("#form_id").val("");
-        $("#form_mouse").val(0);  // default to left mouse button
-        $("#form_key").val(90);   // and z key
-        $(".colorpicker-trigger").css("background-color", "#"+colors[Math.floor(Math.random()*colors.length)]);
-    } else {
-        var param = params.actions[id];
-        $("#form_id").val(id);
+	if (id === null) {
+		displayKeys(0);
+		displayOptions("tabs");
+		$("#form_id").val("");
+		$("#form_mouse").val(0);  // default to left mouse button
+		$("#form_key").val(90);   // and z key
+		$(".colorpicker-trigger").css("background-color", "#" + colors[Math.floor(Math.random() * colors.length)]);
+	} else {
+		var param = params.actions[id];
+		$("#form_id").val(id);
 
-        $("#form_mouse").val(param.mouse);
-        displayKeys(param.mouse);
-        $("#form_key").val(param.key);
+		$("#form_mouse").val(param.mouse);
+		displayKeys(param.mouse);
+		$("#form_key").val(param.key);
 
-        $(".colorpicker-trigger").css("background-color", param.color);
+		$(".colorpicker-trigger").css("background-color", param.color);
 
-        $("#form_"+param.action).attr("checked","checked");
+		$("#form_" + param.action).attr("checked", "checked");
 
-        displayOptions(param.action);
+		displayOptions(param.action);
 
-        for(var i in param.options) {
-            switch(config.options[i].type) {
-                case "selection":
-                    $("#form_option_"+i).val(param.options[i]);
-                    break;
+		for (var i in param.options) {
+			switch (config.options[i].type) {
+				case "selection":
+					$("#form_option_" + i).val(param.options[i]);
+					break;
 
-                case "textbox":
-                    $("#form_option_"+i).val(param.options[i]);
-                    break;
+				case "textbox":
+					$("#form_option_" + i).val(param.options[i]);
+					break;
 
-                case "checkbox":
-                    if(param.options[i]) {
-                        $("#form_option_"+i).attr("checked", true);
-                    } else {
-                        $("#form_option_"+i).attr("checked", false);
-                    }
-                    break;
+				case "checkbox":
+					if (param.options[i]) {
+						$("#form_option_" + i).attr("checked", true);
+					} else {
+						$("#form_option_" + i).attr("checked", false);
+					}
+					break;
 
-                case "selection-textbox":
-                    if(param.options[i].length > 1) {
-                        var selection = param.options[i][0];
-                        var text = "";
-                        for(var k = 1; k < param.options[i].length; k++) {
-                            text += param.options[i][k]+",";
-                        }
+				case "selection-textbox":
+					if (param.options[i].length > 1) {
+						var selection = param.options[i][0];
+						var text = "";
+						for (var k = 1; k < param.options[i].length; k++) {
+							text += param.options[i][k] + ",";
+						}
 
-                        $("#form_option_selection_"+i).val(selection);
-                        $("#form_option_text_"+i).val(text);
-                    }
+						$("#form_option_selection_" + i).val(selection);
+						$("#form_option_text_" + i).val(text);
+					}
 
-                    break;
-            }
+					break;
+			}
 
-        }
-    }
+		}
+	}
 
-    // hide warning and let it show later if required
-    $(".warning").hide();
+	// hide warning and let it show later if required
+	$(".warning").hide();
 
-    // place the form at the top of the window+10
-    $(".form").css("margin-top", $(window).scrollTop()+10);
+	// place the form at the top of the window+10
+	$(".form").css("margin-top", $(window).scrollTop() + 10);
 
-    // fade in the form and set the background to cover the whole page
-    $("#form-background").fadeIn();
-    $("#form-background").css("height", $(document).height());
+	// fade in the form and set the background to cover the whole page
+	$("#form-background").fadeIn();
+	$("#form-background").css("height", $(document).height());
 
-    check_selection();
+	check_selection();
 }
 
 function delete_action(id, div) {
-    div.fadeOut("swing", function(){
-        var del = $("<div class='undo'>Action has been deleted </div>");
-        var undo = $("<a>undo</a>").click({"i":id, "param":params.actions[id]},
-            function(event) {
-                div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
-                params.actions[event.data.i] = event.data.param;
+	div.fadeOut("swing", function () {
+		var del = $("<div class='undo'>Action has been deleted </div>");
+		var undo = $("<a>undo</a>").click({ "i": id, "param": params.actions[id] },
+			function (event) {
+				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
+				params.actions[event.data.i] = event.data.param;
 
-                delete(div_history[event.data.i]);
+				delete (div_history[event.data.i]);
 
-                save_params();
-                return false;
-            }
-        );
-        del.append(undo);
+				save_params();
+				return false;
+			}
+		);
+		del.append(undo);
 
-        $(this).replaceWith(del).fadeIn("swing");
+		$(this).replaceWith(del).fadeIn("swing");
 
-        div_history[id] = del;
-        delete(params.actions[id]);
+		div_history[id] = del;
+		delete (params.actions[id]);
 
-        save_params();
-    });
+		save_params();
+	});
 }
 
 function setup_action(param, id) {
-	var setting = $("<div class='setting' id='action_"+id+"'>");
+	var setting = $("<div class='setting' id='action_" + id + "'>");
 
-	setting.append("<h3>"+config.actions[param.action].name+"</h3>");
-	setting.append("Activate by "+config.triggers[param.mouse].name + " mouse button");
-	if(param.key > 0) {
-		setting.append(" and \""+keys[param.key]+"\" key ");
+	setting.append("<h3>" + config.actions[param.action].name + "</h3>");
+	setting.append("Activate by " + config.triggers[param.mouse].name + " mouse button");
+	if (param.key > 0) {
+		setting.append(" and \"" + keys[param.key] + "\" key ");
 	}
 
 	var list = $("<ul>");
-	for(var j in param.options) {
+	for (var j in param.options) {
 		var op = config.options[j];
-		var text = op.name+": ";
-		switch(op.type) {
-		case "selection":
-			text += op.data[param.options[j]];
-			break;
-		case "textbox":
-			// TODO not sure if param.options[j] returns a string or int
-			if(param.options[j] === "" || param.options[j] == "0") {
-				continue;
-			}
-			text += param.options[j];
-			break;
-		case "checkbox":
-			if(!param.options[j]) {
-				continue;
-			}
-			text += param.options[j];
-			break;
-		case "selection-textbox":
-			if(param.options[j].length < 2) {
-				continue;
-			}
-			var selection = param.options[j][0];
-			var words = "";
-			for(var i = 1; i < param.options[j].length; i++) {
-				words += param.options[j][i];
-				
-				if(i < param.options[j].length-1) {
-					words += ", ";
+		var text = op.name + ": ";
+		switch (op.type) {
+			case "selection":
+				text += op.data[param.options[j]];
+				break;
+			case "textbox":
+				// TODO not sure if param.options[j] returns a string or int
+				if (param.options[j] === "" || param.options[j] == "0") {
+					continue;
 				}
-			}
-			text += op.data[selection]+"; "+words;
-			break;
+				text += param.options[j];
+				break;
+			case "checkbox":
+				if (!param.options[j]) {
+					continue;
+				}
+				text += param.options[j];
+				break;
+			case "selection-textbox":
+				if (param.options[j].length < 2) {
+					continue;
+				}
+				var selection = param.options[j][0];
+				var words = "";
+				for (var i = 1; i < param.options[j].length; i++) {
+					words += param.options[j][i];
+
+					if (i < param.options[j].length - 1) {
+						words += ", ";
+					}
+				}
+				text += op.data[selection] + "; " + words;
+				break;
 		}
 
-		list.append("<li>"+text+"</li>");
+		list.append("<li>" + text + "</li>");
 	}
-	list.append("<li>selection box color: <div style='background-color: "+param.color+"' class='color'></div></li>");
+	list.append("<li>selection box color: <div style='background-color: " + param.color + "' class='color'></div></li>");
 
 	setting.append(list);
 
-	var edit = $("<a href='#' class='button edit'>Edit</a>").click({'i':id},
-		function(event) {
+	var edit = $("<a href='#' class='button edit'>Edit</a>").click({ 'i': id },
+		function (event) {
 			load_action(event.data.i, $(this).parent().parent());
 			return false;
 		}
 	);
 
-	var del = $("<a href='#' class='button delete'>Delete</a>").click({"i":id},
-		function(event) {
+	var del = $("<a href='#' class='button delete'>Delete</a>").click({ "i": id },
+		function (event) {
 			delete_action(event.data.i, $(this).parent());
 			return false;
 		}
@@ -259,18 +261,18 @@ function setup_action(param, id) {
 
 function setup_form() {
 	var mouse = $("#form_mouse");
-	for(var i = 0; i < config.triggers.length; i++) {
-		mouse.append('<option value="'+i+'">'+config.triggers[i].name+'</option>');
+	for (var i = 0; i < config.triggers.length; i++) {
+		mouse.append('<option value="' + i + '">' + config.triggers[i].name + '</option>');
 	}
 
-	mouse.change(function(event) {
-        displayKeys($(this)[0][$(this)[0].selectedIndex].value);
+	mouse.change(function (event) {
+		displayKeys($(this)[0][$(this)[0].selectedIndex].value);
 		check_selection();
 	});
 
 	var color = $("#form_color");
-	for(var i in colors) {
-		color.append("<option value='"+colors[i]+"'>"+colors[i]+"</option>");
+	for (var i in colors) {
+		color.append("<option value='" + colors[i] + "'>" + colors[i] + "</option>");
 	}
 
 	color.colorpicker({
@@ -280,11 +282,11 @@ function setup_form() {
 
 
 	var action = $("#form_action");
-	for(var i in config.actions) {
-		var act = $('<input type="radio" name="action" value="'+i+'" id="form_'+i+'"/>'+config.actions[i].name+'<br/>')
+	for (var i in config.actions) {
+		var act = $('<input type="radio" name="action" value="' + i + '" id="form_' + i + '"/>' + config.actions[i].name + '<br/>')
 
 
-		act.click(function(event) {
+		act.click(function (event) {
 			displayOptions(event.currentTarget.value)
 		}
 		);
@@ -297,17 +299,17 @@ function setup_form() {
 
 function setup_text(keys) {
 	var param;
-	for(var i in params.actions) {
+	for (var i in params.actions) {
 		param = params.actions[i];
 		break;
 	}
-	if(param === undefined) {
+	if (param === undefined) {
 		return;
 	}
 	$("#mouse_name").text(config.triggers[param.mouse].name);
 	$("#action_name").text(config.actions[param.action].name);
-	if(param.key > 0) {
-		$("#key_name").html("the <b>"+keys[param.key]+"</b> key and");
+	if (param.key > 0) {
+		$("#key_name").html("the <b>" + keys[param.key] + "</b> key and");
 	} else {
 		$("#key_name").html("");
 	}
@@ -319,31 +321,31 @@ function check_selection() {
 	var id = $("#form_id").val();
 
 
-    var keyWarning = $('#key_warning');
-    keyWarning.empty();
+	var keyWarning = $('#key_warning');
+	keyWarning.empty();
 	if (k === "0") {
-        keyWarning.append("WARNING: Not using a key could cause unexpected behavior on some websites");
-        if($(".warning2").is(":hidden")) {
-            $(".warning2").fadeIn();
-        }
+		keyWarning.append("WARNING: Not using a key could cause unexpected behavior on some websites");
+		if ($(".warning2").is(":hidden")) {
+			$(".warning2").fadeIn();
+		}
 	} else {
-        if(!$(".warning2").is(":hidden")) {
-            $(".warning2").fadeOut();
-        }
+		if (!$(".warning2").is(":hidden")) {
+			$(".warning2").fadeOut();
+		}
 	}
 
-	for(var i in params.actions) {
-	    // not sure if mouse/key are strings or ints
-		if(i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
-			if($(".warning").is(":hidden")) {
+	for (var i in params.actions) {
+		// not sure if mouse/key are strings or ints
+		if (i != id && params.actions[i].mouse == m && params.actions[i].key == k) {
+			if ($(".warning").is(":hidden")) {
 				$(".warning").fadeIn();
 			}
 
 			return;
 		}
 	}
-	
-	if(!$(".warning").is(":hidden")) {
+
+	if (!$(".warning").is(":hidden")) {
 		$(".warning").fadeOut();
 	}
 }
@@ -352,47 +354,47 @@ function displayOptions(action) {
 	var options = $("#form_options");
 	options.empty();
 
-	for(var i in config.actions[action].options) {
+	for (var i in config.actions[action].options) {
 		var op = config.options[config.actions[action].options[i]];
-		var title = $("<label>"+op.name+"</label>");
+		var title = $("<label>" + op.name + "</label>");
 		var p = $("<p />");
 		p.append(title);
 
-		switch(op.type) {
-		case "selection":
-			var selector = $("<select id='form_option_"+config.actions[action].options[i]+"'>");
-			for(var j in op.data) {
-				selector.append('<option value="'+j+'">'+op.data[j]+'</option>');
-			}
-			p.append(selector);
-			break;
+		switch (op.type) {
+			case "selection":
+				var selector = $("<select id='form_option_" + config.actions[action].options[i] + "'>");
+				for (var j in op.data) {
+					selector.append('<option value="' + j + '">' + op.data[j] + '</option>');
+				}
+				p.append(selector);
+				break;
 
-		case "textbox":
-			p.append('<input type="text" name="'+op.name+'" id="form_option_'+config.actions[action].options[i]+'"/>');
-			break;
+			case "textbox":
+				p.append('<input type="text" name="' + op.name + '" id="form_option_' + config.actions[action].options[i] + '"/>');
+				break;
 
-		case "checkbox":
-			p.append('<input type="checkbox" name="'+op.name+'" id="form_option_'+config.actions[action].options[i]+'"/>');
-			break;
-			
-		case "selection-textbox":
-			var selector = $("<select id='form_option_selection_"+config.actions[action].options[i]+"'>");
-			for(var j in op.data) {
-				selector.append('<option value="'+j+'">'+op.data[j]+'</option>');
-			}
-			p.append(selector);
-			p.append('</p><label> </label><p>');
-			p.append('<input type="text" name="'+op.name+'" id="form_option_text_'+config.actions[action].options[i]+'"/>');
-			break;
+			case "checkbox":
+				p.append('<input type="checkbox" name="' + op.name + '" id="form_option_' + config.actions[action].options[i] + '"/>');
+				break;
+
+			case "selection-textbox":
+				var selector = $("<select id='form_option_selection_" + config.actions[action].options[i] + "'>");
+				for (var j in op.data) {
+					selector.append('<option value="' + j + '">' + op.data[j] + '</option>');
+				}
+				p.append(selector);
+				p.append('</p><label> </label><p>');
+				p.append('<input type="text" name="' + op.name + '" id="form_option_text_' + config.actions[action].options[i] + '"/>');
+				break;
 		}
 
-		p.mouseover({"extra":op.extra}, function(event) {
+		p.mouseover({ "extra": op.extra }, function (event) {
 			var extra = $("#form_extra");
 			extra.html(event.data.extra);
 			extra.css("top", $(this).position().top);
-			extra.css("left", $(this).position().left+500);
+			extra.css("left", $(this).position().left + 500);
 			extra.show();
-		}).mouseout(function() {
+		}).mouseout(function () {
 			$("#form_extra").hide();
 		});
 
@@ -413,23 +415,23 @@ function displayKeys(mouseButton) {
 		keys[18] = "alt";
 	}
 
-    // if not left or windows then allow no key
-    // NOTE mouseButton is sometimes a string, sometimes an int
-    if(mouseButton != 2 || os === OS_WIN) {
-        keys[0] = '';
-    }
+	// if not left or windows then allow no key
+	// NOTE mouseButton is sometimes a string, sometimes an int
+	if (mouseButton != 2 || os === OS_WIN) {
+		keys[0] = '';
+	}
 
 	// add on alpha characters
 	for (var i = 0; i < 26; i++) {
-		keys[65+i] = String.fromCharCode(97 + i);
+		keys[65 + i] = String.fromCharCode(97 + i);
 	}
 
-	for(var i in keys) {
-		key.append('<option value="'+i+'">'+keys[i]+'</option>');
+	for (var i in keys) {
+		key.append('<option value="' + i + '">' + keys[i] + '</option>');
 	}
 
 	// set selected value to z
-    key.val(90);
+	key.val(90);
 
 	return keys;
 }
@@ -450,42 +452,42 @@ function save_action(event) {
 	param.action = $("input[name=action]:radio:checked").val();
 	param.options = {};
 
-	for(var opt in config.actions[param.action].options) {
+	for (var opt in config.actions[param.action].options) {
 		var name = config.actions[param.action].options[opt];
 		var type = config.options[name].type;
-		if(type === "checkbox") {
-			param.options[name] = $("#form_option_"+name).is(":checked");
+		if (type === "checkbox") {
+			param.options[name] = $("#form_option_" + name).is(":checked");
 		} else {
-			if(name === "ignore") {
-				var ignore = $("#form_option_text_"+name).val().replace(/^ */, "").replace(/, */g, ",").toLowerCase().split(",")
+			if (name === "ignore") {
+				var ignore = $("#form_option_text_" + name).val().replace(/^ */, "").replace(/, */g, ",").toLowerCase().split(",")
 				// if the last entry is empty then just remove from array
-				if (ignore.length > 0 && ignore[ignore.length-1] === "") {
+				if (ignore.length > 0 && ignore[ignore.length - 1] === "") {
 					ignore.pop();
 				}
 				// add selection to the start of the array
-				ignore.unshift(param.options[name] = $("#form_option_selection_"+name).val());
-				
+				ignore.unshift(param.options[name] = $("#form_option_selection_" + name).val());
+
 				param.options[name] = ignore;
-			} else if(name === "delay" || name === "close") {
+			} else if (name === "delay" || name === "close") {
 				var delay;
 				try {
-					delay = parseFloat($("#form_option_"+name).val());
-				} catch(err) {
+					delay = parseFloat($("#form_option_" + name).val());
+				} catch (err) {
 					delay = 0;
 				}
-				if(isNaN(delay)) {
+				if (isNaN(delay)) {
 					delay = 0;
 				}
 
 
 				param.options[name] = delay;
 			} else {
-				param.options[name] = $("#form_option_"+name).val();
+				param.options[name] = $("#form_option_" + name).val();
 			}
 		}
 	}
 
-	if(id === "" || params.actions[id] === null) {
+	if (id === "" || params.actions[id] === null) {
 		var newDate = new Date;
 		id = newDate.getTime();
 
@@ -494,7 +496,7 @@ function save_action(event) {
 	} else {
 		params.actions[id] = param;
 		var update = setup_action(param, id);
-		$("#action_"+id).replaceWith(update);
+		$("#action_" + id).replaceWith(update);
 	}
 
 	save_params();
@@ -502,7 +504,7 @@ function save_action(event) {
 }
 
 function save_params() {
-	chrome.extension.sendMessage({
+	browser.runtime.sendMessage({
 		message: "update",
 		settings: params
 	});
@@ -511,14 +513,14 @@ function save_params() {
 function save_block() {
 	// replace any whitespace at end to stop empty site listings
 	var sites = $("#form_block").val().replace(/^\s+|\s+$/g, "").split("\n");
-	
+
 	if (Array.isArray(sites)) {
 		params.blocked = sites;
 		save_params();
 	}
 }
 
-$(function() {
+$(function () {
 	var isFirstTime = window.location.href.indexOf("init=true") > -1;
 
 	// temp check to not load if in test mode
@@ -537,19 +539,21 @@ $(function() {
 
 	setup_form();
 
-	chrome.extension.sendMessage({
+	var init = browser.runtime.sendMessage({
 		message: "init"
-	}, function(response){
+	});
+
+	init.then((response) => {
 		params = response;
 
-		for(var i in params.actions) {
+		for (var i in params.actions) {
 			$("#settings").append(setup_action(params.actions[i], i));
 		}
 		setup_text(keys);
 
 		$("#form_block").val(params.blocked.join("\n"));
 
-		if(isFirstTime) {
+		if (isFirstTime || isDebug) {
 			tour1();
 		} else {
 			tour2();

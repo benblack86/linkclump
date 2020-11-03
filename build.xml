@@ -1,5 +1,5 @@
 <project name="Linkclump" default="build" basedir=".">
-	
+	<copy file="node_modules/webextension-polyfill/dist/browser-polyfill.min.js" todir="src"/>
 	<!-- ant has no if/else statments so have to use this if_.. format -->
 	<target name="build" depends="properties,clean,test_if_mac,test_if_not_mac">
 		<zip destfile="${zip_name}" basedir="src" />
@@ -24,6 +24,7 @@
 		<delete>
 			<fileset dir="." includes="${zip_name}" />
 		</delete>
+		<delete file="src/browser-polyfill.min.js"/>
 	</target>
 	
 	<condition property="is_mac">

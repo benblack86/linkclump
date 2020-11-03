@@ -1,3 +1,5 @@
+console.log("LinkClump loaded");
+
 const END_KEYCODE = 35;
 const HOME_KEYCODE = 36;
 const Z_INDEX = 2147483647;
@@ -25,9 +27,11 @@ var scroll_bug_ignore = false;
 var os = ((navigator.appVersion.indexOf("Win") === -1) ? OS_LINUX : OS_WIN);
 var timer = 0;
 
-chrome.extension.sendMessage({
+var init = browser.runtime.sendMessage({
 	message: "init"
-}, function(response) {
+});
+
+init.then((response) => {
 	if (response === null) {
 		console.log("Unable to load linkclump due to null response");
 	} else {
@@ -49,36 +53,36 @@ chrome.extension.sendMessage({
 		}
 
 		if (allowed) {
-			window.addEventListener("mousedown", this.mousedown, true);
-			window.addEventListener("keydown", this.keydown, true);
-			window.addEventListener("keyup", this.keyup, true);
-			window.addEventListener("blur", this.blur, true);
-			window.addEventListener("contextmenu", this.contextmenu, true);
+			window.addEventListener("mousedown", mousedown, true);
+			window.addEventListener("keydown", keydown, true);
+			window.addEventListener("keyup", keyup, true);
+			window.addEventListener("blur", blur, true);
+			window.addEventListener("contextmenu", contextmenu, true);
 		}
 	}
 });
 
-chrome.extension.onMessage.addListener(function(request, sender, callback) {
+browser.runtime.onMessage.addListener(function (request, sender, callback) {
 	if (request.message === "update") {
-		this.settings = request.settings.actions;
+		settings = request.settings.actions;
 	}
 });
 
 function mousemove(event) {
-	this.prevent_escalation(event);
+	prevent_escalation(event);
 
-	if (this.allow_selection() || this.scroll_bug_ignore) {
-		this.scroll_bug_ignore = false;
-		this.update_box(event.pageX, event.pageY);
+	if (allow_selection() || scroll_bug_ignore) {
+		scroll_bug_ignore = false;
+		update_box(event.pageX, event.pageY);
 
 		// while detect keeps on calling false then recall the method
-		while (!this.detech(event.pageX, event.pageY, false)) {
+		while (!detech(event.pageX, event.pageY, false)) {
 			// empty
 		}
 	} else {
 		// only stop if the mouseup timer is no longer set
-		if (this.timer === 0) {
-			this.stop();
+		if (timer === 0) {
+			stop();
 		}
 	}
 }
@@ -90,18 +94,18 @@ function clean_up() {
 	box_on = false;
 
 	// remove the link boxes
-	for (var i = 0; i < this.links.length; i++) {
-		if (this.links[i].box !== null) {
-			document.body.removeChild(this.links[i].box);
-			this.links[i].box = null;
+	for (var i = 0; i < links.length; i++) {
+		if (links[i].box !== null) {
+			document.body.removeChild(links[i].box);
+			links[i].box = null;
 		}
 	}
-	this.links = [];
+	links = [];
 
 	// wipe clean the smart select
-	this.smart_select = false;
-	this.mouse_button = -1;
-	this.key_pressed = 0;
+	smart_select = false;
+	mouse_button = -1;
+	key_pressed = 0;
 }
 
 function mousedown(event) {
@@ -137,13 +141,13 @@ function mousedown(event) {
 			}
 
 			// create the box
-			if (this.box === null) {
-				this.box = document.createElement("span");
-				this.box.style.margin = "0px auto";
-				this.box.style.border = "2px dotted" + this.settings[this.setting].color;
-				this.box.style.position = "absolute";
-				this.box.style.zIndex = Z_INDEX;
-				this.box.style.visibility = "hidden";
+			if (box === null) {
+				box = document.createElement("span");
+				box.style.margin = "0px auto";
+				box.style.border = "2px dotted" + settings[setting].color;
+				box.style.position = "absolute";
+				box.style.zIndex = Z_INDEX;
+				box.style.visibility = "hidden";
 
 				count_label = document.createElement("span");
 				count_label.style.zIndex = Z_INDEX;
@@ -157,15 +161,19 @@ function mousedown(event) {
 				count_label.style.font = "Arial, sans-serif";
 				count_label.style.color = "black";
 
-				document.body.appendChild(box);
-				document.body.appendChild(count_label);
+				if (document.body != null) {
+					document.body.appendChild(box);
+					document.body.appendChild(count_label);
+				} else {
+					console.log("Body is null");
+				}
 
 			}
 
 			// update position
-			this.box.x = event.pageX;
-			this.box.y = event.pageY;
-			this.update_box(event.pageX, event.pageY);
+			box.x = event.pageX;
+			box.y = event.pageY;
+			update_box(event.pageX, event.pageY);
 
 			// setup mouse move and mouse up
 			window.addEventListener("mousemove", mousemove, true);
@@ -182,38 +190,38 @@ function update_box(x, y) {
 	x = Math.min(x, width - 7);
 	y = Math.min(y, height - 7);
 
-	if (x > this.box.x) {
-		this.box.x1 = this.box.x;
-		this.box.x2 = x;
+	if (x > box.x) {
+		box.x1 = box.x;
+		box.x2 = x;
 	} else {
-		this.box.x1 = x;
-		this.box.x2 = this.box.x;
+		box.x1 = x;
+		box.x2 = box.x;
 	}
-	if (y > this.box.y) {
-		this.box.y1 = this.box.y;
-		this.box.y2 = y;
+	if (y > box.y) {
+		box.y1 = box.y;
+		box.y2 = y;
 	} else {
-		this.box.y1 = y;
-		this.box.y2 = this.box.y;
+		box.y1 = y;
+		box.y2 = box.y;
 	}
 
-	this.box.style.left = this.box.x1 + "px";
-	this.box.style.width = this.box.x2 - this.box.x1 + "px";
-	this.box.style.top = this.box.y1 + "px";
-	this.box.style.height = this.box.y2 - this.box.y1 + "px";
+	box.style.left = box.x1 + "px";
+	box.style.width = box.x2 - box.x1 + "px";
+	box.style.top = box.y1 + "px";
+	box.style.height = box.y2 - box.y1 + "px";
 
 	count_label.style.left = x - 15 + "px";
 	count_label.style.top = y - 15 + "px";
 }
 
 function mousewheel() {
-	this.scroll_bug_ignore = true;
+	scroll_bug_ignore = true;
 }
 
 function mouseout(event) {
-	this.mousemove(event);
+	mousemove(event);
 	// the mouse wheel event might also call this event
-	this.scroll_bug_ignore = true;
+	scroll_bug_ignore = true;
 }
 
 function prevent_escalation(event) {
@@ -222,22 +230,22 @@ function prevent_escalation(event) {
 }
 
 function mouseup(event) {
-	this.prevent_escalation(event);
+	prevent_escalation(event);
 
-	if (this.box_on) {
+	if (box_on) {
 		// all the detection of the mouse to bounce
-		if (this.allow_selection() && this.timer === 0) {
-			this.timer = setTimeout(function() {
-				this.update_box(event.pageX, event.pageY);
-				this.detech(event.pageX, event.pageY, true);
+		if (allow_selection() && timer === 0) {
+			timer = setTimeout(function () {
+				update_box(event.pageX, event.pageY);
+				detech(event.pageX, event.pageY, true);
 
-				this.stop();
-				this.timer = 0;
+				stop();
+				timer = 0;
 			}, 100);
 		}
 	} else {
 		// false alarm
-		this.stop();
+		stop();
 	}
 }
 
@@ -277,15 +285,15 @@ function start() {
 	document.body.style.khtmlUserSelect = "none";
 
 	// turn on the box
-	this.box.style.visibility = "visible";
-	this.count_label.style.visibility = "visible";
+	box.style.visibility = "visible";
+	count_label.style.visibility = "visible";
 
 	// find all links (find them each time as they could have moved)
 	var page_links = document.links;
 
 	// create RegExp once
 	var re1 = new RegExp("^javascript:", "i");
-	var re2 = new RegExp(this.settings[this.setting].options.ignore.slice(1).join("|"), "i");
+	var re2 = new RegExp(settings[setting].options.ignore.slice(1).join("|"), "i");
 	var re3 = new RegExp("^H\\d$");
 
 	for (var i = 0; i < page_links.length; i++) {
@@ -300,12 +308,12 @@ function start() {
 		}
 
 		// include/exclude links
-		if (this.settings[this.setting].options.ignore.length > 1) {
+		if (settings[setting].options.ignore.length > 1) {
 			if (re2.test(page_links[i].href) || re2.test(page_links[i].innerHTML)) {
-				if (this.settings[this.setting].options.ignore[0] == EXCLUDE_LINKS) {
+				if (settings[setting].options.ignore[0] == EXCLUDE_LINKS) {
 					continue;
 				}
-			} else if (this.settings[this.setting].options.ignore[0] == INCLUDE_LINKS) {
+			} else if (settings[setting].options.ignore[0] == INCLUDE_LINKS) {
 				continue;
 			}
 		}
@@ -316,14 +324,14 @@ function start() {
 			continue;
 		}
 
-		var pos = this.getXY(page_links[i]);
+		var pos = getXY(page_links[i]);
 		var width = page_links[i].offsetWidth;
 		var height = page_links[i].offsetHeight;
 
 		// attempt to get the actual size of the link
 		for (var k = 0; k < page_links[i].childNodes.length; k++) {
 			if (page_links[i].childNodes[k].nodeName == "IMG") {
-				const pos2 = this.getXY(page_links[i].childNodes[k]);
+				const pos2 = getXY(page_links[i].childNodes[k]);
 				if (pos.y >= pos2.y) {
 					pos.y = pos2.y;
 
@@ -340,16 +348,16 @@ function start() {
 		page_links[i].height = height;
 		page_links[i].width = width;
 		page_links[i].box = null;
-		page_links[i].important = this.settings[this.setting].options.smart == 0 && page_links[i].parentNode != null && re3.test(page_links[i].parentNode.nodeName);
+		page_links[i].important = settings[setting].options.smart == 0 && page_links[i].parentNode != null && re3.test(page_links[i].parentNode.nodeName);
 
-		this.links.push(page_links[i]);
+		links.push(page_links[i]);
 	}
 
-	this.box_on = true;
+	box_on = true;
 
 	// turn off menu for windows so mouse up doesn't trigger context menu
 	if (os === OS_WIN) {
-		this.stop_menu = true;
+		stop_menu = true;
 	}
 }
 
@@ -358,24 +366,24 @@ function stop() {
 	document.body.style.khtmlUserSelect = "";
 
 	// turn off mouse move and mouse up
-	window.removeEventListener("mousemove", this.mousemove, true);
-	window.removeEventListener("mouseup", this.mouseup, true);
-	window.removeEventListener("mousewheel", this.mousewheel, true);
-	window.removeEventListener("mouseout", this.mouseout, true);
+	window.removeEventListener("mousemove", mousemove, true);
+	window.removeEventListener("mouseup", mouseup, true);
+	window.removeEventListener("mousewheel", mousewheel, true);
+	window.removeEventListener("mouseout", mouseout, true);
 
-	if (this.box_on) {
-		this.clean_up();
+	if (box_on) {
+		clean_up();
 	}
 
 	// turn on menu for linux
-	if (os === OS_LINUX && this.settings[this.setting].key != this.key_pressed) {
-		this.stop_menu == false;
+	if (os === OS_LINUX && settings[setting].key != key_pressed) {
+		stop_menu == false;
 	}
 }
 
 function scroll() {
-	if (this.allow_selection()) {
-		var y = this.mouse_y - window.scrollY;
+	if (allow_selection()) {
+		var y = mouse_y - window.scrollY;
 		var win_height = window.innerHeight;
 
 		if (y > win_height - 20) { //down
@@ -388,11 +396,11 @@ function scroll() {
 				speed = 10;
 			}
 			window.scrollBy(0, speed);
-			this.mouse_y += speed;
-			this.update_box(this.mouse_x, this.mouse_y);
-			this.detech(this.mouse_x, this.mouse_y, false);
+			mouse_y += speed;
+			update_box(mouse_x, mouse_y);
+			detech(mouse_x, mouse_y, false);
 
-			this.scroll_bug_ignore = true;
+			scroll_bug_ignore = true;
 			return;
 		} else if (window.scrollY > 0 && y < 20) { //up
 			let speed = y;
@@ -404,100 +412,100 @@ function scroll() {
 				speed = 10;
 			}
 			window.scrollBy(0, -speed);
-			this.mouse_y -= speed;
-			this.update_box(this.mouse_x, this.mouse_y);
-			this.detech(this.mouse_x, this.mouse_y, false);
+			mouse_y -= speed;
+			update_box(mouse_x, mouse_y);
+			detech(mouse_x, mouse_y, false);
 
-			this.scroll_bug_ignore = true;
+			scroll_bug_ignore = true;
 			return;
 		}
 	}
 
-	clearInterval(this.scroll_id);
-	this.scroll_id = 0;
+	clearInterval(scroll_id);
+	scroll_id = 0;
 }
 
 
 function detech(x, y, open) {
-	this.mouse_x = x;
-	this.mouse_y = y;
+	mouse_x = x;
+	mouse_y = y;
 
-	if (!this.box_on) {
-		if (this.box.x2 - this.box.x1 < 5 && this.box.y2 - this.box.y1 < 5) {
+	if (!box_on) {
+		if (box.x2 - box.x1 < 5 && box.y2 - box.y1 < 5) {
 			return true;
 		} else {
-			this.start();
+			start();
 		}
 
 	}
 
-	if (!this.scroll_id) {
-		this.scroll_id = setInterval(scroll, 100);
+	if (!scroll_id) {
+		scroll_id = setInterval(scroll, 100);
 	}
 
 	var count = 0;
 	var count_tabs = new Set;
 	var open_tabs = [];
-	for (var i = 0; i < this.links.length; i++) {
-		if ((!this.smart_select || this.links[i].important) && !(this.links[i].x1 > this.box.x2 || this.links[i].x2 < this.box.x1 || this.links[i].y1 > this.box.y2 || this.links[i].y2 < this.box.y1)) {
+	for (var i = 0; i < links.length; i++) {
+		if ((!smart_select || links[i].important) && !(links[i].x1 > box.x2 || links[i].x2 < box.x1 || links[i].y1 > box.y2 || links[i].y2 < box.y1)) {
 			if (open) {
 				open_tabs.push({
-					"url": this.links[i].href,
-					"title": this.links[i].innerText
+					"url": links[i].href,
+					"title": links[i].innerText
 				});
 			}
 
 			// check if important links have been selected and possibly redo
-			if (!this.smart_select) {
-				if (this.links[i].important) {
-					this.smart_select = true;
+			if (!smart_select) {
+				if (links[i].important) {
+					smart_select = true;
 					return false;
 				}
 			} else {
-				if (this.links[i].important) {
+				if (links[i].important) {
 					count++;
 				}
 			}
 
-			if (this.links[i].box === null) {
+			if (links[i].box === null) {
 				var link_box = document.createElement("span");
 				link_box.style.id = "linkclump-link";
 				link_box.style.margin = "0px auto";
 				link_box.style.border = "1px solid red";
 				link_box.style.position = "absolute";
-				link_box.style.width = this.links[i].width + "px";
-				link_box.style.height = this.links[i].height + "px";
-				link_box.style.top = this.links[i].y1 + "px";
-				link_box.style.left = this.links[i].x1 + "px";
+				link_box.style.width = links[i].width + "px";
+				link_box.style.height = links[i].height + "px";
+				link_box.style.top = links[i].y1 + "px";
+				link_box.style.left = links[i].x1 + "px";
 				link_box.style.zIndex = Z_INDEX;
 
 				document.body.appendChild(link_box);
-				this.links[i].box = link_box;
+				links[i].box = link_box;
 			} else {
-				this.links[i].box.style.visibility = "visible";
+				links[i].box.style.visibility = "visible";
 			}
 
-			count_tabs.add(this.links[i].href);
+			count_tabs.add(links[i].href);
 		} else {
-			if (this.links[i].box !== null) {
-				this.links[i].box.style.visibility = "hidden";
+			if (links[i].box !== null) {
+				links[i].box.style.visibility = "hidden";
 			}
 		}
 	}
 
 	// important links were found, but not anymore so redo
-	if (this.smart_select && count === 0) {
-		this.smart_select = false;
+	if (smart_select && count === 0) {
+		smart_select = false;
 		return false;
 	}
 
 	count_label.innerText = count_tabs.size;
 
 	if (open_tabs.length > 0) {
-		chrome.extension.sendMessage({
+		browser.runtime.sendMessage({
 			message: "activate",
 			urls: open_tabs,
-			setting: this.settings[this.setting]
+			setting: settings[setting]
 		});
 	}
 
@@ -505,8 +513,8 @@ function detech(x, y, open) {
 }
 
 function allow_key(keyCode) {
-	for (var i in this.settings) {
-		if (this.settings[i].key == keyCode) {
+	for (var i in settings) {
+		if (settings[i].key == keyCode) {
 			return true;
 		}
 	}
@@ -516,13 +524,13 @@ function allow_key(keyCode) {
 
 function keydown(event) {
 	if (event.keyCode != END_KEYCODE && event.keyCode != HOME_KEYCODE) {
-		this.key_pressed = event.keyCode;
+		key_pressed = event.keyCode;
 		// turn menu off for linux
-		if (os === OS_LINUX && this.allow_key(this.key_pressed)) {
-			this.stop_menu = true;
+		if (os === OS_LINUX && allow_key(key_pressed)) {
+			stop_menu = true;
 		}
 	} else {
-		this.scroll_bug_ignore = true;
+		scroll_bug_ignore = true;
 	}
 }
 
@@ -539,19 +547,19 @@ function keyup(event) {
 function remove_key() {
 	// turn menu on for linux
 	if (os === OS_LINUX) {
-		this.stop_menu = false;
+		stop_menu = false;
 	}
-	this.key_pressed = 0;
+	key_pressed = 0;
 }
 
 
 function allow_selection() {
-	for (var i in this.settings) {
+	for (var i in settings) {
 		// need to check if key is 0 as key_pressed might not be accurate
-		if (this.settings[i].mouse == this.mouse_button && this.settings[i].key == this.key_pressed) {
-			this.setting = i;
-			if (this.box !== null) {
-				this.box.style.border = "2px dotted " + this.settings[i].color;
+		if (settings[i].mouse == mouse_button && settings[i].key == key_pressed) {
+			setting = i;
+			if (box !== null) {
+				box.style.border = "2px dotted " + settings[i].color;
 			}
 			return true;
 		}
@@ -560,7 +568,7 @@ function allow_selection() {
 }
 
 function contextmenu(event) {
-	if (this.stop_menu) {
+	if (stop_menu) {
 		event.preventDefault();
 	}
 }
