@@ -23,8 +23,8 @@
 		<echo>Deleting old zip file ${zip_name}</echo>
 		<delete>
 			<fileset dir="." includes="${zip_name}" />
+			<fileset dir="src/web-ext-artifacts"/>
 		</delete>
-		<delete folder="src/web-ext-artifacts"/>
 	</target>
 
 	<condition property="is_mac">
