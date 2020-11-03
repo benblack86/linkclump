@@ -1,42 +1,42 @@
 <project name="Linkclump" default="build" basedir=".">
-	<copy file="node_modules/webextension-polyfill/dist/browser-polyfill.min.js" todir="src"/>
 	<!-- ant has no if/else statments so have to use this if_.. format -->
 	<target name="build" depends="properties,clean,test_if_mac,test_if_not_mac">
 		<zip destfile="${zip_name}" basedir="src" />
 	</target>
-	
+
 	<target name="properties">
+		<copy file="node_modules/webextension-polyfill/dist/browser-polyfill.min.js" todir="src"/>
 		<!-- gets the version number from the manifest file -->
 		<loadfile srcFile="src/manifest.json" property="version">
 			<filterchain>
 				<!-- "s" option allows "." to match newline -->
-				<replaceregex pattern='.*version": "(.*?)".*' flags="s" byline="false" replace="\1" />	
+				<replaceregex pattern='.*version": "(.*?)".*' flags="s" byline="false" replace="\1" />
 			</filterchain>
 		</loadfile>
 		<property name="zip_name" value="linkclump.${version}.zip" />
-				
+
 		<echo>Version: ${version}</echo>
 		<echo>Zip Name: ${zip_name}</echo>
 	</target>
-	
+
 	<target name="clean">
 		<echo>Deleting old zip file ${zip_name}</echo>
 		<delete>
 			<fileset dir="." includes="${zip_name}" />
 		</delete>
-		<delete file="src/browser-polyfill.min.js"/>
+		<delete folder="src/web-ext-artifacts"/>
 	</target>
-	
+
 	<condition property="is_mac">
 		<os family="mac" />
 	</condition>
-	
+
 	<condition property="is_not_mac">
 		<not>
 			<os family="mac" />
 		</not>
 	</condition>
-	
+
 	<target name="test_if_mac" if="is_mac">
 		<echo>Running Js Test Driver [see http://code.google.com/p/js-test-driver/]</echo>
 		<exec executable="java" failonerror="true">
@@ -51,7 +51,7 @@
 			<arg line="--tests all" />
 		</exec>
 	</target>
-	
+
 	<target name="test_if_not_mac" if="is_not_mac">
 		<echo>Js Test Driver is currently only setup for Mac testing</echo>
 	</target>
