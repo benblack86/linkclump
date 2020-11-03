@@ -1,5 +1,3 @@
-console.log("LinkClump loaded");
-
 const END_KEYCODE = 35;
 const HOME_KEYCODE = 36;
 const Z_INDEX = 2147483647;

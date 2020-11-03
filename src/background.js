@@ -1,4 +1,3 @@
-console.log("LinkClump background loaded");
 var settingsManager = new SettingsManager();
 
 Array.prototype.unique = function () {
