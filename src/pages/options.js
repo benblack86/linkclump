@@ -1,13 +1,28 @@
-var isDebug = true;
-
 var config = {
-	"triggers":
-		[{ "name": "Left" }, { "name": "Middle" }, { "name": "Right" }],
+	"triggers": [{
+		"name": "Left"
+	}, {
+		"name": "Middle"
+	}, {
+		"name": "Right"
+	}],
 	"actions": {
-		"win": { "name": "Opened in a New Window", "options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"] },
-		"tabs": { "name": "Opened as New Tabs", "options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"] },
-		"bm": { "name": "Bookmarked", "options": ["smart", "ignore", "block", "reverse"] },
-		"copy": { "name": "Copied to clipboard", "options": ["smart", "ignore", "copy", "block", "reverse"] }
+		"win": {
+			"name": "Opened in a New Window",
+			"options": ["smart", "ignore", "delay", "block", "reverse", "unfocus"]
+		},
+		"tabs": {
+			"name": "Opened as New Tabs",
+			"options": ["smart", "ignore", "delay", "close", "block", "reverse", "end"]
+		},
+		"bm": {
+			"name": "Bookmarked",
+			"options": ["smart", "ignore", "block", "reverse"]
+		},
+		"copy": {
+			"name": "Copied to clipboard",
+			"options": ["smart", "ignore", "copy", "block", "reverse"]
+		}
 	},
 	"options": {
 		"smart": {
@@ -89,14 +104,14 @@ function tour2() {
 	$("#page2").fadeIn();
 }
 
-function load_action(id) {  // into form
+function load_action(id) { // into form
 
 	if (id === null) {
 		displayKeys(0);
 		displayOptions("tabs");
 		$("#form_id").val("");
-		$("#form_mouse").val(0);  // default to left mouse button
-		$("#form_key").val(90);   // and z key
+		$("#form_mouse").val(0); // default to left mouse button
+		$("#form_key").val(90); // and z key
 		$(".colorpicker-trigger").css("background-color", "#" + colors[Math.floor(Math.random() * colors.length)]);
 	} else {
 		var param = params.actions[id];
@@ -164,12 +179,15 @@ function load_action(id) {  // into form
 function delete_action(id, div) {
 	div.fadeOut("swing", function () {
 		var del = $("<div class='undo'>Action has been deleted </div>");
-		var undo = $("<a>undo</a>").click({ "i": id, "param": params.actions[id] },
+		var undo = $("<a>undo</a>").click({
+				"i": id,
+				"param": params.actions[id]
+			},
 			function (event) {
 				div_history[event.data.i].replaceWith(setup_action(event.data.param, event.data.i));
 				params.actions[event.data.i] = event.data.param;
 
-				delete (div_history[event.data.i]);
+				delete(div_history[event.data.i]);
 
 				save_params();
 				return false;
@@ -180,7 +198,7 @@ function delete_action(id, div) {
 		$(this).replaceWith(del).fadeIn("swing");
 
 		div_history[id] = del;
-		delete (params.actions[id]);
+		delete(params.actions[id]);
 
 		save_params();
 	});
@@ -239,14 +257,18 @@ function setup_action(param, id) {
 
 	setting.append(list);
 
-	var edit = $("<a href='#' class='button edit'>Edit</a>").click({ 'i': id },
+	var edit = $("<a href='#' class='button edit'>Edit</a>").click({
+			'i': id
+		},
 		function (event) {
 			load_action(event.data.i, $(this).parent().parent());
 			return false;
 		}
 	);
 
-	var del = $("<a href='#' class='button delete'>Delete</a>").click({ "i": id },
+	var del = $("<a href='#' class='button delete'>Delete</a>").click({
+			"i": id
+		},
 		function (event) {
 			delete_action(event.data.i, $(this).parent());
 			return false;
@@ -288,8 +310,7 @@ function setup_form() {
 
 		act.click(function (event) {
 			displayOptions(event.currentTarget.value)
-		}
-		);
+		});
 
 		action.append(act);
 	}
@@ -388,7 +409,9 @@ function displayOptions(action) {
 				break;
 		}
 
-		p.mouseover({ "extra": op.extra }, function (event) {
+		p.mouseover({
+			"extra": op.extra
+		}, function (event) {
 			var extra = $("#form_extra");
 			extra.html(event.data.extra);
 			extra.css("top", $(this).position().top);
@@ -553,7 +576,7 @@ $(function () {
 
 		$("#form_block").val(params.blocked.join("\n"));
 
-		if (isFirstTime || isDebug) {
+		if (isFirstTime) {
 			tour1();
 		} else {
 			tour2();
