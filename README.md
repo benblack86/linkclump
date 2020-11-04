@@ -4,9 +4,9 @@
 Support is not provided as this is a free extension.
 
 ## Installation
-Install it by:
-visiting the [chrome web store](https://chrome.google.com/webstore/detail/linkclump/lfpjkncokllnfokkgpkobnkbkmelfefj)
-or
+Install it by:  
+visiting the [chrome web store](https://chrome.google.com/webstore/detail/linkclump/lfpjkncokllnfokkgpkobnkbkmelfefj)  
+or  
 visiting the [mozilla addon store (coming soon)](https://addons.mozilla.org)
 
 ## Build
