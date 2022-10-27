@@ -17,7 +17,7 @@ function openTab(urls, delay, windowId, tabPosition, closeTime) {
 	var obj = {
 			windowId: windowId,
 			url: urls.shift().url,
-			selected: false
+			active: false
 	};
 
 	if(tabPosition != null) {
