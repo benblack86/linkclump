@@ -13,9 +13,10 @@ Array.prototype.unique = function() {
 	return a;
 };
 
-function openTab(urls, delay, windowId, tabPosition, closeTime) {
+function openTab(urls, delay, windowId, openerTabId, tabPosition, closeTime) {
 	var obj = {
-			windowId: windowId,
+			windowId,
+			openerTabId,
 			url: urls.shift().url,
 			active: false
 	};
@@ -34,7 +35,7 @@ function openTab(urls, delay, windowId, tabPosition, closeTime) {
 	});
 
 	if(urls.length > 0) {
-		window.setTimeout(function() {openTab(urls, delay, windowId, tabPosition, closeTime)}, delay*1000);
+		window.setTimeout(function() {openTab(urls, delay, windowId, openerTabId, tabPosition, closeTime)}, delay*1000);
 	}
 
 }
@@ -141,7 +142,7 @@ function handleRequests(request, sender, callback){
 
 				chrome.windows.create({url: request.urls.shift().url, "focused" : !request.setting.options.unfocus}, function(window){
 					if(request.urls.length > 0) {
-						openTab(request.urls, request.setting.options.delay, window.id, null, 0);
+						openTab(request.urls, request.setting.options.delay, window.id, undefined, null, 0);
 					}
 				});
 
@@ -159,7 +160,7 @@ function handleRequests(request, sender, callback){
 						tab_index = tab.index+1;
 					}
 
-					openTab(request.urls, request.setting.options.delay, window.id, tab_index, request.setting.options.close);
+					openTab(request.urls, request.setting.options.delay, window.id, tab.id, tab_index, request.setting.options.close);
 				})
 			});
 			break;
