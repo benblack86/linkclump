@@ -14,12 +14,16 @@ Array.prototype.unique = function() {
 };
 
 function openTab(urls, delay, windowId, openerTabId, tabPosition, closeTime) {
-	var obj = {
+	const obj = {
 			windowId,
-			openerTabId,
 			url: urls.shift().url,
 			active: false
 	};
+
+	// only add tab ID if delay feature is not being used as if tab with openerTabId is closed, the links stop opening
+	if (!delay) {
+		obj.openerTabId = openerTabId;
+	}
 
 	if(tabPosition != null) {
 		obj.index = tabPosition;
