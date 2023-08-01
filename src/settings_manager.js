@@ -2,16 +2,20 @@ var CURRENT_VERSION = "5";
 
 function SettingsManager() {}
 
-SettingsManager.prototype.load = function() {
+SettingsManager.prototype.load = async function() {
 	try {
 		// load data from local storage
-		var data = localStorage["settings"];
-		
-		// attempt to parse, if unable then make the assumption it has been corrupted
-		return JSON.parse(data)
+		var {settings}	= await chrome.storage.local.get("settings")
+
+		// chrome.storage will return an empty object if it is not defined,
+		// so we check for any key to indicate that it is not empty
+		if (Object.keys(settings).length === 0) {
+			var {settings} = await this.init();
+		}
+		return settings
 	} catch(error) {
-		var settings = this.init();
-		settings.error = "Error: "+error+"|Data:"+data;
+		var {settings} = await this.init();
+		settings.error = "Error: "+error+"|Data:"+settings;
 		return settings;
 	}
 };
@@ -25,12 +29,14 @@ SettingsManager.prototype.save = function(settings) {
 	localStorage["settings"] = JSON.stringify(settings);
 };
 
-SettingsManager.prototype.isInit = function() {
-	return (localStorage["version"] !== undefined);
+SettingsManager.prototype.isInit = async function() {
+	const version = await chrome.storage.local.get("version");
+	return version !== undefined
 };
 
-SettingsManager.prototype.isLatest = function() {
-	return (localStorage["version"] === CURRENT_VERSION);
+SettingsManager.prototype.isLatest = async function() {
+	const version = await chrome.storage.local.get("version");
+	return version === CURRENT_VERSION;
 };
 
 SettingsManager.prototype.init = function() {
@@ -39,7 +45,7 @@ SettingsManager.prototype.init = function() {
 			"actions": {
 				"101": {
 					"mouse": 0,  // left mouse button
-					"key": 90,   // z key
+					"key": 90,	 // z key
 					"action": "tabs",
 					"color": "#FFA500",
 					"options": {
@@ -65,7 +71,7 @@ SettingsManager.prototype.init = function() {
 
 
 SettingsManager.prototype.update = function() {
-	if (!this.isInit()) {
+	if (!(await this.isInit())) {
 		this.init();
 	}
 };

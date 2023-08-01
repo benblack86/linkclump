@@ -1,11 +1,10 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Linkclump",
-  "version": "2.9.4",
+  "version": "2.9.5",
   "description": "Lets you open, copy or bookmark multiple links at the same time.",
   "background": {
-    "scripts": ["settings_manager.js", "background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "options_page": "pages/options.html",
   "icons": {"16": "images/16x16.png",
@@ -20,9 +19,19 @@
     }
   ],
   "permissions": [
-    "bookmarks", "http://*/*", "https://*/*"
+    "bookmarks",
+    "offscreen",
+    "system.display",
+    "storage",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "web_accessible_resources": [
-    "pages/test_area.html"
+    {
+      "resources": ["pages/test_area.html"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
