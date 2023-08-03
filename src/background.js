@@ -206,7 +206,7 @@ function handleRequests(request, sender, callback){
 	return true
 }
 
-chrome.runtime.onMessage.addListener(handleRequests)
+chrome.runtime.onMessage.addListener(handleRequests);
 
 
 (async function() {

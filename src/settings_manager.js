@@ -70,7 +70,7 @@ SettingsManager.prototype.init = function() {
 };
 
 
-SettingsManager.prototype.update = function() {
+SettingsManager.prototype.update = async function() {
 	if (!(await this.isInit())) {
 		this.init();
 	}
