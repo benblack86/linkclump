@@ -58,7 +58,7 @@ chrome.runtime.sendMessage({
 	}
 });
 
-chrome.extension.onMessage.addListener(function(request, sender, callback) {
+chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 	if (request.message === "update") {
 		this.settings = request.params.actions;
 	}
