@@ -79,10 +79,11 @@ function timeConverter(a){
 // Link copy formats
 const URLS_WITH_TITLES = 0
 const URLS_ONLY = 1
-const TITLES_ONLY = 2
-const AS_LINK_HTML = 3
-const AS_LIST_LINK_HTML = 4
-const AS_MARKDOWN = 5
+const URLS_ONLY_SPACE_SEPARATED = 2
+const TITLES_ONLY = 3
+const AS_LINK_HTML = 4
+const AS_LIST_LINK_HTML = 5
+const AS_MARKDOWN = 6
 
 function formatLink({url, title}, copyFormat) {
 	switch(parseInt(copyFormat)) {
@@ -90,6 +91,8 @@ function formatLink({url, title}, copyFormat) {
 		return title+"\t"+url+"\n";
 	case URLS_ONLY: 
 		return url+"\n";
+	case URLS_ONLY_SPACE_SEPARATED: 
+		return url+" ";
 	case TITLES_ONLY:
 		return title+"\n";
 	case AS_LINK_HTML:
