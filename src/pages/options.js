@@ -23,7 +23,7 @@ var config = {
 	"copy": {
 		"name": "copy format",
 		"type": "selection",
-		"data": ["URLS with titles", "URLS only", "titles only", "as link HTML", "as list link HTML", "as Markdown"],
+		"data": ["URLS with titles", "URLS only", "URLS only space separated", "titles only", "as link HTML", "as list link HTML", "as Markdown"],
 		"extra": "format of the links saved to the clipboard"
 		},
 	"delay": {

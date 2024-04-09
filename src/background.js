@@ -76,6 +76,34 @@ function timeConverter(a){
 	return time;
 }
 
+// Link copy formats
+const URLS_WITH_TITLES = 0
+const URLS_ONLY = 1
+const URLS_ONLY_SPACE_SEPARATED = 2
+const TITLES_ONLY = 3
+const AS_LINK_HTML = 4
+const AS_LIST_LINK_HTML = 5
+const AS_MARKDOWN = 6
+
+function formatLink({url, title}, copyFormat) {
+	switch(parseInt(copyFormat)) {
+	case URLS_WITH_TITLES:
+		return title+"\t"+url+"\n";
+	case URLS_ONLY: 
+		return url+"\n";
+	case URLS_ONLY_SPACE_SEPARATED: 
+		return url+" ";
+	case TITLES_ONLY:
+		return title+"\n";
+	case AS_LINK_HTML:
+		return '<a href="'+url+'">'+title+"</a>\n";
+	case AS_LIST_LINK_HTML:
+		return '<li><a href="'+url+'">'+title+"</a></li>\n";
+	case AS_MARKDOWN:
+		return "["+title+"]("+url+")\n";
+	}
+}
+
 function handleRequests(request, sender, callback){
 	switch(request.message) {
 	case "activate":
@@ -95,29 +123,10 @@ function handleRequests(request, sender, callback){
 		case "copy":
 			var text = "";
 			for (let i = 0; i < request.urls.length; i++) {
-				switch(request.setting.options.copy) {
-				case "0":
-					text += request.urls[i].title+"\t"+request.urls[i].url+"\n";
-					break;
-				case "1": 
-					text += request.urls[i].url+"\n";
-					break;
-				case "2":
-					text += request.urls[i].title+"\n";
-					break;
-				case "3":
-					text += '<a href="'+request.urls[i].url+'">'+request.urls[i].title+"</a>\n";
-					break;
-				case "4":
-					text += '<li><a href="'+request.urls[i].url+'">'+request.urls[i].title+"</a></li>\n";
-					break;
-				case "5":
-					text += "["+request.urls[i].title+"]("+request.urls[i].url+")\n";
-					break;
-				}
+				text += formatLink(request.urls[i], request.setting.options.copy);
 			}
 			
-			if(request.setting.options.copy == 4) {
+			if(request.setting.options.copy == AS_LIST_LINK_HTML) {
 				text = "<ul>\n"+text+"</ul>\n"
 			}
 			
